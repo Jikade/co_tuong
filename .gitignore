@@ -1,0 +1,16 @@
+# Thư viện phụ thuộc và sản phẩm build
+node_modules/
+dist/
+coverage/
+/data/
+
+# Nhật ký
+*.log
+
+# Trình soạn thảo
+.vscode/
+.idea/
+
+# Tệp hệ thống
+.DS_Store
+Thumbs.db

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tạo phòng, chơi cờ tướng trực tuyến và theo dõi trận đấu theo thời gian thực." />
+  <title>Cờ Tướng Trực Tuyến</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Cờ Tướng - Trang chủ">
+        <span class="brand-mark" aria-hidden="true">棋</span>
+        <span>Cờ Tướng</span>
+      </a>
+      <div class="connection-status">
+        <span id="connection-dot" class="connection-dot"></span>
+        <span id="connection-label">Đang kết nối máy chủ…</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="lobby" class="lobby panel">
+        <div class="section-heading">
+          <p class="eyebrow">CHƠI CÙNG BẠN BÈ</p>
+          <h1>Tạo hoặc tham gia Room</h1>
+          <p class="muted">Tạo phòng mới hoặc nhập mã 6 chữ số để vào trận và theo dõi trực tiếp.</p>
+        </div>
+        <label class="field-label" for="display-name">Tên hiển thị</label>
+        <input id="display-name" class="text-input" maxlength="32" autocomplete="nickname" placeholder="Tên của bạn" />
+        <div class="lobby-actions">
+          <form id="create-room-form" class="action-card">
+            <h2>Tạo Room</h2>
+            <label class="field-label" for="room-name">Tên Room</label>
+            <input id="room-name" class="text-input" maxlength="40" placeholder="Ví dụ: Cờ cuối tuần" required />
+            <button class="button button-primary" type="submit">Tạo Room</button>
+          </form>
+          <form id="join-room-form" class="action-card">
+            <h2>Tham gia</h2>
+            <label class="field-label" for="room-code-input">Mã Room</label>
+            <input id="room-code-input" class="text-input code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required />
+            <button class="button button-secondary" type="submit">Vào Room</button>
+          </form>
+        </div>
+        <p class="lobby-note">Người vào sau khi đủ hai đấu thủ sẽ tham gia với quyền khán giả. Mỗi Room hỗ trợ tối đa 10 khán giả.</p>
+      </section>
+
+      <section id="room-view" class="room-view" hidden>
+        <div class="room-banner panel">
+          <div>
+            <p class="eyebrow">ROOM TRỰC TUYẾN</p>
+            <h1 id="room-title">Room</h1>
+            <p class="muted">Mã Room <strong id="room-code"></strong></p>
+          </div>
+          <button id="copy-room-code" class="button button-quiet" type="button">Sao chép mã</button>
+        </div>
+
+        <div class="game-layout">
+          <section class="board-area" aria-label="Bàn cờ tướng">
+            <div class="game-scene" id="game-scene">
+              <div class="stone-disc" aria-hidden="true">
+                <span class="stone-vein vein-one"></span>
+                <span class="stone-vein vein-two"></span>
+                <span class="stone-vein vein-three"></span>
+              </div>
+
+              <section class="board-wrap" aria-label="Bàn cờ tướng">
+                <div class="board-frame">
+                  <div class="frame-corner corner-tl" aria-hidden="true"></div>
+                  <div class="frame-corner corner-tr" aria-hidden="true"></div>
+                  <div class="frame-corner corner-bl" aria-hidden="true"></div>
+                  <div class="frame-corner corner-br" aria-hidden="true"></div>
+                  <canvas id="board-canvas" aria-label="Bàn cờ 9 cột, 10 hàng"></canvas>
+                  <div id="pieces" aria-label="Quân cờ"></div>
+                </div>
+                <div class="board-pedestal" aria-hidden="true">
+                  <div class="pedestal-lip"></div>
+                  <div class="pedestal-panel"></div>
+                  <div class="pedestal-foot left"></div>
+                  <div class="pedestal-foot right"></div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <aside class="game-sidebar">
+            <section class="panel room-panel">
+              <div class="panel-heading">
+                <h2>Người chơi</h2>
+                <span id="my-role" class="role-badge"></span>
+              </div>
+              <div id="host-slot" class="player-slot"></div>
+              <div id="opponent-slot" class="player-slot"></div>
+              <div id="spectator-list" class="spectator-list"></div>
+              <div class="room-controls">
+                <button id="ready-button" class="button button-secondary" type="button" hidden>Sẵn sàng</button>
+                <button id="start-button" class="button button-primary" type="button" hidden>Bắt đầu</button>
+              </div>
+            </section>
+
+            <section class="panel match-panel">
+              <div class="panel-heading">
+                <h2>Trạng thái trận</h2>
+                <span id="match-status" class="status-pill">Đang chờ đối thủ</span>
+              </div>
+              <p id="turn-label" class="turn-label">Chưa có trận đấu</p>
+              <p id="check-label" class="check-label" hidden>Chiếu Tướng</p>
+              <p id="countdown-label" class="countdown-label" hidden></p>
+              <div class="clock-row">
+                <span>Thời gian lượt</span>
+                <strong id="turn-clock">—</strong>
+              </div>
+              <div id="result-label" class="result-label" hidden></div>
+            </section>
+
+            <section class="panel captured-panel">
+              <h2>Quân đã bị ăn</h2>
+              <div class="captured-row"><span>Đỏ</span><span id="captured-red" class="captured-pieces"></span></div>
+              <div class="captured-row"><span>Đen</span><span id="captured-black" class="captured-pieces"></span></div>
+            </section>
+
+            <section class="panel history-panel">
+              <h2>Lịch sử nước đi</h2>
+              <ol id="move-history" class="move-history"></ol>
+            </section>
+          </aside>
+        </div>
+      </section>
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
