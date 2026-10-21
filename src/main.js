@@ -1,4 +1,5 @@
 import { createInitialPieces } from './xiangqi.js';
+import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './constants.js';
 
 const CELL = 49;
 const PAD = 20;
@@ -16,6 +17,22 @@ const pieceTypes = {
 const pieceNames = Object.fromEntries(
   Object.entries(pieceTypes).map(([type, info]) => [type, info.name]),
 );
+const reasonLabels = {
+  [MATCH_REASON.CHECKMATE]: 'chiếu bí',
+  [MATCH_REASON.NO_LEGAL_MOVES]: 'không còn nước đi hợp lệ',
+  [MATCH_REASON.TIMEOUT]: 'hết thời gian',
+  [MATCH_REASON.LEFT_MATCH]: 'rời trận',
+  [MATCH_REASON.DISCONNECT_TIMEOUT]: 'mất kết nối quá 60 giây',
+  [MATCH_REASON.SURRENDER]: 'đầu hàng',
+  [MATCH_REASON.DRAW_AGREED]: 'hai bên đồng ý hòa',
+  [MATCH_REASON.SYSTEM_ERROR]: 'lỗi hệ thống',
+};
+const outcomeLabels = {
+  win: 'Thắng',
+  lose: 'Thua',
+  draw: 'Hòa',
+  voided: 'Không kết quả',
+};
 
 const scene = document.querySelector('#game-scene');
 const boardArea = document.querySelector('.board-area');
@@ -29,6 +46,27 @@ const roomCodeInput = document.querySelector('#room-code-input');
 const noticeEl = document.querySelector('#notice');
 const connectionDot = document.querySelector('#connection-dot');
 const connectionLabel = document.querySelector('#connection-label');
+const readyButton = document.querySelector('#ready-button');
+const startButton = document.querySelector('#start-button');
+const resignButton = document.querySelector('#resign-button');
+const drawButton = document.querySelector('#draw-button');
+const leaveButton = document.querySelector('#leave-button');
+const drawPrompt = document.querySelector('#draw-prompt');
+const drawPromptText = document.querySelector('#draw-prompt-text');
+const reconnectLabel = document.querySelector('#reconnect-label');
+const resultLabel = document.querySelector('#result-label');
+const turnClock = document.querySelector('#turn-clock');
+const turnLabel = document.querySelector('#turn-label');
+const matchStatus = document.querySelector('#match-status');
+const countdownLabel = document.querySelector('#countdown-label');
+const historyButton = document.querySelector('#history-button');
+const historyButtonLobby = document.querySelector('#history-button-lobby');
+const historyOverlay = document.querySelector('#history-overlay');
+const historyList = document.querySelector('#history-list');
+const historyEmpty = document.querySelector('#history-empty');
+const closeHistoryButton = document.querySelector('#close-history');
+const replayBar = document.querySelector('#replay-bar');
+const replayLabel = document.querySelector('#replay-label');
 
 const playerId = getStoredPlayerId();
 displayNameInput.value = localStorage.getItem('xiangqi.displayName') ?? '';
@@ -40,6 +78,7 @@ let reconnectDelay = 500;
 let reconnectTimer = null;
 let noticeTimer = null;
 let replacedByAnotherTab = false;
+let replayView = null;
 const acknowledgedMatches = new Set();
 
 function getStoredPlayerId() {
@@ -49,6 +88,12 @@ function getStoredPlayerId() {
     localStorage.setItem('xiangqi.playerId', id);
   }
   return id;
+}
+
+function apiBase() {
+  const configured = import.meta.env.VITE_WS_URL;
+  if (configured) return configured.replace(/^ws/, 'http').replace(/\/ws$/, '');
+  return `${location.protocol === 'https:' ? 'https' : 'http'}://${location.hostname}:3001`;
 }
 
 function fitScene() {
@@ -229,7 +274,7 @@ function handleServerMessage(message) {
     roomViewEl.hidden = false;
     renderRoom();
     fitScene();
-    if (currentRoom.match?.status === 'syncing') {
+    if (currentRoom.match?.status === MATCH_STATUS.SYNCING) {
       const role = getMyRole();
       if (role !== 'spectator' && !acknowledgedMatches.has(currentRoom.match.id)) {
         acknowledgedMatches.add(currentRoom.match.id);
@@ -268,6 +313,27 @@ function handleServerMessage(message) {
       currentRoom.match = message.match;
       renderMatch();
     }
+    return;
+  }
+  if (message.type === 'draw-offered') {
+    renderMatch();
+    if (message.fromPlayerId !== playerId) {
+      showNotice(`${getParticipantName(message.fromPlayerId)} xin hòa. Chọn Chấp nhận hoặc Từ chối.`);
+    }
+    return;
+  }
+  if (message.type === 'draw-declined') {
+    renderMatch();
+    showNotice('Yêu cầu hòa đã bị từ chối.');
+    return;
+  }
+  if (message.type === 'left-match') {
+    localStorage.removeItem('xiangqi.roomCode');
+    currentRoom = null;
+    exitReplay();
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+    showNotice('Bạn đã rời trận. Trận đấu được tính là thua.');
     return;
   }
   if (message.type === 'replaced') {
@@ -310,6 +376,11 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function isActiveMatch(match) {
+  return Boolean(match)
+    && (match.status === MATCH_STATUS.PLAYING || match.status === MATCH_STATUS.PAUSED);
+}
+
 function renderRoom() {
   document.querySelector('#room-title').textContent = currentRoom.name;
   document.querySelector('#room-code').textContent = currentRoom.code;
@@ -334,45 +405,62 @@ function renderRoom() {
     ? `Khán giả (${currentRoom.spectators.length}/10): ${currentRoom.spectators.map((person) => person.name).join(', ')}`
     : 'Khán giả (0/10)';
 
-  const readyButton = document.querySelector('#ready-button');
-  const startButton = document.querySelector('#start-button');
   const isPlayer = role === 'host' || role === 'opponent';
   const player = role === 'host' ? currentRoom.host : currentRoom.opponent;
   const bothPlayers = Boolean(currentRoom.host && currentRoom.opponent);
-  readyButton.hidden = Boolean(match) || !isPlayer || !bothPlayers;
+  const awaitingOpponent = !match || match.status === MATCH_STATUS.FINISHED;
+  readyButton.hidden = !awaitingOpponent || !isPlayer || !bothPlayers;
   readyButton.textContent = player?.ready ? 'Hủy sẵn sàng' : 'Sẵn sàng';
-  startButton.hidden = Boolean(match) || role !== 'host';
+  startButton.hidden = !awaitingOpponent || role !== 'host';
   startButton.disabled = !currentRoom.host?.ready || !currentRoom.opponent?.ready
     || !currentRoom.host?.connected || !currentRoom.opponent?.connected;
+  const active = isActiveMatch(match);
+  resignButton.hidden = !active || !isPlayer;
+  leaveButton.hidden = !active || !isPlayer;
+  drawButton.hidden = !active || !isPlayer || match?.status !== MATCH_STATUS.PLAYING;
+  drawButton.disabled = Boolean(match?.drawOffer);
+  drawButton.textContent = match?.drawOffer?.fromPlayerId === playerId
+    ? 'Đang chờ phản hồi'
+    : 'Xin hòa';
   renderMatch();
 }
 
 function renderMatch() {
   if (!currentRoom) return;
+  if (replayView) {
+    renderReplay();
+    return;
+  }
   const match = currentRoom.match;
   const statusLabels = {
     waiting: 'Đang chờ đối thủ',
     syncing: 'Đang đồng bộ',
     countdown: 'Chuẩn bị bắt đầu',
     playing: 'Đang diễn ra',
+    paused: 'Tạm dừng chờ kết nối',
     finished: 'Đã kết thúc',
   };
   const status = match?.status ?? 'waiting';
-  document.querySelector('#match-status').textContent = statusLabels[status] ?? status;
+  matchStatus.textContent = statusLabels[status] ?? status;
   document.querySelector('#check-label').hidden = !match?.inCheck;
-  document.querySelector('#countdown-label').hidden = status !== 'countdown';
-  if (status === 'countdown') {
+  countdownLabel.hidden = status !== MATCH_STATUS.COUNTDOWN;
+  if (status === MATCH_STATUS.COUNTDOWN) {
     const seconds = Math.max(1, Math.ceil((match.countdownEndsAt - Date.now()) / 1000));
-    document.querySelector('#countdown-label').textContent = `Bắt đầu sau ${seconds}…`;
+    countdownLabel.textContent = `Bắt đầu sau ${seconds}…`;
+  }
+  renderReconnectLabel(match);
+  drawPrompt.hidden = !match?.drawOffer || match.drawOffer.fromPlayerId === playerId;
+  if (match?.drawOffer && match.drawOffer.fromPlayerId !== playerId) {
+    drawPromptText.textContent = `${getParticipantName(match.drawOffer.fromPlayerId)} xin hòa. Bạn có đồng ý?`;
   }
 
-  const clock = document.querySelector('#turn-clock');
-  clock.textContent = match ? `${match.timeRemaining}s` : '—';
-  clock.classList.toggle('low-time', match?.status === 'playing' && match.timeRemaining <= 10);
+  turnClock.textContent = match ? `${match.timeRemaining}s` : '—';
+  turnClock.classList.toggle('low-time', match?.status === MATCH_STATUS.PLAYING
+    && match.timeRemaining <= 10);
 
   if (!match) {
-    document.querySelector('#turn-label').textContent = 'Chưa có trận đấu';
-    document.querySelector('#result-label').hidden = true;
+    turnLabel.textContent = 'Chưa có trận đấu';
+    resultLabel.hidden = true;
     renderPieces();
     return;
   }
@@ -381,32 +469,45 @@ function renderMatch() {
   const turnPlayerId = match.currentSide === 'red' ? match.redPlayerId : match.blackPlayerId;
   const turnPlayerName = getParticipantName(turnPlayerId);
   const ownsTurn = turnPlayerId === playerId;
-  const turnText = status === 'syncing'
+  const turnText = status === MATCH_STATUS.SYNCING
     ? 'Đang gửi bàn cờ ban đầu cho người chơi…'
-    : status === 'countdown'
+    : status === MATCH_STATUS.COUNTDOWN
       ? 'Trận đấu sắp bắt đầu'
-      : status === 'finished'
+      : status === MATCH_STATUS.FINISHED
         ? 'Trận đấu đã kết thúc'
-        : `${sideName} đang đi — ${turnPlayerName}${ownsTurn ? ' (đến lượt bạn)' : ''}`;
-  document.querySelector('#turn-label').textContent = turnText;
+        : status === MATCH_STATUS.PAUSED
+          ? 'Trận đấu tạm dừng — đồng hồ đã dừng'
+          : `${sideName} đang đi — ${turnPlayerName}${ownsTurn ? ' (đến lượt bạn)' : ''}`;
+  turnLabel.textContent = turnText;
 
-  const resultLabel = document.querySelector('#result-label');
-  resultLabel.hidden = status !== 'finished';
-  if (status === 'finished') {
-    const winnerName = getParticipantName(
-      match.result.winner === 'red' ? match.redPlayerId : match.blackPlayerId,
-    );
-    const reasons = {
-      checkmate: 'chiếu bí',
-      'no-legal-moves': 'không còn nước đi hợp lệ',
-      timeout: 'hết thời gian',
-    };
-    resultLabel.textContent = `${winnerName} thắng — ${reasons[match.result.reason] ?? match.result.reason}`;
-  }
+  resultLabel.hidden = status !== MATCH_STATUS.FINISHED;
+  if (status === MATCH_STATUS.FINISHED) resultLabel.textContent = describeResult(match);
 
   renderCapturedPieces(match.capturedPieces);
   renderMoveHistory(match.history);
   renderPieces();
+}
+
+function describeResult(match) {
+  const reason = reasonLabels[match.result?.reason] ?? match.result?.reason ?? '';
+  const outcome = match.result?.outcome;
+  if (outcome === MATCH_RESULT.DRAW) return `Hòa — ${reason}`;
+  if (outcome === MATCH_RESULT.VOIDED) return `Trận không có kết quả — ${reason}`;
+  const winnerId = match.result?.winnerSide === 'red' ? match.redPlayerId : match.blackPlayerId;
+  return `${getParticipantName(winnerId)} thắng — ${reason}`;
+}
+
+function renderReconnectLabel(match) {
+  if (!match?.reconnectDeadline) {
+    reconnectLabel.hidden = true;
+    return;
+  }
+  const seconds = Math.max(0, Math.ceil((match.reconnectDeadline - Date.now()) / 1000));
+  const names = (match.pausedPlayers ?? []).map((id) => getParticipantName(id));
+  reconnectLabel.hidden = false;
+  reconnectLabel.textContent = names.length > 1
+    ? `Cả hai người chơi mất kết nối — chờ ${seconds}s`
+    : `${names[0] ?? 'Đối thủ'} mất kết nối — chờ ${seconds}s`;
 }
 
 function renderCapturedPieces(captured) {
@@ -418,10 +519,10 @@ function renderCapturedPieces(captured) {
   }
 }
 
-function renderMoveHistory(history) {
+function renderMoveHistory(history, limit = history.length) {
   const list = document.querySelector('#move-history');
   list.replaceChildren();
-  for (const move of history) {
+  for (const move of history.slice(0, limit)) {
     const item = document.createElement('li');
     const sideName = move.color === 'red' ? 'Đỏ' : 'Đen';
     const from = `${String.fromCharCode(65 + move.from.x)}${10 - move.from.y}`;
@@ -433,15 +534,18 @@ function renderMoveHistory(history) {
 }
 
 function canPlay() {
+  if (replayView) return false;
   const match = currentRoom?.match;
-  if (!match || match.status !== 'playing' || pendingRequestId) return false;
+  if (!match || match.status !== MATCH_STATUS.PLAYING || pendingRequestId) return false;
   const side = playerId === match.redPlayerId ? 'red'
     : playerId === match.blackPlayerId ? 'black' : null;
   return side === match.currentSide;
 }
 
 function renderPieces() {
-  const matchPieces = currentRoom?.match?.pieces ?? createInitialPieces();
+  const matchPieces = replayView
+    ? replayView.pieces
+    : currentRoom?.match?.pieces ?? createInitialPieces();
   piecesEl.replaceChildren();
   for (const piece of matchPieces) {
     const element = document.createElement('button');
@@ -492,6 +596,158 @@ function boardCellFromEvent(event) {
   return { x: column, y: row };
 }
 
+function replayPieces(record, index) {
+  let pieces = record.initialPieces.map((piece) => ({ ...piece }));
+  for (const move of record.moves.slice(0, index)) {
+    const moving = pieces.find((piece) => piece.id === move.pieceId);
+    if (!moving) continue;
+    const capturedId = move.capturedPiece?.id;
+    pieces = pieces.filter((piece) => piece.id !== move.pieceId && piece.id !== capturedId);
+    pieces.push({ ...moving, x: move.to.x, y: move.to.y });
+  }
+  return pieces;
+}
+
+function enterReplay(record) {
+  historyOverlay.hidden = true;
+  replayView = {
+    record,
+    index: 0,
+    pieces: replayPieces(record, 0),
+  };
+  lobbyEl.hidden = true;
+  roomViewEl.hidden = false;
+  replayBar.hidden = false;
+  renderReplay();
+  fitScene();
+}
+
+function exitReplay() {
+  replayView = null;
+  replayBar.hidden = true;
+  if (currentRoom) renderRoom();
+  else {
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+  }
+}
+
+function renderReplay() {
+  const { record, index } = replayView;
+  matchStatus.textContent = 'Đang xem lại';
+  turnLabel.textContent = `Trận đã kết thúc — nước ${index}/${record.moves.length}`;
+  turnClock.textContent = '—';
+  turnClock.classList.remove('low-time');
+  countdownLabel.hidden = true;
+  reconnectLabel.hidden = true;
+  drawPrompt.hidden = true;
+  document.querySelector('#check-label').hidden = true;
+  resultLabel.hidden = false;
+  resultLabel.textContent = describeReplayResult(record);
+  replayLabel.textContent = `${record.roomName} · ${record.players.red.name} (Đỏ) vs ${record.players.black.name} (Đen) · ${formatDate(record.endedAt)}`;
+  const captured = record.moves.slice(0, index)
+    .map((move) => move.capturedPiece)
+    .filter(Boolean);
+  renderCapturedPieces(captured);
+  renderMoveHistory(record.moves, index);
+  renderPieces();
+}
+
+function describeReplayResult(record) {
+  const reason = reasonLabels[record.result?.reason] ?? record.result?.reason ?? '';
+  const outcome = record.result?.outcome;
+  if (outcome === MATCH_RESULT.DRAW) return `Hòa — ${reason}`;
+  if (outcome === MATCH_RESULT.VOIDED) return `Không có kết quả — ${reason}`;
+  const winner = record.result?.winnerSide === 'red'
+    ? record.players.red.name
+    : record.players.black.name;
+  return `${winner} thắng — ${reason}`;
+}
+
+function stepReplay(nextIndex) {
+  if (!replayView) return;
+  const total = replayView.record.moves.length;
+  replayView.index = Math.max(0, Math.min(total, nextIndex));
+  replayView.pieces = replayPieces(replayView.record, replayView.index);
+  renderReplay();
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) return '';
+  return new Date(timestamp).toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+async function openHistory() {
+  historyOverlay.hidden = false;
+  historyList.replaceChildren();
+  historyEmpty.hidden = false;
+  historyEmpty.textContent = 'Đang tải lịch sử trận…';
+  try {
+    const response = await fetch(`${apiBase()}/api/history?playerId=${encodeURIComponent(playerId)}`);
+    if (!response.ok) throw new Error('history request failed');
+    const payload = await response.json();
+    renderHistoryList(payload.matches ?? []);
+  } catch {
+    historyEmpty.textContent = 'Không tải được lịch sử trận. Kiểm tra kết nối máy chủ.';
+  }
+}
+
+function renderHistoryList(matches) {
+  historyList.replaceChildren();
+  historyEmpty.hidden = matches.length > 0;
+  if (matches.length === 0) {
+    historyEmpty.textContent = 'Chưa có trận nào đã kết thúc.';
+    return;
+  }
+  for (const match of matches) {
+    const item = document.createElement('li');
+    item.className = 'history-item';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'history-item-button';
+    const side = match.side === 'red' ? 'Đỏ' : 'Đen';
+    const reason = reasonLabels[match.reason] ?? match.reason ?? '';
+    button.innerHTML = `<span class="history-opponent">${escapeHtml(match.opponentName || 'Đối thủ')}</span>
+      <span class="history-meta">Quân ${side} · ${match.moveCount} nước · ${formatDate(match.endedAt)}</span>
+      <span class="history-reason">${escapeHtml(reason)}</span>
+      <span class="history-outcome ${match.outcome}">${outcomeLabels[match.outcome] ?? match.outcome}</span>`;
+    button.addEventListener('click', () => loadReplay(match.id));
+    item.appendChild(button);
+    historyList.appendChild(item);
+  }
+}
+
+async function loadReplay(matchId) {
+  try {
+    const response = await fetch(`${apiBase()}/api/matches/${encodeURIComponent(matchId)}`);
+    if (!response.ok) throw new Error('match request failed');
+    const record = await response.json();
+    enterReplay(record);
+  } catch {
+    showNotice('Không tải được dữ liệu trận để xem lại.');
+  }
+}
+
+function requestResign() {
+  if (!window.confirm('Đầu hàng sẽ tính bạn thua ngay lập tức. Xác nhận?')) return;
+  sendAction('resign');
+}
+
+function requestLeave() {
+  if (!window.confirm('Rời trận sẽ tính bạn thua ngay lập tức. Xác nhận?')) return;
+  sendAction('leave-match');
+}
+
+function respondDraw(accept) {
+  sendAction('respond-draw', { accept });
+}
+
 document.querySelector('#create-room-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const displayName = displayNameInput.value.trim();
@@ -528,15 +784,31 @@ document.querySelector('#join-room-form').addEventListener('submit', (event) => 
   sendAction('join-room', { playerId, displayName, roomCode });
 });
 
-document.querySelector('#ready-button').addEventListener('click', () => {
+readyButton.addEventListener('click', () => {
   const role = getMyRole();
   const player = role === 'host' ? currentRoom.host : currentRoom.opponent;
   sendAction('set-ready', { ready: !player?.ready });
 });
 
-document.querySelector('#start-button').addEventListener('click', () => {
+startButton.addEventListener('click', () => {
   sendAction('start-match');
 });
+
+resignButton.addEventListener('click', requestResign);
+leaveButton.addEventListener('click', requestLeave);
+drawButton.addEventListener('click', () => sendAction('offer-draw'));
+document.querySelector('#draw-accept').addEventListener('click', () => respondDraw(true));
+document.querySelector('#draw-decline').addEventListener('click', () => respondDraw(false));
+historyButton.addEventListener('click', openHistory);
+historyButtonLobby.addEventListener('click', openHistory);
+closeHistoryButton.addEventListener('click', () => {
+  historyOverlay.hidden = true;
+});
+document.querySelector('#replay-first').addEventListener('click', () => stepReplay(0));
+document.querySelector('#replay-prev').addEventListener('click', () => stepReplay(replayView.index - 1));
+document.querySelector('#replay-next').addEventListener('click', () => stepReplay(replayView.index + 1));
+document.querySelector('#replay-last').addEventListener('click', () => stepReplay(replayView.record.moves.length));
+document.querySelector('#replay-exit').addEventListener('click', exitReplay);
 
 document.querySelector('#copy-room-code').addEventListener('click', async () => {
   try {
@@ -554,10 +826,13 @@ boardCanvas.addEventListener('click', (event) => {
 
 window.addEventListener('resize', fitScene);
 setInterval(() => {
+  if (replayView) return;
   const match = currentRoom?.match;
-  if (match?.status !== 'countdown') return;
-  const seconds = Math.max(1, Math.ceil((match.countdownEndsAt - Date.now()) / 1000));
-  document.querySelector('#countdown-label').textContent = `Bắt đầu sau ${seconds}…`;
+  if (match?.status === MATCH_STATUS.COUNTDOWN) {
+    const seconds = Math.max(1, Math.ceil((match.countdownEndsAt - Date.now()) / 1000));
+    countdownLabel.textContent = `Bắt đầu sau ${seconds}…`;
+  }
+  if (match?.status === MATCH_STATUS.PAUSED) renderReconnectLabel(match);
 }, 250);
 drawBoard();
 renderPieces();
