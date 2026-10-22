@@ -9,8 +9,15 @@ import {
   createInitialPieces,
   getTurnStatus,
 } from './src/xiangqi.js';
+import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './src/constants.js';
+import { createHistoryStore } from './src/history-store.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
+const corsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, OPTIONS',
+  'access-control-allow-headers': 'content-type',
+};
 
 function publicParticipant(room, participant) {
   if (!participant) return null;
@@ -23,9 +30,13 @@ function publicParticipant(room, participant) {
   };
 }
 
-function publicMatch(room, now = Date.now()) {
+function publicMatch(room, warningSeconds, now = Date.now()) {
   const match = room.match;
   if (!match) return null;
+  const remaining = match.turnDeadline
+    ? Math.max(0, Math.ceil((match.turnDeadline - now) / 1000))
+    : match.timeRemaining;
+  const disconnects = Object.entries(match.disconnects ?? {});
   return {
     id: match.id,
     status: match.status,
@@ -37,15 +48,21 @@ function publicMatch(room, now = Date.now()) {
     history: match.history,
     inCheck: match.inCheck,
     result: match.result,
-    timeRemaining: match.turnDeadline
-      ? Math.max(0, Math.ceil((match.turnDeadline - now) / 1000))
-      : match.timeRemaining,
+    timeRemaining: remaining,
+    lowTime: match.status === MATCH_STATUS.PLAYING && remaining <= warningSeconds,
     countdownEndsAt: match.countdownEndsAt,
     turnDeadline: match.turnDeadline,
+    startedAt: match.startedAt ?? null,
+    endedAt: match.endedAt ?? null,
+    pausedPlayers: disconnects.map(([playerId]) => playerId),
+    reconnectDeadline: disconnects.length
+      ? Math.max(...disconnects.map(([, deadline]) => deadline))
+      : null,
+    drawOffer: match.drawOffer ? { fromPlayerId: match.drawOffer.fromPlayerId } : null,
   };
 }
 
-function publicRoom(room) {
+function publicRoom(room, warningSeconds) {
   return {
     code: room.code,
     name: room.name,
@@ -53,7 +70,7 @@ function publicRoom(room) {
     host: publicParticipant(room, room.host),
     opponent: publicParticipant(room, room.opponent),
     spectators: room.spectators.map((participant) => publicParticipant(room, participant)),
-    match: publicMatch(room),
+    match: publicMatch(room, warningSeconds),
   };
 }
 
@@ -73,36 +90,92 @@ function newRoom(code, name, host) {
     host: { ...host, ready: false },
     opponent: null,
     spectators: [],
+    blocked: [],
     match: null,
     connections: new Map(),
     timer: null,
     ackTimer: null,
+    pauseTimer: null,
     lastPersistAt: 0,
   };
+}
+
+function sideFor(match, playerId) {
+  if (!match) return null;
+  if (match.redPlayerId === playerId) return 'red';
+  if (match.blackPlayerId === playerId) return 'black';
+  return null;
+}
+
+function playerIds(match) {
+  return [match?.redPlayerId, match?.blackPlayerId].filter(Boolean);
+}
+
+function isActiveMatch(match) {
+  return Boolean(match)
+    && (match.status === MATCH_STATUS.PLAYING || match.status === MATCH_STATUS.PAUSED);
 }
 
 export function createGameServer({
   host = '0.0.0.0',
   port = Number(process.env.PORT) || 3001,
   dataFile = path.join(root, 'data', 'rooms.json'),
+  historyFile = path.join(path.dirname(dataFile), 'matches.json'),
   countdownMs = 3000,
   ackTimeoutMs = 15000,
   turnSeconds = 60,
+  reconnectSeconds = 60,
+  warningSeconds = 10,
 } = {}) {
   const rooms = new Map();
   const peers = new Map();
-  const httpServer = createServer((request, response) => {
-    if (request.url === '/health') {
-      response.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-      response.end(JSON.stringify({ status: 'ok' }));
+  const history = createHistoryStore(historyFile);
+  const reconnectMs = reconnectSeconds * 1000;
+  let writeQueue = Promise.resolve();
+  let started = false;
+  let shuttingDown = false;
+
+  function sendJson(response, status, payload) {
+    response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', ...corsHeaders });
+    response.end(JSON.stringify(payload));
+  }
+
+  function handleHttp(request, response) {
+    const url = new URL(request.url, 'http://localhost');
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204, corsHeaders);
+      response.end();
+      return;
+    }
+    if (url.pathname === '/health') {
+      sendJson(response, 200, { status: 'ok' });
+      return;
+    }
+    if (url.pathname === '/api/history') {
+      const playerId = url.searchParams.get('playerId');
+      if (!playerId) {
+        sendJson(response, 400, { error: 'Thieu tham so playerId.' });
+        return;
+      }
+      sendJson(response, 200, { matches: history.list(playerId) });
+      return;
+    }
+    const matchRoute = url.pathname.match(/^\/api\/matches\/([\w-]+)$/);
+    if (matchRoute) {
+      const record = history.find(matchRoute[1]);
+      if (!record) {
+        sendJson(response, 404, { error: 'Khong tim thay tran dau.' });
+        return;
+      }
+      sendJson(response, 200, record);
       return;
     }
     response.writeHead(404);
     response.end('Not found');
-  });
+  }
+
+  const httpServer = createServer(handleHttp);
   const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
-  let writeQueue = Promise.resolve();
-  let started = false;
 
   function send(socket, message) {
     if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
@@ -122,11 +195,11 @@ export function createGameServer({
   }
 
   function broadcastRoom(room) {
-    broadcast(room, { type: 'room-state', room: publicRoom(room) });
+    broadcast(room, { type: 'room-state', room: publicRoom(room, warningSeconds) });
   }
 
   function serializeRoom(room) {
-    const { connections, timer, ackTimer, ...saved } = room;
+    const { connections, timer, ackTimer, pauseTimer, ...saved } = room;
     return saved;
   }
 
@@ -158,21 +231,34 @@ export function createGameServer({
       if (!/^\d{6}$/.test(saved.code) || !saved.host?.id || !Array.isArray(saved.spectators)) continue;
       const room = {
         ...saved,
+        blocked: Array.isArray(saved.blocked) ? saved.blocked : [],
         connections: new Map(),
         timer: null,
         ackTimer: null,
+        pauseTimer: null,
         lastPersistAt: Date.now(),
       };
-      if (room.match && ['syncing', 'countdown'].includes(room.match.status)) {
+      if (room.match) {
+        room.match.disconnects = {};
+        room.match.drawOffer = null;
+      }
+      if (room.match && [MATCH_STATUS.SYNCING, MATCH_STATUS.COUNTDOWN].includes(room.match.status)) {
         room.match = null;
         room.host.ready = false;
         if (room.opponent) room.opponent.ready = false;
       }
-      if (room.match?.status === 'playing') {
-        if (!Number.isFinite(room.match.turnDeadline)) {
-          room.match.turnDeadline = Date.now() + turnSeconds * 1000;
-        }
-        scheduleTurn(room);
+      if (room.match && isActiveMatch(room.match)) {
+        const deadline = Date.now() + reconnectMs;
+        room.match.status = MATCH_STATUS.PAUSED;
+        room.match.turnDeadline = null;
+        room.match.timeRemaining = Number.isFinite(room.match.timeRemaining)
+          ? room.match.timeRemaining
+          : turnSeconds;
+        room.match.pausedRemainingMs = room.match.timeRemaining * 1000;
+        room.match.disconnects = Object.fromEntries(
+          playerIds(room.match).map((playerId) => [playerId, deadline]),
+        );
+        scheduleReconnectCheck(room);
       }
       rooms.set(room.code, room);
     }
@@ -193,22 +279,70 @@ export function createGameServer({
     room.timer = null;
   }
 
-  function finishMatch(room, winner, reason) {
+  function clearPauseTimer(room) {
+    if (room.pauseTimer) clearTimeout(room.pauseTimer);
+    room.pauseTimer = null;
+  }
+
+  function matchRecord(room) {
+    const match = room.match;
+    const nameOf = (playerId) => participantFor(room, playerId)?.name ?? '';
+    return {
+      id: match.id,
+      roomCode: room.code,
+      roomName: room.name,
+      players: {
+        red: { id: match.redPlayerId, name: nameOf(match.redPlayerId) },
+        black: { id: match.blackPlayerId, name: nameOf(match.blackPlayerId) },
+      },
+      result: match.result,
+      startedAt: match.startedAt ?? match.endedAt,
+      endedAt: match.result.endedAt,
+      initialPieces: match.initialPieces,
+      finalPieces: match.pieces,
+      capturedPieces: match.capturedPieces,
+      moves: match.history,
+    };
+  }
+
+  async function finishMatch(room, { winner = null, reason, voided = false } = {}) {
+    const match = room.match;
+    if (!match || match.status === MATCH_STATUS.FINISHED) return false;
     clearRoomTimer(room);
-    room.match.status = 'finished';
-    room.match.result = { winner, reason };
-    room.match.timeRemaining = 0;
-    room.match.turnDeadline = null;
+    clearPauseTimer(room);
+    clearTimeout(room.ackTimer);
+    const endedAt = Date.now();
+    match.status = MATCH_STATUS.FINISHED;
+    match.turnDeadline = null;
+    match.timeRemaining = 0;
+    match.endedAt = endedAt;
+    match.disconnects = {};
+    match.drawOffer = null;
+    match.result = {
+      outcome: voided ? MATCH_RESULT.VOIDED : winner ? `${winner}-win` : MATCH_RESULT.DRAW,
+      winnerSide: voided ? null : winner,
+      winnerPlayerId: voided || !winner
+        ? null
+        : winner === 'red' ? match.redPlayerId : match.blackPlayerId,
+      reason,
+      endedAt,
+    };
+    if (room.host) room.host.ready = false;
+    if (room.opponent) room.opponent.ready = false;
+    await history.append(matchRecord(room));
+    return true;
   }
 
   async function runTurnTick(room) {
     const match = room.match;
-    if (!match || match.status !== 'playing') return;
+    if (!match || match.status !== MATCH_STATUS.PLAYING) return;
     const remainingMs = match.turnDeadline - Date.now();
     if (remainingMs <= 0) {
-      finishMatch(room, match.currentSide === 'red' ? 'black' : 'red', 'timeout');
-      await persistRooms();
-      broadcastRoom(room);
+      await finishMatch(room, {
+        winner: match.currentSide === 'red' ? 'black' : 'red',
+        reason: MATCH_REASON.TIMEOUT,
+      });
+      await persistAndBroadcast(room);
       return;
     }
     match.timeRemaining = Math.ceil(remainingMs / 1000);
@@ -221,8 +355,9 @@ export function createGameServer({
   }
 
   function scheduleTurn(room) {
+    if (shuttingDown) return;
     clearRoomTimer(room);
-    if (room.match?.status !== 'playing') return;
+    if (room.match?.status !== MATCH_STATUS.PLAYING) return;
     room.timer = setTimeout(() => {
       runTurnTick(room).catch((error) => {
         console.error('Could not update the turn clock:', error);
@@ -233,13 +368,65 @@ export function createGameServer({
     }, Math.min(1000, Math.max(1, room.match.turnDeadline - Date.now())));
   }
 
+  function scheduleReconnectCheck(room) {
+    if (shuttingDown) return;
+    clearPauseTimer(room);
+    const match = room.match;
+    if (!match || match.status !== MATCH_STATUS.PAUSED) return;
+    const deadlines = Object.values(match.disconnects ?? {});
+    if (deadlines.length === 0) return;
+    const nextDeadline = Math.min(...deadlines);
+    room.pauseTimer = setTimeout(() => {
+      checkReconnects(room).catch((error) => {
+        console.error('Could not resolve the reconnect window:', error);
+      });
+    }, Math.max(1, nextDeadline - Date.now()));
+  }
+
+  async function checkReconnects(room) {
+    const match = room.match;
+    if (!match || match.status !== MATCH_STATUS.PAUSED) return;
+    const now = Date.now();
+    const expired = Object.entries(match.disconnects)
+      .filter(([, deadline]) => deadline <= now)
+      .map(([playerId]) => playerId);
+    if (expired.length === 0) {
+      scheduleReconnectCheck(room);
+      return;
+    }
+    const stillConnected = playerIds(match)
+      .filter((playerId) => room.connections.has(playerId) && !expired.includes(playerId));
+    if (stillConnected.length === 0) {
+      await finishMatch(room, { reason: MATCH_REASON.SYSTEM_ERROR, voided: true });
+      await persistAndBroadcast(room);
+      return;
+    }
+    const winner = sideFor(match, stillConnected[0]);
+    await finishMatch(room, { winner, reason: MATCH_REASON.DISCONNECT_TIMEOUT });
+    for (const playerId of expired) {
+      const socket = room.connections.get(playerId);
+      if (socket) {
+        room.connections.delete(playerId);
+        if (peers.get(playerId) === socket) peers.delete(playerId);
+        socket.roomCode = null;
+        socket.playerId = null;
+      }
+      removeParticipant(room, playerId);
+      room.blocked.push(playerId);
+    }
+    await persistAndBroadcast(room);
+  }
+
   async function beginPlaying(room) {
     const match = room.match;
-    if (!match || match.status !== 'countdown') return;
-    match.status = 'playing';
+    if (!match || match.status !== MATCH_STATUS.COUNTDOWN) return;
+    match.status = MATCH_STATUS.PLAYING;
     match.countdownEndsAt = null;
     match.timeRemaining = turnSeconds;
     match.turnDeadline = Date.now() + turnSeconds * 1000;
+    match.startedAt = Date.now();
+    match.disconnects = {};
+    match.pausedRemainingMs = null;
     room.lastPersistAt = Date.now();
     await persistAndBroadcast(room);
     scheduleTurn(room);
@@ -247,9 +434,9 @@ export function createGameServer({
 
   async function beginCountdown(room) {
     const match = room.match;
-    if (!match || match.status !== 'syncing') return;
+    if (!match || match.status !== MATCH_STATUS.SYNCING) return;
     clearTimeout(room.ackTimer);
-    match.status = 'countdown';
+    match.status = MATCH_STATUS.COUNTDOWN;
     match.countdownEndsAt = Date.now() + countdownMs;
     await persistAndBroadcast(room);
     room.timer = setTimeout(() => {
@@ -288,6 +475,61 @@ export function createGameServer({
     return code;
   }
 
+  function removeParticipant(room, participantId) {
+    room.spectators = room.spectators.filter((person) => person.id !== participantId);
+    if (room.host?.id === participantId) room.host = null;
+    if (room.opponent?.id === participantId) room.opponent = null;
+    if (!room.host) {
+      if (room.opponent) {
+        room.host = room.opponent;
+        room.opponent = null;
+      } else if (room.spectators.length > 0) {
+        room.host = room.spectators.shift();
+      }
+    }
+  }
+
+  async function resumeMatchIfReady(room) {
+    const match = room.match;
+    if (!match || match.status !== MATCH_STATUS.PAUSED) return;
+    for (const playerId of Object.keys(match.disconnects ?? {})) {
+      if (room.connections.has(playerId)) delete match.disconnects[playerId];
+    }
+    if (Object.keys(match.disconnects ?? {}).length > 0) return;
+    const remainingMs = Number.isFinite(match.pausedRemainingMs) && match.pausedRemainingMs > 0
+      ? match.pausedRemainingMs
+      : Math.max(1000, (match.timeRemaining ?? 1) * 1000);
+    clearPauseTimer(room);
+    match.status = MATCH_STATUS.PLAYING;
+    match.pausedRemainingMs = null;
+    match.turnDeadline = Date.now() + remainingMs;
+    match.timeRemaining = Math.ceil(remainingMs / 1000);
+    room.lastPersistAt = Date.now();
+    scheduleTurn(room);
+  }
+
+  async function handleDisconnect(room, playerId) {
+    if (shuttingDown) return;
+    const match = room.match;
+    if (!match || !playerIds(match).includes(playerId)) return;
+    if (match.status === MATCH_STATUS.PLAYING) {
+      const remainingMs = Math.max(
+        1,
+        match.turnDeadline ? match.turnDeadline - Date.now() : turnSeconds * 1000,
+      );
+      clearRoomTimer(room);
+      match.pausedRemainingMs = remainingMs;
+      match.timeRemaining = Math.max(1, Math.ceil(remainingMs / 1000));
+      match.turnDeadline = null;
+      match.status = MATCH_STATUS.PAUSED;
+    }
+    if (match.status !== MATCH_STATUS.PAUSED) return;
+    match.disconnects = match.disconnects ?? {};
+    match.disconnects[playerId] = Date.now() + reconnectMs;
+    scheduleReconnectCheck(room);
+    await persistAndBroadcast(room);
+  }
+
   async function createRoom(socket, message) {
     if (!validIdentity(message) || typeof message.roomName !== 'string'
         || !message.roomName.trim() || message.roomName.trim().length > 40) {
@@ -321,9 +563,14 @@ export function createGameServer({
       sendError(socket, 'Room không còn tồn tại hoặc không còn khả dụng.');
       return;
     }
+    if (Array.isArray(room.blocked) && room.blocked.includes(message.playerId)) {
+      sendError(socket, 'Bạn không thể vào lại Room này.');
+      return;
+    }
     let participant = participantFor(room, message.playerId);
     if (!participant) {
-      if (!room.match && !room.opponent) {
+      const seatOpen = !room.opponent && !isActiveMatch(room.match);
+      if (seatOpen) {
         room.opponent = { id: message.playerId, name: message.displayName.trim(), ready: false };
         participant = room.opponent;
       } else {
@@ -338,6 +585,7 @@ export function createGameServer({
       participant.name = message.displayName.trim();
     }
     setConnection(socket, room, participant);
+    await resumeMatchIfReady(room);
     await persistAndBroadcast(room);
   }
 
@@ -348,7 +596,7 @@ export function createGameServer({
       sendError(socket, 'Khán giả không được thay đổi trạng thái sẵn sàng.');
       return;
     }
-    if (room.match) {
+    if (room.match && room.match.status !== MATCH_STATUS.FINISHED) {
       sendError(socket, 'Trận đấu đã được khởi tạo.');
       return;
     }
@@ -366,7 +614,7 @@ export function createGameServer({
       sendError(socket, 'Chỉ Chủ Room mới được bắt đầu trận.');
       return;
     }
-    if (room.match) {
+    if (isActiveMatch(room.match)) {
       broadcastRoom(room);
       return;
     }
@@ -380,13 +628,17 @@ export function createGameServer({
     }
     const redPlayerId = randomInt(2) === 0 ? room.host.id : room.opponent.id;
     const blackPlayerId = redPlayerId === room.host.id ? room.opponent.id : room.host.id;
+    const initialPieces = createInitialPieces();
+    room.host.ready = false;
+    room.opponent.ready = false;
     room.match = {
       id: randomUUID(),
-      status: 'syncing',
+      status: MATCH_STATUS.SYNCING,
       redPlayerId,
       blackPlayerId,
       currentSide: 'red',
-      pieces: createInitialPieces(),
+      pieces: initialPieces.map((piece) => ({ ...piece })),
+      initialPieces,
       capturedPieces: [],
       history: [],
       inCheck: false,
@@ -394,11 +646,16 @@ export function createGameServer({
       timeRemaining: turnSeconds,
       turnDeadline: null,
       countdownEndsAt: null,
+      startedAt: null,
+      endedAt: null,
+      pausedRemainingMs: null,
+      disconnects: {},
+      drawOffer: null,
       acknowledgedPlayerIds: [],
     };
     await persistAndBroadcast(room);
     room.ackTimer = setTimeout(() => {
-      if (room.match?.status !== 'syncing') return;
+      if (room.match?.status !== MATCH_STATUS.SYNCING) return;
       room.match = null;
       room.host.ready = false;
       if (room.opponent) room.opponent.ready = false;
@@ -410,8 +667,8 @@ export function createGameServer({
   async function acknowledgeSnapshot(socket) {
     const room = roomForSocket(socket);
     const match = room?.match;
-    if (!match || match.status !== 'syncing') return;
-    if (![match.redPlayerId, match.blackPlayerId].includes(socket.playerId)) return;
+    if (!match || match.status !== MATCH_STATUS.SYNCING) return;
+    if (!playerIds(match).includes(socket.playerId)) return;
     if (!match.acknowledgedPlayerIds.includes(socket.playerId)) {
       match.acknowledgedPlayerIds.push(socket.playerId);
     }
@@ -421,10 +678,12 @@ export function createGameServer({
   async function move(socket, message) {
     const room = roomForSocket(socket);
     const match = room?.match;
-    if (!room || !match || match.status !== 'playing') {
+    if (!room || !match || match.status !== MATCH_STATUS.PLAYING) {
       send(socket, {
         type: 'error',
-        message: 'Trận đấu chưa ở trạng thái có thể di chuyển.',
+        message: match?.status === MATCH_STATUS.PAUSED
+          ? 'Trận đấu đang tạm dừng chờ kết nối lại.'
+          : 'Trận đấu chưa ở trạng thái có thể di chuyển.',
         ...(typeof message.requestId === 'string' ? { requestId: message.requestId } : {}),
       });
       return;
@@ -438,18 +697,24 @@ export function createGameServer({
       (entry) => entry.playerId === socket.playerId && entry.requestId === requestId,
     );
     if (previousMove) {
-      send(socket, { type: 'move-accepted', requestId, duplicate: true, match: publicMatch(room) });
+      send(socket, {
+        type: 'move-accepted',
+        requestId,
+        duplicate: true,
+        match: publicMatch(room, warningSeconds),
+      });
       return;
     }
-    const playerSide = socket.playerId === match.redPlayerId
-      ? 'red'
-      : socket.playerId === match.blackPlayerId ? 'black' : null;
+    const playerSide = sideFor(match, socket.playerId);
     if (!playerSide) {
       sendError(socket, 'Khán giả chỉ có quyền xem trận đấu.');
       return;
     }
     if (Date.now() >= match.turnDeadline) {
-      finishMatch(room, match.currentSide === 'red' ? 'black' : 'red', 'timeout');
+      await finishMatch(room, {
+        winner: match.currentSide === 'red' ? 'black' : 'red',
+        reason: MATCH_REASON.TIMEOUT,
+      });
       await persistRooms();
       send(socket, {
         type: 'error',
@@ -487,15 +752,117 @@ export function createGameServer({
       playedAt: Date.now(),
     });
     if (!turnStatus.hasLegalMove) {
-      finishMatch(room, turnStatus.winner, turnStatus.reason);
+      await finishMatch(room, {
+        winner: turnStatus.winner,
+        reason: turnStatus.reason === 'checkmate' ? MATCH_REASON.CHECKMATE : MATCH_REASON.NO_LEGAL_MOVES,
+      });
     } else {
       match.timeRemaining = turnSeconds;
       match.turnDeadline = Date.now() + turnSeconds * 1000;
     }
     await persistRooms();
-    send(socket, { type: 'move-accepted', requestId, match: publicMatch(room) });
+    send(socket, { type: 'move-accepted', requestId, match: publicMatch(room, warningSeconds) });
     broadcastRoom(room);
-    if (match.status === 'playing') scheduleTurn(room);
+    if (match.status === MATCH_STATUS.PLAYING) scheduleTurn(room);
+  }
+
+  async function resignMatch(socket) {
+    const room = roomForSocket(socket);
+    const match = room?.match;
+    if (!room || !isActiveMatch(match)) {
+      sendError(socket, 'Không có trận đấu đang diễn ra.');
+      return;
+    }
+    const playerSide = sideFor(match, socket.playerId);
+    if (!playerSide) {
+      sendError(socket, 'Khán giả không thể đầu hàng.');
+      return;
+    }
+    await finishMatch(room, {
+      winner: playerSide === 'red' ? 'black' : 'red',
+      reason: MATCH_REASON.SURRENDER,
+    });
+    await persistAndBroadcast(room);
+  }
+
+  async function offerDraw(socket) {
+    const room = roomForSocket(socket);
+    const match = room?.match;
+    if (!room || match?.status !== MATCH_STATUS.PLAYING) {
+      sendError(socket, 'Chỉ có thể xin hòa khi trận đang diễn ra.');
+      return;
+    }
+    if (!sideFor(match, socket.playerId)) {
+      sendError(socket, 'Khán giả không thể xin hòa.');
+      return;
+    }
+    if (match.drawOffer) {
+      sendError(socket, match.drawOffer.fromPlayerId === socket.playerId
+        ? 'Bạn đã gửi yêu cầu hòa, đang chờ đối thủ phản hồi.'
+        : 'Đang có yêu cầu hòa chờ xử lý.');
+      return;
+    }
+    match.drawOffer = { fromPlayerId: socket.playerId, createdAt: Date.now() };
+    broadcast(room, { type: 'draw-offered', fromPlayerId: socket.playerId });
+    await persistAndBroadcast(room);
+  }
+
+  async function respondDraw(socket, message) {
+    const room = roomForSocket(socket);
+    const match = room?.match;
+    if (!room || match?.status !== MATCH_STATUS.PLAYING) {
+      sendError(socket, 'Trận đấu không còn xử lý yêu cầu hòa.');
+      return;
+    }
+    if (typeof message.accept !== 'boolean') {
+      sendError(socket, 'Phản hồi yêu cầu hòa không hợp lệ.');
+      return;
+    }
+    const offer = match.drawOffer;
+    if (!offer || offer.fromPlayerId === socket.playerId) {
+      sendError(socket, 'Yêu cầu hòa không còn hiệu lực.');
+      return;
+    }
+    if (!sideFor(match, socket.playerId)) {
+      sendError(socket, 'Khán giả không thể phản hồi yêu cầu hòa.');
+      return;
+    }
+    match.drawOffer = null;
+    if (message.accept) {
+      await finishMatch(room, { reason: MATCH_REASON.DRAW_AGREED });
+      await persistAndBroadcast(room);
+      return;
+    }
+    await persistAndBroadcast(room);
+    broadcast(room, { type: 'draw-declined', byPlayerId: socket.playerId });
+  }
+
+  async function leaveMatch(socket) {
+    const room = roomForSocket(socket);
+    const match = room?.match;
+    if (!room || !isActiveMatch(match)) {
+      sendError(socket, 'Không có trận đấu đang diễn ra.');
+      return;
+    }
+    const playerSide = sideFor(match, socket.playerId);
+    if (!playerSide) {
+      sendError(socket, 'Khán giả không thể rời trận theo cách này.');
+      return;
+    }
+    const playerId = socket.playerId;
+    await finishMatch(room, {
+      winner: playerSide === 'red' ? 'black' : 'red',
+      reason: MATCH_REASON.LEFT_MATCH,
+    });
+    room.blocked.push(playerId);
+    room.connections.delete(playerId);
+    if (peers.get(playerId) === socket) peers.delete(playerId);
+    socket.roomCode = null;
+    socket.playerId = null;
+    removeParticipant(room, playerId);
+    send(socket, { type: 'left-match', roomCode: room.code });
+    await persistRooms();
+    broadcastRoom(room);
   }
 
   async function dispatch(socket, message) {
@@ -522,6 +889,18 @@ export function createGameServer({
         break;
       case 'move':
         await move(socket, message);
+        break;
+      case 'resign':
+        await resignMatch(socket);
+        break;
+      case 'offer-draw':
+        await offerDraw(socket);
+        break;
+      case 'respond-draw':
+        await respondDraw(socket, message);
+        break;
+      case 'leave-match':
+        await leaveMatch(socket);
         break;
       default:
         sendError(socket, 'Thao tác không được hỗ trợ.');
@@ -555,11 +934,20 @@ export function createGameServer({
     });
 
     socket.on('close', () => {
+      if (shuttingDown) return;
       if (socket.playerId && peers.get(socket.playerId) === socket) peers.delete(socket.playerId);
       const room = socket.roomCode && rooms.get(socket.roomCode);
       if (!room || room.connections.get(socket.playerId) !== socket) return;
-      room.connections.delete(socket.playerId);
-      broadcastRoom(room);
+      const playerId = socket.playerId;
+      room.connections.delete(playerId);
+      const isPlayer = Boolean(room.match && playerIds(room.match).includes(playerId));
+      if (isPlayer) {
+        handleDisconnect(room, playerId).catch((error) => {
+          console.error('Could not pause the match:', error);
+        });
+      } else {
+        broadcastRoom(room);
+      }
     });
   });
 
@@ -567,6 +955,7 @@ export function createGameServer({
     async listen() {
       if (started) throw new Error('Game server is already listening.');
       await loadRooms();
+      await history.load();
       await new Promise((resolve, reject) => {
         httpServer.once('error', reject);
         httpServer.listen(port, host, () => {
@@ -579,8 +968,10 @@ export function createGameServer({
       return `ws://${host === '0.0.0.0' ? 'localhost' : host}:${address.port}/ws`;
     },
     async close() {
+      shuttingDown = true;
       for (const room of rooms.values()) {
         clearRoomTimer(room);
+        clearPauseTimer(room);
         clearTimeout(room.ackTimer);
       }
       for (const socket of wss.clients) socket.close(1001, 'Server shutting down');
@@ -590,12 +981,18 @@ export function createGameServer({
         });
         started = false;
       }
+      for (const room of rooms.values()) {
+        clearRoomTimer(room);
+        clearPauseTimer(room);
+        clearTimeout(room.ackTimer);
+      }
       await writeQueue;
     },
     address() {
       return httpServer.address();
     },
     rooms,
+    history,
   };
 }
 
