@@ -437,9 +437,9 @@ PHASE 3 – THỜI GIAN, MẤT KẾT NỐI VÀ KẾT QUẢ
 PHASE 4 – GIAO TIẾP VÀ CHƠI VỚI MÁY
 
 1. Chat riêng giữa hai người chơi
-   Mục tiêu: Chủ Room và Đối thủ có thể trao đổi trong Room nhưng Khán giả tuyệt đối không được làm gián đoạn hoặc nhìn thấy nội dung trao đổi của hai người chơi.
+   Mục tiêu: Chủ Room và Đối thủ có thể trao đổi trong Room, khán giả nhìn thấy nội dung trao đổi của hai người chơi.
    • Chỉ hai người đang giữ vai trò Chủ Room và Đối thủ được sử dụng khung Chat dành cho người chơi.
-   • Khán giả tuyệt đối không có quyền gửi tin nhắn trong khung Chat của người chơi và không được nhận hoặc nhìn thấy tin nhắn giữa Chủ Room và Đối thủ.
+   • Khán giả tuyệt đối không có quyền gửi tin nhắn trong khung Chat của người chơi, chỉ nhìn thấy tin nhắn giữa Chủ Room và Đối thủ.
    • Trong phiên bản này không triển khai Chat Khán giả. Nếu sau này bổ sung, Chat Khán giả phải là một kênh tách biệt chỉ giữa Khán giả với nhau; Chủ Room và Đối thủ không được nhận hoặc nhìn thấy kênh đó để tránh bị phân tâm.
    • Người chơi nhập nội dung vào ô tin nhắn và chọn Gửi. Hệ thống không cho gửi tin nhắn rỗng hoặc chỉ chứa khoảng trắng.
    • Khi tin nhắn hợp lệ được gửi, hệ thống chuyển tin nhắn Real-time chỉ tới hai người chơi của Room hiện tại.
@@ -448,9 +448,9 @@ PHASE 4 – GIAO TIẾP VÀ CHƠI VỚI MÁY
    • Người không còn giữ vai trò Chủ Room hoặc Đối thủ không được tiếp tục gửi hoặc nhận Chat của hai người chơi.
    • Nếu người chơi mất kết nối tại thời điểm gửi, hệ thống không hiển thị tin nhắn như đã gửi thành công khi máy chủ chưa nhận được.
    • Chat hoạt động độc lập với bàn cờ; gửi hoặc nhận tin nhắn không làm dừng đồng hồ lượt, thay đổi lượt hoặc kết quả.
-   • Nếu Đối thủ bị Chủ Room loại khỏi vị trí trước trận, người đó lập tức mất quyền truy cập Chat của hai người chơi. Đối thủ mới không được xem lại nội dung Chat riêng đã diễn ra với Đối thủ trước đó.
+   • Nếu Đối thủ bị Chủ Room loại khỏi vị trí trước trận, người đó lập tức mất quyền truy cập Chat của hai người chơi. Đối thủ mới được xem lại nội dung Chat riêng đã diễn ra với Đối thủ trước đó.
    • Khi một người rời Room, người đó không còn gửi hoặc nhận tin nhắn mới trong Chat của Room.
-   • Mỗi khi thành phần hai người chơi trong Room thay đổi, người vừa trở thành Chủ Room hoặc Đối thủ chỉ được nhận các tin nhắn phát sinh sau khi họ giữ vai trò người chơi; họ không được tải lại nội dung Chat riêng của cặp người chơi trước đó.
+   • Mỗi khi thành phần hai người chơi trong Room thay đổi, người vừa trở thành Chủ Room hoặc Đối thủ được nhận các tin nhắn phát sinh sau khi họ giữ vai trò người chơi; họ được tải lại nội dung Chat riêng của cặp người chơi trước đó.
 2. Video Call trực tiếp giữa hai người chơi trong Room
    Mục tiêu: Chủ Room và Đối thủ có thể gọi video trực tiếp với nhau trong cùng Room mà không cần tạo hoặc chia sẻ link cuộc gọi.
    • Khi Chủ Room và Đối thủ đều có mặt trong Room, giao diện hiển thị chức năng Video Call cho hai người chơi.
