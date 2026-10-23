@@ -3,6 +3,7 @@ node_modules/
 dist/
 coverage/
 /data/
+/certs/
 
 # Nhật ký
 *.log

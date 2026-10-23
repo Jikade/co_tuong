@@ -1,5 +1,12 @@
-import { createInitialPieces } from './xiangqi.js';
+import { createInitialPieces, toDisplayCoordinate, toLogicCoordinate } from './xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './constants.js';
+import {
+  createClientId,
+  getApiBase,
+  getWebSocketUrl,
+  mediaErrorMessage,
+  webRtcErrorMessage,
+} from './client-utils.js';
 
 const CELL = 49;
 const PAD = 20;
@@ -48,6 +55,9 @@ const connectionDot = document.querySelector('#connection-dot');
 const connectionLabel = document.querySelector('#connection-label');
 const readyButton = document.querySelector('#ready-button');
 const startButton = document.querySelector('#start-button');
+const closeRoomButton = document.querySelector('#close-room-button');
+const leaveRoomButton = document.querySelector('#leave-room-button');
+const computerExitButton = document.querySelector('#computer-exit-button');
 const resignButton = document.querySelector('#resign-button');
 const drawButton = document.querySelector('#draw-button');
 const leaveButton = document.querySelector('#leave-button');
@@ -67,11 +77,28 @@ const historyEmpty = document.querySelector('#history-empty');
 const closeHistoryButton = document.querySelector('#close-history');
 const replayBar = document.querySelector('#replay-bar');
 const replayLabel = document.querySelector('#replay-label');
+const realtimePanel = document.querySelector('#realtime-panel');
+const chatMessages = document.querySelector('#chat-messages');
+const chatForm = document.querySelector('#chat-form');
+const chatInput = document.querySelector('#chat-input');
+const chatStatus = document.querySelector('#chat-status');
+const chatNote = document.querySelector('#chat-note');
+const callStatus = document.querySelector('#call-status');
+const callStartButton = document.querySelector('#call-start');
+const callAcceptButton = document.querySelector('#call-accept');
+const callRejectButton = document.querySelector('#call-reject');
+const callEndButton = document.querySelector('#call-end');
+const localVideo = document.querySelector('#local-video');
+const remoteVideo = document.querySelector('#remote-video');
+const computerPlayButton = document.querySelector('#computer-play-button');
+const computerSidePicker = document.querySelector('#computer-side-picker');
+const computerCancelButton = document.querySelector('#computer-cancel-button');
 
 const playerId = getStoredPlayerId();
 displayNameInput.value = localStorage.getItem('xiangqi.displayName') ?? '';
 let socket;
 let currentRoom = null;
+let computerMatch = null;
 let selectedPieceId = null;
 let pendingRequestId = null;
 let reconnectDelay = 500;
@@ -80,11 +107,13 @@ let noticeTimer = null;
 let replacedByAnotherTab = false;
 let replayView = null;
 const acknowledgedMatches = new Set();
+let callState = null;
+let chatRoomCode = null;
 
 function getStoredPlayerId() {
   let id = localStorage.getItem('xiangqi.playerId');
   if (!id) {
-    id = crypto.randomUUID();
+    id = createClientId();
     localStorage.setItem('xiangqi.playerId', id);
   }
   return id;
@@ -92,8 +121,11 @@ function getStoredPlayerId() {
 
 function apiBase() {
   const configured = import.meta.env.VITE_WS_URL;
-  if (configured) return configured.replace(/^ws/, 'http').replace(/\/ws$/, '');
-  return `${location.protocol === 'https:' ? 'https' : 'http'}://${location.hostname}:3001`;
+  return getApiBase(getWebSocketUrl({
+    override: configured,
+    protocol: location.protocol,
+    hostname: location.hostname,
+  }));
 }
 
 function fitScene() {
@@ -101,6 +133,7 @@ function fitScene() {
   const scale = Math.max(0, Math.min(boardArea.clientWidth / SCENE_SIZE, availableHeight / SCENE_SIZE, 1));
   scene.style.transform = `translateX(-50%) scale(${scale})`;
   boardArea.style.height = `${SCENE_SIZE * scale}px`;
+  realtimePanel.style.height = `${SCENE_SIZE * scale}px`;
 }
 
 function line(ctx, x1, y1, x2, y2) {
@@ -135,6 +168,10 @@ function drawBoard() {
   const h = 9 * CELL + PAD * 2;
   boardCanvas.width = w;
   boardCanvas.height = h;
+  if (isBlackPerspective()) {
+    ctx.translate(w, h);
+    ctx.rotate(Math.PI);
+  }
 
   const base = ctx.createLinearGradient(0, 0, w, h);
   base.addColorStop(0, '#c5cdb7');
@@ -217,7 +254,12 @@ function showNotice(message) {
 
 function sendAction(action, details = {}) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    showNotice('Đang kết nối lại máy chủ. Vui lòng thử lại sau ít giây.');
+    const endpoint = getWebSocketUrl({
+      override: import.meta.env.VITE_WS_URL,
+      protocol: location.protocol,
+      hostname: location.hostname,
+    });
+    showNotice(`Chưa kết nối được máy chủ (${endpoint}). Hãy kiểm tra máy chủ và thử lại; thông tin đã nhập vẫn được giữ.`);
     return false;
   }
   socket.send(JSON.stringify({ action, ...details }));
@@ -226,8 +268,11 @@ function sendAction(action, details = {}) {
 
 function connect() {
   clearTimeout(reconnectTimer);
-  const url = import.meta.env.VITE_WS_URL
-    || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.hostname}:3001/ws`;
+  const url = getWebSocketUrl({
+    override: import.meta.env.VITE_WS_URL,
+    protocol: location.protocol,
+    hostname: location.hostname,
+  });
   socket = new WebSocket(url);
   socket.addEventListener('open', () => {
     reconnectDelay = 500;
@@ -236,9 +281,12 @@ function connect() {
     selectedPieceId = null;
     pendingRequestId = null;
     setConnection('connected', 'Đã kết nối');
-    const savedRoomCode = localStorage.getItem('xiangqi.roomCode');
     const displayName = displayNameInput.value.trim();
-    if (savedRoomCode && displayName) {
+    const savedComputerMatchId = localStorage.getItem('xiangqi.computerMatchId');
+    const savedRoomCode = localStorage.getItem('xiangqi.roomCode');
+    if (savedComputerMatchId && displayName) {
+      sendAction('computer-resume', { matchId: savedComputerMatchId, playerId, displayName });
+    } else if (savedRoomCode && displayName) {
       sendAction('join-room', { roomCode: savedRoomCode, playerId, displayName });
     }
   });
@@ -246,6 +294,8 @@ function connect() {
     handleServerMessage(JSON.parse(event.data));
   });
   socket.addEventListener('close', () => {
+    cleanupCall({ message: 'Mất kết nối máy chủ; cuộc gọi đã kết thúc.' });
+    renderPrivatePanels();
     if (replacedByAnotherTab) {
       setConnection('disconnected', 'Room đang mở ở tab khác');
       return;
@@ -260,7 +310,60 @@ function connect() {
 }
 
 function handleServerMessage(message) {
+  if (message.type === 'computer-state') {
+    const previousMatch = computerMatch;
+    currentRoom = null;
+    computerMatch = message.match;
+    if (!previousMatch || previousMatch.id !== computerMatch.id
+        || previousMatch.currentSide !== computerMatch.currentSide
+        || previousMatch.history.length !== computerMatch.history.length
+        || previousMatch.status !== computerMatch.status) selectedPieceId = null;
+    chatRoomCode = null;
+    localStorage.removeItem('xiangqi.roomCode');
+    localStorage.setItem('xiangqi.computerMatchId', computerMatch.id);
+    lobbyEl.hidden = true;
+    roomViewEl.hidden = false;
+    realtimePanel.hidden = true;
+    drawBoard();
+    renderRoom();
+    renderPrivatePanels();
+    fitScene();
+    return;
+  }
+  if (message.type === 'computer-move-accepted') {
+    pendingRequestId = null;
+    computerMatch = message.match;
+    renderRoom();
+    return;
+  }
+  if (message.type === 'computer-move-rejected') {
+    pendingRequestId = null;
+    showNotice(message.message);
+    renderPieces();
+    return;
+  }
+  if (message.type === 'computer-exited') {
+    if (localStorage.getItem('xiangqi.computerMatchId') === message.matchId) {
+      localStorage.removeItem('xiangqi.computerMatchId');
+    }
+    computerMatch = null;
+    currentRoom = null;
+    replayView = null;
+    replayBar.hidden = true;
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+    renderPrivatePanels();
+    return;
+  }
   if (message.type === 'room-state') {
+    computerMatch = null;
+    const previousRoom = currentRoom;
+    const previousMatchStatus = previousRoom?.match?.status;
+    if (chatRoomCode && chatRoomCode !== message.room.code) {
+      cleanupCall();
+      chatMessages.replaceChildren();
+    }
+    chatRoomCode = message.room.code;
     const previousMatch = currentRoom?.match;
     currentRoom = message.room;
     const nextMatch = currentRoom.match;
@@ -272,8 +375,21 @@ function handleServerMessage(message) {
     localStorage.setItem('xiangqi.roomCode', currentRoom.code);
     lobbyEl.hidden = true;
     roomViewEl.hidden = false;
+    drawBoard();
     renderRoom();
+    renderPrivatePanels();
     fitScene();
+    if (previousRoom?.code === currentRoom.code) {
+      const knownIds = new Set([previousRoom.host, previousRoom.opponent, ...previousRoom.spectators]
+        .filter(Boolean).map((participant) => participant.id));
+      const joined = [currentRoom.host, currentRoom.opponent, ...currentRoom.spectators]
+        .filter((participant) => participant && !knownIds.has(participant.id) && participant.id !== playerId);
+      if (joined.length) showNotice(`${joined.map((participant) => participant.name).join(', ')} đã vào phòng.`);
+      if (previousMatchStatus !== MATCH_STATUS.FINISHED
+          && currentRoom.match?.status === MATCH_STATUS.FINISHED) {
+        showNotice(`Trận đấu đã kết thúc. ${describeResult(currentRoom.match)}`);
+      }
+    }
     if (currentRoom.match?.status === MATCH_STATUS.SYNCING) {
       const role = getMyRole();
       if (role !== 'spectator' && !acknowledgedMatches.has(currentRoom.match.id)) {
@@ -281,6 +397,48 @@ function handleServerMessage(message) {
         sendAction('snapshot-ack');
       }
     }
+    return;
+  }
+  if (message.type === 'room-expired') {
+    if (localStorage.getItem('xiangqi.roomCode') === message.roomCode) {
+      localStorage.removeItem('xiangqi.roomCode');
+    }
+    cleanupCall();
+    chatMessages.replaceChildren();
+    chatRoomCode = null;
+    currentRoom = null;
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+    realtimePanel.hidden = true;
+    renderPrivatePanels();
+    showNotice('Phòng đã hết hạn do không hoạt động. Bạn có thể tạo hoặc tham gia phòng mới.');
+    return;
+  }
+  if (message.type === 'room-closed') {
+    if (localStorage.getItem('xiangqi.roomCode') === message.roomCode) localStorage.removeItem('xiangqi.roomCode');
+    cleanupCall();
+    chatMessages.replaceChildren();
+    chatRoomCode = null;
+    currentRoom = null;
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+    realtimePanel.hidden = true;
+    renderPrivatePanels();
+    showNotice('Phòng đã được đóng. Bạn có thể tạo hoặc tham gia phòng mới.');
+    return;
+  }
+  if (message.type === 'left-room') {
+    if (localStorage.getItem('xiangqi.roomCode') === message.roomCode) localStorage.removeItem('xiangqi.roomCode');
+    cleanupCall();
+    chatMessages.replaceChildren();
+    chatRoomCode = null;
+    currentRoom = null;
+    selectedPieceId = null;
+    roomViewEl.hidden = true;
+    lobbyEl.hidden = false;
+    realtimePanel.hidden = true;
+    renderPrivatePanels();
+    showNotice('Báº¡n Ä‘Ă£ rá»i phĂ²ng.');
     return;
   }
   if (message.type === 'error') {
@@ -293,6 +451,7 @@ function handleServerMessage(message) {
       currentRoom = null;
       roomViewEl.hidden = true;
       lobbyEl.hidden = false;
+      renderPrivatePanels();
     }
     showNotice(message.message);
     return;
@@ -328,21 +487,94 @@ function handleServerMessage(message) {
     return;
   }
   if (message.type === 'left-match') {
+    cleanupCall();
     localStorage.removeItem('xiangqi.roomCode');
     currentRoom = null;
     exitReplay();
     roomViewEl.hidden = true;
     lobbyEl.hidden = false;
+    renderPrivatePanels();
     showNotice('Bạn đã rời trận. Trận đấu được tính là thua.');
     return;
   }
   if (message.type === 'replaced') {
     replacedByAnotherTab = true;
+    cleanupCall();
+    renderPrivatePanels();
     showNotice('Tài khoản này đã kết nối vào Room ở tab khác.');
+  }
+  if (message.type === 'chat-message') {
+    if (currentRoom?.code === chatRoomCode) appendChatMessage(message.message);
+    return;
+  }
+  if (message.type === 'chat-history') {
+    if (currentRoom?.code === chatRoomCode) {
+      chatMessages.replaceChildren();
+      for (const chatMessage of message.messages) appendChatMessage(chatMessage);
+    }
+    return;
+  }
+  if (message.type === 'chat-error') {
+    chatStatus.textContent = message.message;
+    return;
+  }
+  if (message.type === 'call-started') {
+    if (callState?.status === 'starting') {
+      callState.callId = message.callId;
+      callState.status = 'calling';
+      renderPrivatePanels();
+    }
+    return;
+  }
+  if (message.type === 'call-incoming') {
+    if (!privateRole() || callState) return;
+    callState = { callId: message.callId, callerId: message.callerId, callerName: message.callerName,
+      role: 'callee', status: 'incoming', pc: null, localStream: null, pendingCandidates: [] };
+    renderPrivatePanels();
+    return;
+  }
+  if (message.type === 'call-accepted') {
+    if (!callState || callState.callId !== message.callId) return;
+    callState.status = 'connecting';
+    renderPrivatePanels();
+    if (callState.role === 'caller') {
+      const state = callState;
+      (async () => {
+        try {
+          await acquireCallMedia(state);
+        } catch (error) {
+          cleanupCall({ notify: true, message: mediaErrorMessage(error) });
+          return;
+        }
+        const pc = ensurePeerConnection(state);
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendAction('call-offer', { callId: state.callId, description: pc.localDescription });
+      })().catch((error) => cleanupCall({ notify: true, message: webRtcErrorMessage(error) }));
+    }
+    return;
+  }
+  if (['call-offer', 'call-answer', 'call-ice-candidate'].includes(message.type)) {
+    handleCallSignal(message);
+    return;
+  }
+  if (['call-rejected', 'call-ended', 'call-timeout'].includes(message.type)) {
+    const text = message.type === 'call-rejected' ? 'Đối phương đã từ chối cuộc gọi.'
+      : message.type === 'call-timeout' ? 'Không có phản hồi trong 60 giây.' : 'Cuộc gọi đã kết thúc.';
+    if (callState?.callId === message.callId) cleanupCall({ message: text });
+    return;
+  }
+  if (message.type === 'call-error') {
+    if (callState?.status === 'starting' && !callState.callId) callState = null;
+    callStatus.textContent = message.message;
+    showNotice(message.message);
+    renderPrivatePanels();
+    return;
   }
 }
 
 function getMyRole() {
+  if (computerMatch) return 'computer';
   if (!currentRoom) return null;
   if (currentRoom.host?.id === playerId) return 'host';
   if (currentRoom.opponent?.id === playerId) return 'opponent';
@@ -351,8 +583,168 @@ function getMyRole() {
 
 function getParticipantName(id) {
   if (!id) return '';
+  if (computerMatch) {
+    if (id === computerMatch.humanPlayerId) return computerMatch.humanName;
+    if (id === computerMatch.computerPlayerId) return 'Máy';
+  }
   return [currentRoom.host, currentRoom.opponent, ...currentRoom.spectators]
     .find((participant) => participant?.id === id)?.name ?? 'Người chơi';
+}
+
+function privateRole() {
+  const role = getMyRole();
+  return role === 'host' || role === 'opponent';
+}
+
+function isBlackPerspective() {
+  if (computerMatch) return computerMatch.humanSide === 'black';
+  return privateRole() && currentRoom?.match?.blackPlayerId === playerId;
+}
+
+function appendChatMessage(message) {
+  const item = document.createElement('li');
+  item.className = message.senderId === playerId ? 'mine' : 'theirs';
+  const heading = document.createElement('span');
+  heading.className = 'chat-message-heading';
+  heading.textContent = `${message.senderName} · ${new Date(message.sentAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
+  const body = document.createElement('span');
+  body.className = 'chat-message-body';
+  body.textContent = message.text;
+  item.append(heading, body);
+  chatMessages.appendChild(item);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function renderPrivatePanels() {
+  if (!currentRoom) {
+    realtimePanel.hidden = true;
+    document.querySelector('#call-panel').hidden = true;
+    return;
+  }
+  realtimePanel.hidden = false;
+  const isPlayer = privateRole();
+  const opponent = currentRoom.host?.id === playerId ? currentRoom.opponent : currentRoom.host;
+  if (!isPlayer) {
+    chatForm.hidden = true;
+    chatStatus.textContent = '';
+    chatNote.textContent = 'Bạn đang xem với tư cách khán giả';
+    document.querySelector('#call-panel').hidden = true;
+    return;
+  }
+  document.querySelector('#call-panel').hidden = false;
+  chatForm.hidden = false;
+  const online = socket?.readyState === WebSocket.OPEN;
+  chatNote.textContent = opponent
+    ? `Chat riêng với ${opponent.name}${opponent.connected ? '' : ' (đang ngoại tuyến)'}`
+    : 'Đang chờ người chơi thứ hai.';
+  chatInput.disabled = !online || !opponent?.connected;
+  document.querySelector('#chat-send').disabled = chatInput.disabled;
+  chatStatus.textContent = online ? '' : 'Mất kết nối — tin nhắn chưa được gửi.';
+  const idle = !callState;
+  callStartButton.hidden = !idle;
+  callStartButton.disabled = !online || !opponent?.connected;
+  callAcceptButton.hidden = callState?.status !== 'incoming';
+  callRejectButton.hidden = callState?.status !== 'incoming';
+  callEndButton.hidden = !callState || callState.status === 'incoming';
+  callStatus.textContent = !callState
+    ? !online ? 'Chưa kết nối máy chủ.' : !opponent ? 'Đang chờ người chơi thứ hai.'
+      : !opponent.connected ? 'Đối phương đang ngoại tuyến.' : 'Đang chờ cuộc gọi'
+    : callState.status === 'incoming' ? `${callState.callerName} đang gọi…`
+      : callState.status === 'calling' ? `Đang gọi ${opponent?.name ?? 'đối phương'}…`
+        : callState.status === 'connecting' ? 'Đang kết nối video…'
+          : callState.status === 'connected' ? 'Đã kết nối' : 'Đang chuẩn bị cuộc gọi…';
+}
+
+function cleanupCall({ notify = false, message = '' } = {}) {
+  const previous = callState;
+  callState = null;
+  if (notify && previous?.callId) sendAction('call-end', { callId: previous.callId });
+  if (previous?.pc) {
+    previous.pc.onicecandidate = null;
+    previous.pc.ontrack = null;
+    previous.pc.onconnectionstatechange = null;
+    previous.pc.close();
+  }
+  previous?.localStream?.getTracks().forEach((track) => track.stop());
+  localVideo.srcObject = null;
+  remoteVideo.srcObject = null;
+  if (message) showNotice(message);
+  renderPrivatePanels();
+}
+
+async function acquireCallMedia(state) {
+  if (state.localStream) return state.localStream;
+  if (!window.isSecureContext) {
+    throw new Error('Trang chưa ở secure context. Hãy mở website bằng HTTPS với chứng chỉ được iPhone tin cậy.');
+  }
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error('Trình duyệt này không hỗ trợ API camera/microphone (getUserMedia). Hãy dùng Safari bản mới nhất.');
+  }
+  state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  if (callState !== state) {
+    state.localStream.getTracks().forEach((track) => track.stop());
+    throw new Error('Cuộc gọi đã kết thúc.');
+  }
+  localVideo.srcObject = state.localStream;
+  return state.localStream;
+}
+
+function ensurePeerConnection(state) {
+  if (state.pc) return state.pc;
+  if (typeof RTCPeerConnection !== 'function') {
+    throw new Error('Trình duyệt không hỗ trợ WebRTC. Hãy dùng Safari bản mới nhất.');
+  }
+  const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+  state.pc = pc;
+  for (const track of state.localStream.getTracks()) pc.addTrack(track, state.localStream);
+  pc.onicecandidate = ({ candidate }) => {
+    if (candidate && callState === state) sendAction('call-ice-candidate', { callId: state.callId, candidate });
+  };
+  pc.ontrack = ({ streams }) => {
+    if (callState === state && streams[0]) remoteVideo.srcObject = streams[0];
+  };
+  pc.onconnectionstatechange = () => {
+    if (callState !== state) return;
+    if (pc.connectionState === 'connected') state.status = 'connected';
+    else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+      cleanupCall({ notify: pc.connectionState === 'failed', message: webRtcErrorMessage(new Error(`trạng thái ${pc.connectionState}`)) });
+      return;
+    }
+    renderPrivatePanels();
+  };
+  return pc;
+}
+
+async function flushIceCandidates(state) {
+  if (!state.pc?.remoteDescription) return;
+  for (const candidate of state.pendingCandidates.splice(0)) await state.pc.addIceCandidate(candidate);
+}
+
+async function handleCallSignal(message) {
+  const state = callState;
+  if (!state || state.callId !== message.callId) return;
+  if (message.type === 'call-ice-candidate' && !state.pc) {
+    state.pendingCandidates.push(message.candidate);
+    return;
+  }
+  try {
+    const pc = ensurePeerConnection(state);
+    if (message.type === 'call-offer') {
+      await pc.setRemoteDescription(message.description);
+      await flushIceCandidates(state);
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      sendAction('call-answer', { callId: state.callId, description: pc.localDescription });
+    } else if (message.type === 'call-answer') {
+      await pc.setRemoteDescription(message.description);
+      await flushIceCandidates(state);
+    } else if (message.type === 'call-ice-candidate') {
+      if (pc.remoteDescription) await pc.addIceCandidate(message.candidate);
+      else state.pendingCandidates.push(message.candidate);
+    }
+  } catch (error) {
+    cleanupCall({ notify: true, message: webRtcErrorMessage(error) });
+  }
 }
 
 function playerSlotMarkup(participant, role, color) {
@@ -382,6 +774,12 @@ function isActiveMatch(match) {
 }
 
 function renderRoom() {
+  if (computerMatch) {
+    renderComputerRoom();
+    return;
+  }
+  document.querySelector('.room-banner .muted').hidden = false;
+  document.querySelector('#copy-room-code').hidden = false;
   document.querySelector('#room-title').textContent = currentRoom.name;
   document.querySelector('#room-code').textContent = currentRoom.code;
   const role = getMyRole();
@@ -401,6 +799,7 @@ function renderRoom() {
     colors[currentRoom.opponent?.id],
   );
   const spectatorList = document.querySelector('#spectator-list');
+  spectatorList.hidden = false;
   spectatorList.textContent = currentRoom.spectators.length
     ? `Khán giả (${currentRoom.spectators.length}/10): ${currentRoom.spectators.map((person) => person.name).join(', ')}`
     : 'Khán giả (0/10)';
@@ -412,6 +811,8 @@ function renderRoom() {
   readyButton.hidden = !awaitingOpponent || !isPlayer || !bothPlayers;
   readyButton.textContent = player?.ready ? 'Hủy sẵn sàng' : 'Sẵn sàng';
   startButton.hidden = !awaitingOpponent || role !== 'host';
+    closeRoomButton.hidden = !awaitingOpponent || role !== 'host';
+  leaveRoomButton.hidden = !role || (isPlayer && !awaitingOpponent);
   startButton.disabled = !currentRoom.host?.ready || !currentRoom.opponent?.ready
     || !currentRoom.host?.connected || !currentRoom.opponent?.connected;
   const active = isActiveMatch(match);
@@ -425,13 +826,37 @@ function renderRoom() {
   renderMatch();
 }
 
+function renderComputerRoom() {
+  document.querySelector('#room-title').textContent = 'Chơi với máy';
+  document.querySelector('.room-banner .muted').hidden = true;
+  document.querySelector('#copy-room-code').hidden = true;
+  document.querySelector('#my-role').textContent = `Bạn cầm quân ${computerMatch.humanSide === 'red' ? 'Đỏ' : 'Đen'}`;
+  const redPlayer = computerMatch.humanSide === 'red'
+    ? { id: computerMatch.humanPlayerId, name: `${computerMatch.humanName} (Bạn)`, ready: true, connected: true }
+    : { id: computerMatch.computerPlayerId, name: 'Máy', ready: true, connected: true };
+  const blackPlayer = computerMatch.humanSide === 'black'
+    ? { id: computerMatch.humanPlayerId, name: `${computerMatch.humanName} (Bạn)`, ready: true, connected: true }
+    : { id: computerMatch.computerPlayerId, name: 'Máy', ready: true, connected: true };
+  document.querySelector('#host-slot').innerHTML = playerSlotMarkup(redPlayer, 'Quân Đỏ', 'red');
+  document.querySelector('#opponent-slot').innerHTML = playerSlotMarkup(blackPlayer, 'Quân Đen', 'black');
+  document.querySelector('#spectator-list').hidden = true;
+  readyButton.hidden = true;
+  startButton.hidden = true;
+  closeRoomButton.hidden = true;
+  drawButton.hidden = true;
+  leaveButton.hidden = true;
+  resignButton.hidden = computerMatch.status !== MATCH_STATUS.PLAYING;
+  computerExitButton.hidden = computerMatch.status !== MATCH_STATUS.FINISHED;
+  renderMatch();
+}
+
 function renderMatch() {
-  if (!currentRoom) return;
+  if (!currentRoom && !computerMatch) return;
   if (replayView) {
     renderReplay();
     return;
   }
-  const match = currentRoom.match;
+  const match = computerMatch ?? currentRoom.match;
   const statusLabels = {
     waiting: 'Đang chờ đối thủ',
     syncing: 'Đang đồng bộ',
@@ -449,12 +874,13 @@ function renderMatch() {
     countdownLabel.textContent = `Bắt đầu sau ${seconds}…`;
   }
   renderReconnectLabel(match);
-  drawPrompt.hidden = !match?.drawOffer || match.drawOffer.fromPlayerId === playerId;
+  drawPrompt.hidden = Boolean(computerMatch) || !match?.drawOffer || match.drawOffer.fromPlayerId === playerId;
   if (match?.drawOffer && match.drawOffer.fromPlayerId !== playerId) {
     drawPromptText.textContent = `${getParticipantName(match.drawOffer.fromPlayerId)} xin hòa. Bạn có đồng ý?`;
   }
 
-  turnClock.textContent = match ? `${match.timeRemaining}s` : '—';
+  turnClock.textContent = computerMatch && match?.status === MATCH_STATUS.PLAYING
+    && match.currentSide === match.computerSide ? 'Máy đang đi...' : match ? `${match.timeRemaining}s` : '—';
   turnClock.classList.toggle('low-time', match?.status === MATCH_STATUS.PLAYING
     && match.timeRemaining <= 10);
 
@@ -469,7 +895,10 @@ function renderMatch() {
   const turnPlayerId = match.currentSide === 'red' ? match.redPlayerId : match.blackPlayerId;
   const turnPlayerName = getParticipantName(turnPlayerId);
   const ownsTurn = turnPlayerId === playerId;
-  const turnText = status === MATCH_STATUS.SYNCING
+  const turnText = computerMatch && status === MATCH_STATUS.PLAYING
+    && match.currentSide === match.computerSide
+    ? 'Máy đang đi...'
+    : status === MATCH_STATUS.SYNCING
     ? 'Đang gửi bàn cờ ban đầu cho người chơi…'
     : status === MATCH_STATUS.COUNTDOWN
       ? 'Trận đấu sắp bắt đầu'
@@ -535,8 +964,9 @@ function renderMoveHistory(history, limit = history.length) {
 
 function canPlay() {
   if (replayView) return false;
-  const match = currentRoom?.match;
+  const match = computerMatch ?? currentRoom?.match;
   if (!match || match.status !== MATCH_STATUS.PLAYING || pendingRequestId) return false;
+  if (computerMatch) return match.currentSide === computerMatch.humanSide;
   const side = playerId === match.redPlayerId ? 'red'
     : playerId === match.blackPlayerId ? 'black' : null;
   return side === match.currentSide;
@@ -545,9 +975,10 @@ function canPlay() {
 function renderPieces() {
   const matchPieces = replayView
     ? replayView.pieces
-    : currentRoom?.match?.pieces ?? createInitialPieces();
+    : computerMatch?.pieces ?? currentRoom?.match?.pieces ?? createInitialPieces();
   piecesEl.replaceChildren();
   for (const piece of matchPieces) {
+    const displayCoordinate = toDisplayCoordinate(piece, isBlackPerspective());
     const element = document.createElement('button');
     const name = pieceTypes[piece.type].name;
     const colorName = piece.color === 'red' ? 'Đỏ' : 'Đen';
@@ -559,8 +990,8 @@ function renderPieces() {
     element.setAttribute('aria-label', label);
     element.setAttribute('aria-pressed', String(piece.id === selectedPieceId));
     element.disabled = !canPlay();
-    element.style.left = `${PAD + piece.x * CELL - PIECE_SIZE / 2}px`;
-    element.style.top = `${PAD + piece.y * CELL - PIECE_SIZE / 2}px`;
+    element.style.left = `${PAD + displayCoordinate.x * CELL - PIECE_SIZE / 2}px`;
+    element.style.top = `${PAD + displayCoordinate.y * CELL - PIECE_SIZE / 2}px`;
     element.addEventListener('click', () => handleCell(piece.x, piece.y));
     piecesEl.appendChild(element);
   }
@@ -568,7 +999,7 @@ function renderPieces() {
 
 function handleCell(x, y) {
   if (!canPlay()) return;
-  const match = currentRoom.match;
+  const match = computerMatch ?? currentRoom.match;
   const selected = match.pieces.find((piece) => piece.id === selectedPieceId);
   const clicked = match.pieces.find((piece) => piece.x === x && piece.y === y);
   if (clicked?.color === match.currentSide) {
@@ -577,8 +1008,12 @@ function handleCell(x, y) {
     return;
   }
   if (!selected) return;
-  const requestId = crypto.randomUUID();
-  if (sendAction('move', { requestId, pieceId: selected.id, to: { x, y } })) {
+  const requestId = createClientId();
+  const action = computerMatch ? 'computer-move' : 'move';
+  const details = computerMatch
+    ? { matchId: computerMatch.id, playerId, requestId, pieceId: selected.id, to: { x, y } }
+    : { requestId, pieceId: selected.id, to: { x, y } };
+  if (sendAction(action, details)) {
     pendingRequestId = requestId;
     renderPieces();
   }
@@ -593,7 +1028,7 @@ function boardCellFromEvent(event) {
   if (column < 0 || column > 8 || row < 0 || row > 9) return null;
   if (Math.abs(x - (PAD + column * CELL)) > CELL * 0.48
       || Math.abs(y - (PAD + row * CELL)) > CELL * 0.48) return null;
-  return { x: column, y: row };
+  return toLogicCoordinate({ x: column, y: row }, isBlackPerspective());
 }
 
 function replayPieces(record, index) {
@@ -625,7 +1060,8 @@ function enterReplay(record) {
 function exitReplay() {
   replayView = null;
   replayBar.hidden = true;
-  if (currentRoom) renderRoom();
+  if (computerMatch) renderRoom();
+  else if (currentRoom) renderRoom();
   else {
     roomViewEl.hidden = true;
     lobbyEl.hidden = false;
@@ -736,7 +1172,25 @@ async function loadReplay(matchId) {
 
 function requestResign() {
   if (!window.confirm('Đầu hàng sẽ tính bạn thua ngay lập tức. Xác nhận?')) return;
-  sendAction('resign');
+  if (computerMatch) sendAction('computer-resign', { matchId: computerMatch.id });
+  else sendAction('resign');
+}
+
+function startComputerGame(side) {
+  const displayName = displayNameInput.value.trim();
+  if (!displayName || displayName.length > 32) {
+    showNotice('Vui lòng nhập tên hiển thị (tối đa 32 ký tự).');
+    displayNameInput.focus();
+    return;
+  }
+  localStorage.setItem('xiangqi.displayName', displayName);
+  localStorage.removeItem('xiangqi.roomCode');
+  sendAction('computer-start', { playerId, displayName, side });
+}
+
+function exitComputerGame() {
+  if (!computerMatch || computerMatch.status !== MATCH_STATUS.FINISHED) return;
+  sendAction('computer-exit', { matchId: computerMatch.id });
 }
 
 function requestLeave() {
@@ -747,6 +1201,66 @@ function requestLeave() {
 function respondDraw(accept) {
   sendAction('respond-draw', { accept });
 }
+
+chatForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const text = chatInput.value.trim();
+  if (!text) return;
+  if (!privateRole() || !sendAction('chat-send', { text })) {
+    chatStatus.textContent = 'Tin nhắn chưa được gửi. Kiểm tra kết nối rồi thử lại.';
+    return;
+  }
+  chatInput.value = '';
+  chatStatus.textContent = '';
+});
+
+callStartButton.addEventListener('click', () => {
+  if (!privateRole() || callState || !sendAction('call-start')) return;
+  callState = { callId: null, role: 'caller', status: 'starting', pc: null,
+    localStream: null, pendingCandidates: [] };
+  renderPrivatePanels();
+});
+
+callAcceptButton.addEventListener('click', async () => {
+  const state = callState;
+  if (!state || state.status !== 'incoming') return;
+  state.status = 'preparing';
+  renderPrivatePanels();
+  try {
+    await acquireCallMedia(state);
+  } catch (error) {
+    sendAction('call-reject', { callId: state.callId });
+    cleanupCall({ message: mediaErrorMessage(error) });
+    return;
+  }
+  if (callState !== state) return;
+  try {
+    ensurePeerConnection(state);
+    if (!sendAction('call-accept', { callId: state.callId })) cleanupCall();
+  } catch (error) {
+    sendAction('call-reject', { callId: state.callId });
+    cleanupCall({ message: webRtcErrorMessage(error) });
+  }
+});
+
+callRejectButton.addEventListener('click', () => {
+  const state = callState;
+  if (!state || state.status !== 'incoming') return;
+  sendAction('call-reject', { callId: state.callId });
+  cleanupCall();
+});
+
+callEndButton.addEventListener('click', () => cleanupCall({ notify: true }));
+
+closeRoomButton.addEventListener('click', () => {
+  if (window.confirm('Đóng phòng cho tất cả thành viên? Lịch sử trận đã hoàn tất vẫn được giữ.')) {
+    sendAction('close-room');
+  }
+});
+
+leaveRoomButton.addEventListener('click', () => {
+  if (currentRoom) sendAction('leave-room', { roomCode: currentRoom.code });
+});
 
 document.querySelector('#create-room-form').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -793,6 +1307,19 @@ readyButton.addEventListener('click', () => {
 startButton.addEventListener('click', () => {
   sendAction('start-match');
 });
+
+computerPlayButton.addEventListener('click', () => {
+  computerSidePicker.hidden = false;
+  computerPlayButton.hidden = true;
+});
+computerCancelButton.addEventListener('click', () => {
+  computerSidePicker.hidden = true;
+  computerPlayButton.hidden = false;
+});
+computerSidePicker.querySelectorAll('[data-computer-side]').forEach((button) => {
+  button.addEventListener('click', () => startComputerGame(button.dataset.computerSide));
+});
+computerExitButton.addEventListener('click', exitComputerGame);
 
 resignButton.addEventListener('click', requestResign);
 leaveButton.addEventListener('click', requestLeave);

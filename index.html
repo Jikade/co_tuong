@@ -43,6 +43,19 @@
             <input id="room-code-input" class="text-input code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required />
             <button class="button button-secondary" type="submit">Vào Room</button>
           </form>
+          <section class="action-card computer-action-card">
+            <h2>Chơi với máy</h2>
+            <p class="muted">Đấu một trận cờ tướng với máy ngay trên thiết bị này.</p>
+            <button id="computer-play-button" class="button button-primary" type="button">Chơi với máy</button>
+            <div id="computer-side-picker" class="computer-side-picker" hidden>
+              <p class="field-label">Bạn muốn cầm quân nào?</p>
+              <div class="computer-side-actions">
+                <button class="button button-secondary" type="button" data-computer-side="red">Quân Đỏ</button>
+                <button class="button button-secondary" type="button" data-computer-side="black">Quân Đen</button>
+                <button id="computer-cancel-button" class="button button-quiet" type="button">Hủy</button>
+              </div>
+            </div>
+          </section>
         </div>
         <p class="lobby-note">Người vào sau khi đủ hai đấu thủ sẽ tham gia với quyền khán giả. Mỗi Room hỗ trợ tối đa 10 khán giả.</p>
         <div class="lobby-history">
@@ -88,6 +101,17 @@
             </div>
           </section>
 
+          <section id="realtime-panel" class="panel realtime-panel" hidden>
+            <h2>Chat người chơi</h2>
+            <p id="chat-note" class="muted"></p>
+            <ol id="chat-messages" class="chat-messages" aria-live="polite"></ol>
+            <p id="chat-status" class="muted" aria-live="polite"></p>
+            <form id="chat-form" class="chat-form">
+              <input id="chat-input" class="text-input" maxlength="1000" autocomplete="off" placeholder="Nhập tin nhắn…" aria-label="Tin nhắn" />
+              <button id="chat-send" class="button button-secondary" type="submit">Gửi</button>
+            </form>
+          </section>
+
           <aside class="game-sidebar">
             <section class="panel room-panel">
               <div class="panel-heading">
@@ -100,11 +124,14 @@
               <div class="room-controls">
                 <button id="ready-button" class="button button-secondary" type="button" hidden>Sẵn sàng</button>
                 <button id="start-button" class="button button-primary" type="button" hidden>Bắt đầu</button>
+                <button id="close-room-button" class="button button-quiet" type="button" hidden>Đóng phòng</button>
+                <button id="leave-room-button" class="button button-quiet" type="button" hidden>Rời phòng</button>
               </div>
               <div id="match-actions" class="room-controls room-controls-match">
                 <button id="draw-button" class="button button-secondary" type="button" hidden>Xin hòa</button>
                 <button id="resign-button" class="button button-quiet" type="button" hidden>Đầu hàng</button>
                 <button id="leave-button" class="button button-quiet danger" type="button" hidden>Rời trận</button>
+                <button id="computer-exit-button" class="button button-secondary" type="button" hidden>Về trang chính</button>
               </div>
             </section>
 
@@ -144,6 +171,20 @@
             <section class="panel matches-panel">
               <h2>Lịch sử trận</h2>
               <button id="history-button" class="button button-secondary" type="button">Xem lại trận đã chơi</button>
+            </section>
+            <section id="call-panel" class="panel call-panel">
+                <h3>Video call</h3>
+                <p id="call-status" class="muted">Đang chờ cuộc gọi</p>
+                <div class="call-videos">
+                  <figure><video id="local-video" autoplay muted playsinline></video><figcaption>Bạn</figcaption></figure>
+                  <figure><video id="remote-video" autoplay playsinline></video><figcaption>Đối phương</figcaption></figure>
+                </div>
+                <div class="call-controls">
+                  <button id="call-start" class="button button-secondary" type="button">Gọi video</button>
+                  <button id="call-accept" class="button button-primary" type="button" hidden>Chấp nhận</button>
+                  <button id="call-reject" class="button button-quiet" type="button" hidden>Từ chối</button>
+                  <button id="call-end" class="button button-quiet danger" type="button" hidden>Kết thúc</button>
+                </div>
             </section>
           </aside>
         </div>

@@ -1,4 +1,4 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { MATCH_RESULT } from './constants.js';
@@ -25,6 +25,7 @@ function summarize(record, playerId) {
     id: record.id,
     roomCode: record.roomCode,
     roomName: record.roomName,
+    mode: record.mode ?? 'online',
     side,
     opponentName: opponent?.name ?? '',
     outcome: outcomeFor(record, playerId),
@@ -40,21 +41,36 @@ export function createHistoryStore(filePath) {
   let records = [];
   let queue = Promise.resolve();
 
-  function persist() {
-    const contents = JSON.stringify(records);
-    queue = queue.then(async () => {
-      await mkdir(path.dirname(filePath), { recursive: true });
-      const temporaryFile = `${filePath}.${randomUUID()}.tmp`;
-      await writeFile(temporaryFile, contents, 'utf8');
+  async function persist(nextRecords) {
+    await mkdir(path.dirname(filePath), { recursive: true });
+    const temporaryFile = `${filePath}.${randomUUID()}.tmp`;
+    try {
+      await writeFile(temporaryFile, JSON.stringify(nextRecords), 'utf8');
       await rename(temporaryFile, filePath);
+    } catch (error) {
+      await unlink(temporaryFile).catch(() => {});
+      throw error;
+    }
+  }
+
+  function append(record) {
+    const operation = queue.then(async () => {
+      const nextRecords = records.slice();
+      const existing = nextRecords.findIndex((candidate) => candidate.id === record.id);
+      if (existing >= 0) nextRecords[existing] = record;
+      else nextRecords.push(record);
+      await persist(nextRecords);
+      records = nextRecords;
+      return record;
     });
-    return queue.catch((error) => {
-      console.error('Could not persist match history:', error);
-    });
+    // Keep later writes usable while returning this operation's failure to its caller.
+    queue = operation.catch(() => {});
+    return operation;
   }
 
   return {
     async load() {
+      await queue;
       try {
         const contents = await readFile(filePath, 'utf8');
         const parsed = JSON.parse(contents);
@@ -65,18 +81,25 @@ export function createHistoryStore(filePath) {
       }
       return records.length;
     },
-    async append(record) {
-      const existing = records.findIndex((candidate) => candidate.id === record.id);
-      if (existing >= 0) records[existing] = record;
-      else records.push(record);
-      await persist();
-      return record;
+    append,
+    async save(record) {
+      return append(record);
     },
     list(playerId) {
       return records
-        .filter((record) => sideOf(record, playerId) !== null)
+        .filter((record) => record.result && Number.isFinite(record.endedAt)
+          && sideOf(record, playerId) !== null)
         .map((record) => summarize(record, playerId))
         .sort((first, second) => (second.endedAt ?? 0) - (first.endedAt ?? 0));
+    },
+    findActiveComputerMatch(playerId) {
+      return records
+        .filter((record) => record.mode === 'computer' && record.status === 'playing'
+          && record.humanPlayerId === playerId)
+        .sort((first, second) => (second.startedAt ?? 0) - (first.startedAt ?? 0))[0] ?? null;
+    },
+    activeComputerMatches() {
+      return records.filter((record) => record.mode === 'computer' && record.status === 'playing');
     },
     find(id) {
       return records.find((record) => record.id === id) ?? null;
