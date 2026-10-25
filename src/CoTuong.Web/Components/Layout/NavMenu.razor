@@ -1,0 +1,14 @@
+<div class="nav-brand"><a href="/">Cờ Tướng</a></div>
+<nav class="nav flex-column">
+    <AuthorizeView>
+        <Authorized>
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Trang chính</NavLink>
+            <NavLink class="nav-link" href="/friends">Bạn bè</NavLink>
+            <NavLink class="nav-link" href="/notifications">Thông báo</NavLink>
+        </Authorized>
+        <NotAuthorized>
+            <NavLink class="nav-link" href="/account/login">Đăng nhập</NavLink>
+            <NavLink class="nav-link" href="/account/register">Đăng ký</NavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</nav>

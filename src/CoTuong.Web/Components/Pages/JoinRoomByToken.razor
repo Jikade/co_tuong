@@ -1,0 +1,21 @@
+@page "/room/join/{Token}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using CoTuong.Web.Components.Pages.Account
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Vào Room | Cờ Tướng</PageTitle>
+<p>Đang kiểm tra link Room…</p>
+@if (!string.IsNullOrEmpty(_error)) { <p class="error-message" role="alert">@_error</p><a href="/">Về trang chính</a> }
+
+@code {
+    [Parameter] public string Token { get; set; } = string.Empty;
+    private string? _error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/join/{Uri.EscapeDataString(Token)}", new { });
+        if (result.Ok) Navigation.NavigateTo($"/room/{result.Data.GetProperty("maPhong").GetInt64()}");
+        else _error = result.Data.TryGetProperty("message", out var message) ? message.GetString() : "Room không còn khả dụng.";
+    }
+}
