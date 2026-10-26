@@ -31,6 +31,11 @@ public sealed record RoomSnapshot(
     IReadOnlyList<KhanGiaItem> KhanGia,
     // Loi moi truc tiep dang cho (chi hien thi chu room)
     LoiMoiVaoPhongSnapshot? LoiMoiDangCho,
+    // Loi moi dang cho moi ngui duoc moi la ngui xem (de hien thi bo dem 60s + Tham gia/Tu choi)
+    LoiMoiVaoPhongSnapshot? LoiMoiNhanDuoc,
+    // Da co Match hoat dong (Countdown/InProgress) trong Room nay — dung de
+    // disable nut "Bat dau" khi da tao Match (README: bam nhieu lan chi tao mot).
+    bool DaCoMatch,
     DateTime ThoiDiemServerUtc);
 
 /// <summary>Mot nhan gia dang trong Room.</summary>

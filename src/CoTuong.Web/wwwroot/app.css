@@ -96,4 +96,7 @@ body { background: #f5f7fb; color: #1b2430; }
 .notification-row { padding: 1rem; border-radius: .5rem; }
 .realtime-toast { position: sticky; top: .5rem; z-index: 10; display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; margin: .5rem 1rem; background: #172b4d; color: white; border-radius: .65rem; box-shadow: 0 8px 20px #0002; }
 .realtime-toast a { color: white; font-weight: 700; }
+.unread-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 1.1rem; height: 1.1rem; padding: 0 .3rem; margin-left: .35rem; border-radius: 999px; background: #d6336c; color: #fff; font-size: .68rem; font-weight: 700; }
+.invite-countdown { display: inline-block; margin: 0 .4rem; font-weight: 600; color: #d9480f; }
+.received-invite { background: #fff8e1; border: 1px solid #f5e6a8; }
 @media (max-width: 720px) { .dashboard-grid, .room-board { grid-template-columns: 1fr; } .panel-wide { grid-column: auto; } .room-list-item { flex-wrap: wrap; } }

@@ -45,15 +45,24 @@ else
             }
             @if (_role == "Host")
             {
-                <button class="btn btn-primary ms-2" disabled="@(!Bool(_snapshot, "sanSangChuPhong") || !Bool(_snapshot, "sanSangDoiThu"))" @onclick="StartMatchAsync">Bắt đầu</button>
-                @if (Text(_snapshot, "tenHienThiDoiThu").Length > 0) { <button class="btn btn-outline-danger ms-2" @onclick="RemoveOpponentAsync">Loại khỏi vị trí Đối thủ</button> }
+                <button class="btn btn-primary ms-2" disabled="@(!Bool(_snapshot, "sanSangChuPhong") || !Bool(_snapshot, "sanSangDoiThu") || _matchStarted)" @onclick="StartMatchAsync">Bắt đầu</button>
+                @if (_matchStarted) { <span class="ms-2" style="color:var(--bs-success-text)">Match đã được tạo</span> }
+                @if (Text(_snapshot, "tenHienThiDoiThu").Length > 0 && !_matchStarted) { <button class="btn btn-outline-danger ms-2" @onclick="RemoveOpponentAsync">Loại khỏi vị trí Đối thủ</button> }
                 <div class="invite-box mt-3">
                     <label for="friend-invite">Mời bạn đang online</label>
                     <select id="friend-invite" class="form-select" @bind="_selectedFriend">
                         <option value="0">Chọn bạn</option>
                         @foreach (var friend in _friends)
                         {
-                            if (Bool(friend, "dangOnline")) { <option value="@Long(friend, "maBanBe")">@Text(friend, "tenHienThi") (@Text(friend, "tenDangNhap"))</option> }
+                            @if (Bool(friend, "dangOnline"))
+                            {
+                                <option value="@Long(friend, "maBanBe")">@Text(friend, "tenHienThi") (@Text(friend, "tenDangNhap"))</option>
+                            }
+                            else
+                            {
+                                // README muc 4: hong cho chon ban offline, nhan ly do
+                                <option value="@Long(friend, "maBanBe")" disabled>@Text(friend, "tenHienThi") — offline, khong the moi</option>
+                            }
                         }
                     </select>
                     <button class="btn btn-outline-primary mt-2" disabled="@(_selectedFriend == 0)" @onclick="InviteAsync">Gửi lời mời 60 giây</button>
@@ -66,6 +75,17 @@ else
             }
             <button class="btn btn-outline-secondary mt-3" @onclick="LeaveAsync">Rời Room</button>
         </section>
+
+        @if (_receivedInvite.ValueKind == JsonValueKind.Object)
+        {
+            <section class="panel panel-wide received-invite">
+                <h2>Bạn nhận được lời mời</h2>
+                <p><strong>@Text(_receivedInvite, "tenHienThiNgudiMoi")</strong> mời bạn vào Room "@Text(_snapshot, "tenPhong")" — còn @_secondsLeft giây để phản hồi.</p>
+                <button class="btn btn-primary" @onclick="AcceptReceivedInviteAsync">Tham gia</button>
+                <button class="btn btn-outline-secondary ms-2" @onclick="DeclineReceivedInviteAsync">Từ chối</button>
+            </section>
+        }
+
         <section class="panel panel-wide">
             <h2>Khán giả (@ArrayCount(_snapshot, "khanGia"))</h2>
             @if (_snapshot.TryGetProperty("khanGia", out var guests) && guests.ValueKind == JsonValueKind.Array)
@@ -90,10 +110,12 @@ else
     [Parameter] public long RoomId { get; set; }
     private JsonElement _snapshot;
     private JsonElement _invite;
+    private JsonElement _receivedInvite;
     private List<JsonElement> _friends = [];
     private long _viewerId;
     private long _selectedFriend;
     private string _role = "";
+    private bool _matchStarted;
     private string? _message;
     private string? _error;
     private int _secondsLeft;
@@ -132,6 +154,8 @@ else
             : _viewerId == Long(_snapshot, "maDoiThu") ? "Opponent" : "Spectator";
         _ready = _role == "Host" ? Bool(_snapshot, "sanSangChuPhong") : _role == "Opponent" && Bool(_snapshot, "sanSangDoiThu");
         _invite = _snapshot.TryGetProperty("loiMoiDangCho", out var invite) && invite.ValueKind == JsonValueKind.Object ? invite.Clone() : default;
+        _receivedInvite = _snapshot.TryGetProperty("loiMoiNhanDuoc", out var recv) && recv.ValueKind == JsonValueKind.Object ? recv.Clone() : default;
+        _matchStarted = Bool(_snapshot, "daCoMatch");
         UpdateCountdown();
     }
 
@@ -183,6 +207,20 @@ else
         if (!result.Ok) _error = Error(result); else await RefreshAsync();
     }
 
+    private async Task AcceptReceivedInviteAsync()
+    {
+        var id = Long(_receivedInvite, "maLoiMoi");
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/invites/{id}/accept", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task DeclineReceivedInviteAsync()
+    {
+        var id = Long(_receivedInvite, "maLoiMoi");
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/invites/{id}/decline", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
     private async Task LeaveAsync()
     {
         if (!await JS.InvokeAsync<bool>("confirm", "Bạn muốn rời Room này?")) return;
@@ -206,10 +244,12 @@ else
     private void UpdateCountdown()
     {
         _timer?.Dispose();
-        if (_invite.ValueKind != JsonValueKind.Object) return;
+        // Dem nguoc boi loi moi do chu room gui (host) HOAC loi moi ngui xem nhan duoc.
+        var activeInvite = _invite.ValueKind == JsonValueKind.Object ? _invite : _receivedInvite;
+        if (activeInvite.ValueKind != JsonValueKind.Object) return;
         _timer = new System.Threading.Timer(_ => _ = InvokeAsync(() =>
         {
-            var expires = DateTime.Parse(Text(_invite, "thoiDiemHetHan"), System.Globalization.CultureInfo.InvariantCulture,
+            var expires = DateTime.Parse(Text(activeInvite, "thoiDiemHetHan"), System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal);
             _secondsLeft = Math.Max(0, (int)Math.Ceiling((expires - (DateTime.UtcNow + _serverClockOffset)).TotalSeconds));
             StateHasChanged();

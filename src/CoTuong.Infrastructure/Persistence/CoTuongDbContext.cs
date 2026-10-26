@@ -335,8 +335,8 @@ public partial class CoTuongDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_loi_moi_phong_nguoi_duoc_moi");
 
-            entity.HasOne(d => d.ma_nguoi_moiNavigation).WithOne(p => p.loi_moi_vao_phongma_nguoi_moiNavigation)
-                .HasForeignKey<loi_moi_vao_phong>(d => d.ma_nguoi_moi)
+            entity.HasOne(d => d.ma_nguoi_moiNavigation).WithMany(p => p.loi_moi_vao_phongma_nguoi_moiNavigations)
+                .HasForeignKey(d => d.ma_nguoi_moi)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_loi_moi_phong_nguoi_moi");
 
@@ -667,8 +667,8 @@ public partial class CoTuongDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tv_phong_nguoi_dung");
 
-            entity.HasOne(d => d.ma_phongNavigation).WithOne(p => p.thanh_vien_phong)
-                .HasForeignKey<thanh_vien_phong>(d => d.ma_phong)
+            entity.HasOne(d => d.ma_phongNavigation).WithMany(p => p.thanh_vien_phongs)
+                .HasForeignKey(d => d.ma_phong)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tv_phong_phong");
         });
@@ -772,8 +772,8 @@ public partial class CoTuongDbContext : DbContext
                 .IsUnicode(false)
                 .HasDefaultValue("Active", "DF_token_dat_lai_trang_thai");
 
-            entity.HasOne(d => d.ma_nguoi_dungNavigation).WithOne(p => p.token_dat_lai_mat_khau)
-                .HasForeignKey<token_dat_lai_mat_khau>(d => d.ma_nguoi_dung)
+            entity.HasOne(d => d.ma_nguoi_dungNavigation).WithMany(p => p.token_dat_lai_mat_khaus)
+                .HasForeignKey(d => d.ma_nguoi_dung)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_token_dat_lai_nguoi_dung");
         });
@@ -843,8 +843,8 @@ public partial class CoTuongDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tran_dau_nguoi_tao");
 
-            entity.HasOne(d => d.ma_phongNavigation).WithOne(p => p.tran_dau)
-                .HasForeignKey<tran_dau>(d => d.ma_phong)
+            entity.HasOne(d => d.ma_phongNavigation).WithMany(p => p.tran_daus)
+                .HasForeignKey(d => d.ma_phong)
                 .HasConstraintName("FK_tran_dau_phong");
         });
 
@@ -884,9 +884,10 @@ public partial class CoTuongDbContext : DbContext
 
         modelBuilder.Entity<v_nguoi_dung_online>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToView("v_nguoi_dung_online");
+            if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+                entity.HasKey(e => e.ma_nguoi_dung);
+            else
+                entity.HasNoKey().ToView("v_nguoi_dung_online");
 
             entity.Property(e => e.ma_nguoi_dung).ValueGeneratedOnAdd();
             entity.Property(e => e.ten_dang_nhap).HasMaxLength(50);

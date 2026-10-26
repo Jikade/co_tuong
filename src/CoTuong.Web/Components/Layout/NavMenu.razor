@@ -1,14 +1,45 @@
-<div class="nav-brand"><a href="/">Cờ Tướng</a></div>
-<nav class="nav flex-column">
-    <AuthorizeView>
-        <Authorized>
-            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Trang chính</NavLink>
-            <NavLink class="nav-link" href="/friends">Bạn bè</NavLink>
-            <NavLink class="nav-link" href="/notifications">Thông báo</NavLink>
-        </Authorized>
-        <NotAuthorized>
-            <NavLink class="nav-link" href="/account/login">Đăng nhập</NavLink>
-            <NavLink class="nav-link" href="/account/register">Đăng ký</NavLink>
-        </NotAuthorized>
-    </AuthorizeView>
-</nav>
+<div class="side-nav">
+    <a class="side-brand" href="/" aria-label="Cờ Tướng - Trang chính">
+        <span class="side-brand-mark" aria-hidden="true">♞</span>
+        <span class="side-brand-copy">
+            <strong>Cờ Tướng</strong>
+            <small>Giao hữu &amp; kết nối</small>
+        </span>
+    </a>
+
+    <div class="side-nav-caption">KHÔNG GIAN CỦA BẠN</div>
+    <nav class="side-nav-links" aria-label="Điều hướng chính">
+        <AuthorizeView>
+            <Authorized>
+                <NavLink class="side-nav-link" href="/" Match="NavLinkMatch.All">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" /></svg>
+                    <span>Trang chính</span>
+                </NavLink>
+                <NavLink class="side-nav-link" href="/friends">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm10 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span>Bạn bè</span>
+                </NavLink>
+                <NavLink class="side-nav-link" href="/notifications">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
+                    <span>Thông báo</span>
+                    <NotificationBadge />
+                </NavLink>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink class="side-nav-link" href="/account/login">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5m5 5H3" /></svg>
+                    <span>Đăng nhập</span>
+                </NavLink>
+                <NavLink class="side-nav-link" href="/account/register">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-3v6m3-3h-6" /></svg>
+                    <span>Đăng ký</span>
+                </NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+
+    <div class="side-nav-footer">
+        <span class="side-footer-dot" aria-hidden="true"></span>
+        <span>Cờ tướng · Kết nối bạn bè</span>
+    </div>
+</div>

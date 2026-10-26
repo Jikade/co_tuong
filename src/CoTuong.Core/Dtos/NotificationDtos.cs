@@ -10,4 +10,5 @@ public sealed record ThongBaoItem(
     long? MaLoiMoiKetBan,
     string? DuLieuPhu,
     bool DaDoc,
-    DateTime NgayTao);
+    DateTime NgayTao,
+    DateTime? ThoiDiemHetHanLoiMoi);

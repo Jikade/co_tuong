@@ -43,6 +43,13 @@ public sealed class RoomHub(CoTuongDbContext db, IClock clock) : Hub
             lan_thay_cuoi = now
         });
         await db.SaveChangesAsync();
+
+        // Bat buoc: moi connection phai vao user-group de nhan duoc cac su kien
+        // user-scoped (Clients.User) nhu loi moi Room, thong bao trong game,
+        // ket ban. Mot nguoi co the mo nhieu tab -> nhieu connection, cung
+        // thuoc cung user-group.
+        await Groups.AddToGroupAsync(Context.ConnectionId, UserGroup(userId));
+
         await base.OnConnectedAsync();
     }
 
@@ -65,4 +72,11 @@ public sealed class RoomHub(CoTuongDbContext db, IClock clock) : Hub
     }
 
     public static string RoomGroup(long roomId) => $"room:{roomId}";
+
+    /// <summary>
+    /// Group theo nguoi dung. Moi connection deu duoc them vao group nay o
+    /// <see cref="OnConnectedAsync"/>, nho do <c>Clients.User(id)</c> trong
+    /// <c>SignalRRealtimeNotifier</c> moi truy van den duoc nguoi nhan.
+    /// </summary>
+    public static string UserGroup(long userId) => $"user:{userId}";
 }

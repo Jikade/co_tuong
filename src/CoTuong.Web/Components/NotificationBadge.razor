@@ -1,0 +1,34 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@if (_count > 0)
+{
+    <span class="unread-badge" title="@_count thông báo chưa đọc">@_count</span>
+}
+
+@code {
+    private int _count;
+    private DotNetObjectReference<NotificationBadge>? _reference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _reference = DotNetObjectReference.Create(this);
+        try { await JS.InvokeAsync<bool>("coTuongUnreadBadge.init", _reference); }
+        catch (JSException) { }
+    }
+
+    [JSInvokable]
+    public Task SetCount(int count)
+    {
+        _count = Math.Max(0, count);
+        return InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _reference?.Dispose();
+        try { await JS.InvokeVoidAsync("coTuongUnreadBadge.dispose"); }
+        catch (JSException) { }
+    }
+}

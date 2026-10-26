@@ -8,7 +8,10 @@ using CoTuong.Core.Abstractions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using CoTuong.Web.Realtime;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +43,24 @@ builder.Services.AddScoped<IRoomLockProvider, DatabaseRoomLockProvider>();
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<RoomInvitationService>();
 builder.Services.AddScoped<NotificationService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddScoped<CoTuong.Core.Abstractions.IIdempotencyStore, DatabaseIdempotencyStore>();
+var jwtSigningKey = builder.Configuration["CoTuong:Jwt:SigningKey"] ?? string.Empty;
+if (Encoding.UTF8.GetByteCount(jwtSigningKey) < 32)
+    throw new InvalidOperationException("CoTuong:Jwt:SigningKey phải có ít nhất 32 byte.");
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "CoTuongAuth";
+        options.DefaultChallengeScheme = "CoTuongAuth";
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddPolicyScheme("CoTuongAuth", "Cookie hoặc JWT bearer", options =>
+    {
+        options.ForwardDefaultSelector = context =>
+            context.Request.Headers.Authorization.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                ? JwtBearerDefaults.AuthenticationScheme
+                : CookieAuthenticationDefaults.AuthenticationScheme;
+    })
     .AddCookie(options =>
     {
         options.Cookie.Name = "CoTuong.Session";
@@ -80,6 +100,41 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             }
         };
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["CoTuong:Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["CoTuong:Jwt:Audience"],
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+            NameClaimType = ClaimTypes.Name,
+            RoleClaimType = ClaimTypes.Role
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var sessionClaim = context.Principal?.FindFirst("session_id")?.Value;
+                if (!long.TryParse(sessionClaim, out var sessionId))
+                {
+                    context.Fail("Access token không gắn với phiên hợp lệ.");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<CoTuongDbContext>();
+                var now = context.HttpContext.RequestServices.GetRequiredService<IClock>().UtcNow;
+                var active = await db.phien_dang_nhaps.AsNoTracking().AnyAsync(x => x.ma == sessionId
+                    && x.thoi_diem_thu_hoi == null && x.thoi_diem_het_han > now
+                    && x.ma_nguoi_dungNavigation.dang_hoat_dong);
+                if (!active) context.Fail("Phiên đăng nhập đã hết hiệu lực.");
+            }
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
@@ -117,8 +172,10 @@ app.MapRazorComponents<App>()
 app.MapHub<RoomHub>("/hubs/room");
 
 var auth = app.MapGroup("/api/auth");
-auth.MapPost("/register", async (RegisterRequest request, AuthService service, CancellationToken ct) =>
-    await HandleBusinessAsync(async () => Results.Ok(await service.RegisterAsync(request, ct))));
+auth.MapPost("/register", async (RegisterRequest request, HttpContext context, AuthService service, CancellationToken ct) =>
+    await HandleBusinessAsync(async () =>
+        Results.Ok(await service.RegisterAsync(request,
+            context.Request.Headers["Idempotency-Key"].FirstOrDefault(), ct))));
 auth.MapPost("/login", async (LoginRequest request, HttpContext context, AuthService service, CancellationToken ct) =>
     await HandleBusinessAsync(async () =>
     {
@@ -201,6 +258,8 @@ rooms.MapPost("", async (CreateRoomRequest request, HttpContext context, RoomSer
 var notifications = app.MapGroup("/api/notifications").RequireAuthorization();
 notifications.MapGet("", async (HttpContext context, NotificationService service, CancellationToken ct) =>
     Results.Ok(await service.ListAsync(CurrentUserId(context), ct: ct)));
+notifications.MapGet("/unread-count", async (HttpContext context, NotificationService service, CancellationToken ct) =>
+    Results.Ok(new { count = await service.CountUnreadAsync(CurrentUserId(context), ct) }));
 notifications.MapPost("/{notificationId:long}/read", async (long notificationId, HttpContext context, NotificationService service, CancellationToken ct) =>
     await HandleBusinessAsync(async () => { await service.MarkReadAsync(CurrentUserId(context), notificationId, ct); return Results.NoContent(); }));
 rooms.MapPost("/join/code", async (JoinRoomByCodeRequest request, HttpContext context, RoomService service, CancellationToken ct) =>
@@ -231,7 +290,8 @@ rooms.MapPost("/{roomId:long}/ready", async (long roomId, ReadyRequest request, 
     await HandleBusinessAsync(async () => { await service.SetReadyAsync(roomId, CurrentUserId(context), request.Ready, ct); return Results.NoContent(); }))
     .RequireAuthorization();
 rooms.MapPost("/{roomId:long}/start", async (long roomId, HttpContext context, RoomService service, CancellationToken ct) =>
-    await HandleBusinessAsync(async () => Results.Ok(new { matchId = await service.StartMatchAsync(roomId, CurrentUserId(context), ct) })))
+    await HandleBusinessAsync(async () => Results.Ok(new { matchId = await service.StartMatchAsync(roomId, CurrentUserId(context),
+        context.Request.Headers["Idempotency-Key"].FirstOrDefault(), ct) })))
     .RequireAuthorization();
 rooms.MapPost("/{roomId:long}/opponent", async (long roomId, HttpContext context, RoomService service, CancellationToken ct) =>
     await HandleBusinessAsync(async () => { await service.BecomeOpponentAsync(roomId, CurrentUserId(context), ct); return Results.NoContent(); }))

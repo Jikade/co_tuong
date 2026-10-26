@@ -31,6 +31,7 @@
 
 @code {
     private readonly RegisterForm _form = new();
+    private readonly string _registerKey = Guid.NewGuid().ToString("N");
     private string? _error;
     private bool _busy;
 
@@ -39,7 +40,7 @@
         _busy = true; _error = null;
         try
         {
-            var response = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", "/api/auth/register", _form);
+            var response = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", "/api/auth/register", _form, _registerKey);
             if (!response.Ok)
             {
                 _error = response.Data.TryGetProperty("message", out var message) ? message.GetString() : "Không thể tạo tài khoản.";

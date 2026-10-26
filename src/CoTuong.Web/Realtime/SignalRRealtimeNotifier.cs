@@ -9,7 +9,7 @@ public sealed class SignalRRealtimeNotifier(IHubContext<RoomHub> hub) : IRealtim
         hub.Clients.Group(RoomHub.RoomGroup(maPhong)).SendAsync(tenSuKien, duLieu, cancellationToken);
 
     public Task UserAsync(long maNguoiDung, string tenSuKien, object? duLieu = null, CancellationToken cancellationToken = default) =>
-        hub.Clients.User(maNguoiDung.ToString(System.Globalization.CultureInfo.InvariantCulture)).SendAsync(tenSuKien, duLieu, cancellationToken);
+        hub.Clients.Group(RoomHub.UserGroup(maNguoiDung)).SendAsync(tenSuKien, duLieu, cancellationToken);
 
     public Task PublicRoomsChangedAsync(CancellationToken cancellationToken = default) =>
         hub.Clients.All.SendAsync(RealtimeEvent.PublicRoomsChanged, cancellationToken);

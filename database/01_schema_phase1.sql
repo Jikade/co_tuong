@@ -834,6 +834,8 @@ GO
 -- tao ban ghi moi. Backend insert khoa TRUOC khi thuc hien tac dong; neu insert bi
 -- unique violation thi doc ban ghi da ton tai va tra lai ket_qua_bam (khong thuc hien lai).
 CREATE UNIQUE INDEX UX_yc_cl_nguoi_loai_khoa ON dbo.yeu_cau_chong_lap(ma_nguoi_dung, loai_yeu_cau, khoa_idempotency);
+-- Dang ky chua co ma_nguoi_dung truoc khi tao tai khoan; khoa client phai duy nhat toan he thong.
+CREATE UNIQUE INDEX UX_yc_cl_register_khoa ON dbo.yeu_cau_chong_lap(loai_yeu_cau, khoa_idempotency) WHERE loai_yeu_cau = 'Register';
 CREATE INDEX IX_yc_cl_ngay_tao ON dbo.yeu_cau_chong_lap(ngay_tao);
 GO
 -- [DB] Ban ghi da cu hon 7 ngay co the don dep boi job (khong anh huong hien tai).

@@ -135,18 +135,47 @@ public sealed class FriendService(CoTuongDbContext db, IClock clock, IRealtimeNo
         request.thoi_diem_phan_hoi = now;
         if (accept)
         {
-            db.ban_bes.Add(new ban_be
+            // Co the da ton tai quan he ban be (vi du hai ben cung nhan "Chap nhan"
+            // cung luc, hoac nhánh cross-accept da tao). Khi do chi can bo qua —
+            // quan he ban be la duy nhat, khong tao them dong trung.
+            var low = request.ma_nguoi_dung_nho;
+            var high = request.ma_nguoi_dung_lon;
+            var exists = await db.ban_bes.AnyAsync(x => x.ma_nguoi_dung_nho == low && x.ma_nguoi_dung_lon == high, ct);
+            if (!exists)
             {
-                ma_nguoi_dung_nho = request.ma_nguoi_dung_nho,
-                ma_nguoi_dung_lon = request.ma_nguoi_dung_lon,
-                ma_loi_moi_nguon = request.ma,
-                ngay_tao = now
-            });
+                db.ban_bes.Add(new ban_be
+                {
+                    ma_nguoi_dung_nho = low,
+                    ma_nguoi_dung_lon = high,
+                    ma_loi_moi_nguon = request.ma,
+                    ngay_tao = now
+                });
+            }
         }
         AddNotification(request.ma_nguoi_gui,
             accept ? TrangThaiThongBao.FriendRequestAccepted : TrangThaiThongBao.FriendRequestRejected,
             recipientId, request.ma);
-        await db.SaveChangesAsync(ct);
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            // Race: bang "ban_be" co PK (nho, lon) nen insert trung se bi unique
+            // constraint tu choi. Quan he ban be da duoc tao boi thao tac khac
+            // => coi nhu thanh cong, khong phai loi.
+            db.ChangeTracker.Clear();
+            var request2 = await db.loi_moi_ket_bans.AsNoTracking().SingleOrDefaultAsync(x => x.ma == requestId, ct);
+            if (request2 is null || request2.trang_thai == TrangThaiLoiMoiKetBan.Pending)
+            {
+                await tx.RollbackAsync(ct);
+                throw new BusinessException(BusinessErrorCode.LoiMoiDaDuocXuLy);
+            }
+            await tx.CommitAsync(ct);
+            await notifier.UserAsync(request.ma_nguoi_gui, RealtimeEvent.NotificationReceived,
+                new { requestId, accepted = accept }, ct);
+            return;
+        }
         await tx.CommitAsync(ct);
         await notifier.UserAsync(request.ma_nguoi_gui, RealtimeEvent.NotificationReceived, new { requestId, accepted = accept }, ct);
         await notifier.UserAsync(recipientId, RealtimeEvent.InviteUpdated, new { requestId, status = request.trang_thai }, ct);
@@ -154,14 +183,45 @@ public sealed class FriendService(CoTuongDbContext db, IClock clock, IRealtimeNo
 
     public async Task CancelRequestAsync(long senderId, long requestId, CancellationToken ct = default)
     {
-        var request = await db.loi_moi_ket_bans.SingleOrDefaultAsync(x => x.ma == requestId, ct)
-            ?? throw new BusinessException(BusinessErrorCode.LoiMoiKhongConHieuLuc);
-        if (request.ma_nguoi_gui != senderId) throw new BusinessException(BusinessErrorCode.KhongDuQuyen);
-        if (request.trang_thai != TrangThaiLoiMoiKetBan.Pending) throw new BusinessException(BusinessErrorCode.LoiMoiDaDuocXuLy);
-        request.trang_thai = TrangThaiLoiMoiKetBan.Cancelled;
-        request.thoi_diem_phan_hoi = clock.UtcNow;
-        await db.SaveChangesAsync(ct);
-        await notifier.UserAsync(request.ma_nguoi_nhan, RealtimeEvent.InviteUpdated, new { requestId, status = request.trang_thai }, ct);
+        var now = clock.UtcNow;
+        var recipientId = await db.loi_moi_ket_bans.AsNoTracking()
+            .Where(x => x.ma == requestId).Select(x => x.ma_nguoi_nhan)
+            .SingleOrDefaultAsync(ct);
+        if (recipientId == 0) throw new BusinessException(BusinessErrorCode.LoiMoiKhongConHieuLuc);
+
+        // UPDATE co dieu kien: chi loi moi con Pending (va do chinh sender tao)
+        // moi chuyen sang Cancelled duoc. Rowcount = 0 => loi moi da duong xu ly
+        // truoc do hoac khong phai cua sender => tra loi phu hop, khong tho tac
+        // hai lan (README: "neu nguoi dung bam nhieu lan, he thong chi xu ly mot lan").
+        var pending = db.loi_moi_ket_bans
+            .Where(x => x.ma == requestId && x.ma_nguoi_gui == senderId && x.trang_thai == TrangThaiLoiMoiKetBan.Pending);
+        int affected;
+        if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            var tracked = await pending.SingleOrDefaultAsync(ct);
+            if (tracked is not null)
+            {
+                tracked.trang_thai = TrangThaiLoiMoiKetBan.Cancelled;
+                tracked.thoi_diem_phan_hoi = now;
+                affected = await db.SaveChangesAsync(ct);
+            }
+            else affected = 0;
+        }
+        else
+        {
+            affected = await pending.ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.trang_thai, TrangThaiLoiMoiKetBan.Cancelled)
+                .SetProperty(x => x.thoi_diem_phan_hoi, now), ct);
+        }
+        if (affected == 0)
+        {
+            if (await db.loi_moi_ket_bans.AsNoTracking()
+                .AnyAsync(x => x.ma == requestId && x.ma_nguoi_gui == senderId, ct))
+                throw new BusinessException(BusinessErrorCode.LoiMoiDaDuocXuLy);
+            throw new BusinessException(BusinessErrorCode.KhongDuQuyen);
+        }
+        await notifier.UserAsync(recipientId, RealtimeEvent.InviteUpdated,
+            new { requestId, status = TrangThaiLoiMoiKetBan.Cancelled }, ct);
     }
 
     public async Task UnfriendAsync(long userId, long friendId, CancellationToken ct = default)
@@ -183,4 +243,8 @@ public sealed class FriendService(CoTuongDbContext db, IClock clock, IRealtimeNo
         du_lieu_phu = JsonSerializer.Serialize(new { requestId }),
         ngay_tao = clock.UtcNow
     });
+
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
+        exception.GetBaseException() is Microsoft.Data.SqlClient.SqlException sql
+        && sql.Number is 2601 or 2627;
 }

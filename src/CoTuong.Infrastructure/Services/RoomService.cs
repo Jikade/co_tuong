@@ -159,9 +159,18 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
         await notifier.RoomAsync(roomId, RealtimeEvent.RoomStateChanged, new { roomId }, ct);
     }
 
-    public async Task<long> StartMatchAsync(long roomId, long hostId, CancellationToken ct = default)
+    public async Task<long> StartMatchAsync(long roomId, long hostId, string? idempotencyKey = null, CancellationToken ct = default)
     {
         await using var roomLock = await locks.AcquireAsync(roomId, ct);
+
+        // Idempotency: "neu nguoi dung bam Bat dau nhieu lan lien tiep, he thong
+        // chi tao mot Match duy nhat". Khoa nhan hieu tu client; nhan lai cung khoa
+        // thi tra ve ket qua da luu (ma Match), khong tao Match moi.
+        idempotencyKey = string.IsNullOrWhiteSpace(idempotencyKey) ? Guid.NewGuid().ToString("N") : idempotencyKey.Trim();
+        if (idempotencyKey.Length > 64) throw new BusinessException(BusinessErrorCode.ThaoTacKhongHopLe);
+        var prior = await GetStartMatchResultAsync(hostId, idempotencyKey, ct);
+        if (prior is not null) return prior.Value;
+
         await using var tx = await db.Database.BeginTransactionAsync(ct);
         var room = await db.phongs.SingleOrDefaultAsync(x => x.ma == roomId && x.trang_thai != TrangThaiPhong.Closed, ct)
             ?? throw new BusinessException(BusinessErrorCode.RoomKhongConKhaDung);
@@ -173,6 +182,8 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
             .Select(x => (long?)x.ma).SingleOrDefaultAsync(ct);
         if (existingMatch is not null)
         {
+            await SaveStartMatchResultAsync(hostId, idempotencyKey, existingMatch.Value, ct);
+            await db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
             return existingMatch.Value;
         }
@@ -197,12 +208,58 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
         await db.SaveChangesAsync(ct);
         await db.Database.ExecuteSqlInterpolatedAsync($"EXEC dbo.usp_khoi_tao_quan_co_tran_dau @ma_tran_dau={match.ma}", ct);
         room.trang_thai = TrangThaiPhong.Full;
-        await db.SaveChangesAsync(ct);
+        await SaveStartMatchResultAsync(hostId, idempotencyKey, match.ma, ct);
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            // Race: chu room (khoa room da chiem) hoac thao tac song song da tao
+            // Match cho Room nay (unique index UX_tran_dau_mot_active_room chan).
+            // Tra ve Match da ton tai thay vi loi 500.
+            db.ChangeTracker.Clear();
+            await tx.RollbackAsync(ct);
+            var conflict = await db.tran_daus.AsNoTracking()
+                .Where(x => x.ma_phong == roomId && x.trang_thai != "Finished")
+                .Select(x => (long?)x.ma).SingleOrDefaultAsync(ct);
+            if (conflict is not null) return conflict.Value;
+            throw;
+        }
         await tx.CommitAsync(ct);
 
         await notifier.RoomAsync(roomId, RealtimeEvent.MatchStarted, new { matchId = match.ma, status = match.trang_thai }, ct);
         await notifier.PublicRoomsChangedAsync(ct);
         return match.ma;
+    }
+
+    private async Task<long?> GetStartMatchResultAsync(long userId, string key, CancellationToken ct)
+    {
+        var json = await db.yeu_cau_chong_laps.AsNoTracking()
+            .Where(x => x.ma_nguoi_dung == userId && x.loai_yeu_cau == LoaiYeuCauChongLap.StartMatch && x.khoa_idempotency == key)
+            .Select(x => x.ket_qua_bam).SingleOrDefaultAsync(ct);
+        return long.TryParse(json, out var maMatch) ? maMatch : null;
+    }
+
+    private async Task SaveStartMatchResultAsync(long userId, string key, long maMatch, CancellationToken ct)
+    {
+        var record = await db.yeu_cau_chong_laps.SingleOrDefaultAsync(x =>
+            x.ma_nguoi_dung == userId && x.loai_yeu_cau == LoaiYeuCauChongLap.StartMatch && x.khoa_idempotency == key, ct);
+        if (record is null)
+        {
+            db.yeu_cau_chong_laps.Add(new yeu_cau_chong_lap
+            {
+                ma_nguoi_dung = userId,
+                loai_yeu_cau = LoaiYeuCauChongLap.StartMatch,
+                khoa_idempotency = key,
+                ket_qua_bam = maMatch.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                ngay_tao = clock.UtcNow
+            });
+        }
+        else
+        {
+            record.ket_qua_bam = maMatch.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
     }
 
     public async Task BecomeOpponentAsync(long roomId, long userId, CancellationToken ct = default)
@@ -226,7 +283,20 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
         member.thoi_diem_nhan_vai_tro = clock.UtcNow;
         room.trang_thai = TrangThaiPhong.Full;
         AddMemberEvent(roomId, userId, userId, LoaiSuKienThanhVien.BecameOpponent, VaiTro.Spectator, VaiTro.Opponent);
-        await db.SaveChangesAsync(ct);
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            // Race: mot nhan gia khac da nhan duoc o doi tru truoc do (unique index
+            // UX_tv_phong_mot_doi_thu bao ve). README: "chi mo phiep mot nguoi dau
+            // tien duoc xu ly thanh cong; nhung nguoi con lai nhan thong bao vi tri
+            // da co nguoi va van la nhan gia."
+            db.ChangeTracker.Clear();
+            await tx.RollbackAsync(ct);
+            throw new BusinessException(BusinessErrorCode.ODoiThuDaCoNguoi);
+        }
         await tx.CommitAsync(ct);
         await notifier.RoomAsync(roomId, RealtimeEvent.RoleChanged, new { userId, role = VaiTro.Opponent }, ct);
         await notifier.PublicRoomsChangedAsync(ct);
@@ -395,18 +465,33 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
                 throw new BusinessException(BusinessErrorCode.PhongDaDay);
 
             var now = clock.UtcNow;
-            member = new thanh_vien_phong
+            var newMember = new thanh_vien_phong
             {
                 ma_phong = roomId, ma_nguoi_dung = userId, vai_tro = role,
                 san_sang = false, thoi_diem_vao = now, thoi_diem_nhan_vai_tro = now, nguon_tham_gia = source
             };
-            db.thanh_vien_phongs.Add(member);
-            AddMemberEvent(roomId, userId, userId, LoaiSuKienThanhVien.Joined, null, role);
+            db.thanh_vien_phongs.Add(newMember);
             if (role == VaiTro.Opponent) room.trang_thai = TrangThaiPhong.Full;
-            await db.SaveChangesAsync(ct);
+            AddMemberEvent(roomId, userId, userId, LoaiSuKienThanhVien.Joined, null, role);
+            try
+            {
+                await db.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+            {
+                // Race: mot nguoi khac vao o doi thu cung luc -> unique index
+                // UX_tv_phong_mot_doi_thu bi vi pham, hoac danh sach khan gia da
+                // duoc them boi thao tac ben can. Tra loi nghiep vu thay vi 500.
+                db.ChangeTracker.Clear();
+                await tx.RollbackAsync(ct);
+                if (role == VaiTro.Opponent)
+                    throw new BusinessException(BusinessErrorCode.ODoiThuDaCoNguoi);
+                throw new BusinessException(BusinessErrorCode.PhongDaDay);
+            }
             await tx.CommitAsync(ct);
             await notifier.RoomAsync(roomId, RealtimeEvent.MemberJoined, new { userId, role }, ct);
             await notifier.PublicRoomsChangedAsync(ct);
+            member = newMember;
         }
         else
         {
@@ -421,7 +506,15 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
         var members = await db.thanh_vien_phongs.AsNoTracking().Where(x => x.ma_phong == room.ma && x.thoi_diem_roi == null)
             .Select(x => new { x.ma_nguoi_dung, x.vai_tro, x.san_sang, x.thoi_diem_vao, x.ma_nguoi_dungNavigation.ten_hien_thi, x.ma_nguoi_dungNavigation.ten_dang_nhap })
             .OrderBy(x => x.thoi_diem_vao).ToListAsync(ct);
-        var host = members.Single(x => x.vai_tro == VaiTro.Host);
+        // .First() thay .Single(): mot room chua Finished nhung co truong hop
+        // thieu Host (vi du Host moi bi chuyen di ma van dang dem nguoc). Khong
+        // duoc tra 500 chi vi thieu truoc duong bien doc.
+        var host = members.FirstOrDefault(x => x.vai_tro == VaiTro.Host);
+        if (host is null)
+        {
+            // Loi nghiep vu: room van con ngui nguoi nhung khong co Host.
+            throw new BusinessException(BusinessErrorCode.RoomKhongConKhaDung);
+        }
         var opponent = members.SingleOrDefault(x => x.vai_tro == VaiTro.Opponent);
         var spectators = members.Where(x => x.vai_tro == VaiTro.Spectator)
             .Select(x => new KhanGiaItem(x.ma_nguoi_dung, x.ten_hien_thi, x.ten_dang_nhap, x.thoi_diem_vao)).ToArray();
@@ -435,9 +528,23 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
                 .SingleOrDefaultAsync(ct);
             invite = pending;
         }
+        // Loi moi dang cho do chinh ngui xem (viewer) nhan (de hien thi bo dem 60s
+        // + Tham gia/Tu choi tren man hinh cua ngui duoc moi). README muc 4:
+        // "Ngui duoc moi cung nhin thay thoi gian con lai cua loi moi".
+        LoiMoiVaoPhongSnapshot? receivedInvite = null;
+        if (viewerId is long viewer)
+        {
+            var incoming = await db.loi_moi_vao_phongs.AsNoTracking()
+                .Where(x => x.ma_phong == room.ma && x.ma_nguoi_duoc_moi == viewer && x.trang_thai == TrangThaiLoiMoiVaoPhong.Pending)
+                .Select(x => new LoiMoiVaoPhongSnapshot(x.ma, x.ma_nguoi_duoc_moi,
+                    x.ma_nguoi_moiNavigation.ten_hien_thi, x.thoi_diem_gui, x.thoi_diem_het_han, x.trang_thai))
+                .SingleOrDefaultAsync(ct);
+            receivedInvite = incoming;
+        }
+        var hasMatch = await db.tran_daus.AsNoTracking().AnyAsync(x => x.ma_phong == room.ma && x.trang_thai != "Finished", ct);
         return new RoomSnapshot(room.ma, room.ma_so_phong.Trim(), room.token_moi, room.ten, room.che_do_hien_thi, room.trang_thai,
             room.so_khan_gia_toi_da, host.ma_nguoi_dung, host.ten_hien_thi, host.san_sang,
-            opponent?.ma_nguoi_dung, opponent?.ten_hien_thi, opponent?.san_sang ?? false, spectators, invite, clock.UtcNow);
+            opponent?.ma_nguoi_dung, opponent?.ten_hien_thi, opponent?.san_sang ?? false, spectators, invite, receivedInvite, hasMatch, clock.UtcNow);
     }
 
     private void AddMemberEvent(long roomId, long userId, long? actorId, string eventType, string? oldRole, string? newRole) =>
@@ -446,4 +553,12 @@ public sealed class RoomService(CoTuongDbContext db, IClock clock, IRoomLockProv
             ma_phong = roomId, ma_nguoi_dung = userId, ma_nguoi_thuc_hien = actorId,
             loai_su_kien = eventType, vai_tro_cu = oldRole, vai_tro_moi = newRole, ngay_tao = clock.UtcNow
         });
+
+    /// <summary>
+    /// Phan biet loi vi pham unique/FK constraint (race condition duoc kiem soat)
+    /// voi cac loi database khac. Duoc dung trong JoinAsync, BecomeOpponentAsync
+    /// va StartMatchAsync de tra thong bao nghiep vu thay vi loi 500.
+    /// </summary>
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
+        exception.GetBaseException() is SqlException sql && sql.Number is 2601 or 2627;
 }

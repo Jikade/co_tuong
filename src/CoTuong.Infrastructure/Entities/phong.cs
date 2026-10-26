@@ -37,11 +37,11 @@ public partial class phong
 
     public virtual ICollection<su_kien_thanh_vien_phong> su_kien_thanh_vien_phongs { get; set; } = new List<su_kien_thanh_vien_phong>();
 
-    public virtual thanh_vien_phong? thanh_vien_phong { get; set; }
+    public virtual ICollection<thanh_vien_phong> thanh_vien_phongs { get; set; } = new List<thanh_vien_phong>();
 
     public virtual ICollection<thong_bao> thong_baos { get; set; } = new List<thong_bao>();
 
     public virtual ICollection<tin_nhan_phong> tin_nhan_phongs { get; set; } = new List<tin_nhan_phong>();
 
-    public virtual tran_dau? tran_dau { get; set; }
+    public virtual ICollection<tran_dau> tran_daus { get; set; } = new List<tran_dau>();
 }

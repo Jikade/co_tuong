@@ -51,7 +51,7 @@ public partial class nguoi_dung
 
     public virtual ICollection<loi_moi_vao_phong> loi_moi_vao_phongma_nguoi_duoc_moiNavigations { get; set; } = new List<loi_moi_vao_phong>();
 
-    public virtual loi_moi_vao_phong? loi_moi_vao_phongma_nguoi_moiNavigation { get; set; }
+    public virtual ICollection<loi_moi_vao_phong> loi_moi_vao_phongma_nguoi_moiNavigations { get; set; } = new List<loi_moi_vao_phong>();
 
     public virtual ICollection<mat_ket_noi_tran_dau> mat_ket_noi_tran_daus { get; set; } = new List<mat_ket_noi_tran_dau>();
 
@@ -81,7 +81,7 @@ public partial class nguoi_dung
 
     public virtual ICollection<tin_nhan_phong> tin_nhan_phongma_nguoi_gui_tinNavigations { get; set; } = new List<tin_nhan_phong>();
 
-    public virtual token_dat_lai_mat_khau? token_dat_lai_mat_khau { get; set; }
+    public virtual ICollection<token_dat_lai_mat_khau> token_dat_lai_mat_khaus { get; set; } = new List<token_dat_lai_mat_khau>();
 
     public virtual ICollection<tran_dau> tran_dauma_nguoi_choi_denNavigations { get; set; } = new List<tran_dau>();
 

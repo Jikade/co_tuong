@@ -78,6 +78,10 @@ public partial class CoTuongDbContext
             entity.HasIndex(e => new { e.ma_nguoi_dung, e.loai_yeu_cau, e.khoa_idempotency },
                 "UX_yc_cl_nguoi_loai_khoa").IsUnique();
 
+            entity.HasIndex(e => new { e.loai_yeu_cau, e.khoa_idempotency }, "UX_yc_cl_register_khoa")
+                .IsUnique()
+                .HasFilter("([loai_yeu_cau]='Register')");
+
             entity.HasIndex(e => e.ngay_tao, "IX_yc_cl_ngay_tao");
         });
     }

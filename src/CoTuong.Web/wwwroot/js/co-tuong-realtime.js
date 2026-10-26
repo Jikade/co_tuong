@@ -46,3 +46,34 @@ window.coTuongRealtime = (() => {
 window.coTuongClipboard = {
     copy: async value => navigator.clipboard.writeText(value)
 };
+
+window.coTuongUnreadBadge = (() => {
+    let reference = null;
+    let timer = null;
+    const onFocus = () => refresh();
+
+    async function refresh() {
+        try {
+            const response = await fetch("/api/notifications/unread-count", { credentials: "same-origin" });
+            if (!response.ok) return;
+            const data = await response.json();
+            reference?.invokeMethodAsync("SetCount", data.count ?? 0).catch(() => {});
+        } catch { /* offline: bo qua */ }
+    }
+
+    return {
+        init(dotnetReference) {
+            if (timer) clearInterval(timer);
+            reference = dotnetReference;
+            refresh();
+            timer = window.setInterval(refresh, 30000);
+            window.removeEventListener("focus", onFocus);
+            window.addEventListener("focus", onFocus);
+        },
+        dispose() {
+            if (timer) { window.clearInterval(timer); timer = null; }
+            window.removeEventListener("focus", onFocus);
+            reference = null;
+        }
+    };
+})();

@@ -3,6 +3,7 @@
 @using System.Text.Json
 @using CoTuong.Web.Components.Pages.Account
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <PageTitle>Thông báo | Cờ Tướng</PageTitle>
 <h1>Thông báo</h1>
@@ -18,7 +19,9 @@
             <div><strong>@Message(item)</strong><small>@Text(item, "ngayTao")</small></div>
             @if (type == "RoomInvitationReceived" && Long(item, "maLoiMoiVaoPhong") is var inviteId && inviteId > 0)
             {
-                <button class="btn btn-sm btn-primary" @onclick="() => RespondAsync(inviteId, true, id)">Tham gia</button>
+                var left = SecondsLeft(item);
+                @if (left > 0) { <small class="invite-countdown">Còn @left giây</small> }
+                <button class="btn btn-sm btn-primary" disabled="@(left <= 0)" @onclick="() => RespondAsync(inviteId, true, id)">Tham gia</button>
                 <button class="btn btn-sm btn-outline-secondary" @onclick="() => RespondAsync(inviteId, false, id)">Từ chối</button>
             }
             else if (!Bool(item, "daDoc"))
@@ -33,14 +36,39 @@
     private List<JsonElement> _items = [];
     private string? _message;
     private string? _error;
+    private System.Threading.Timer? _countdownTimer;
 
-    protected override async Task OnInitializedAsync() => await ReloadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+        // Dem nguoc 1s/luc cho cac loi moi vao Room con dang chho.
+        _countdownTimer = new System.Threading.Timer(_ =>
+        {
+            if (_items.Any(x => Text(x, "loai") == "RoomInvitationReceived"
+                && SecondsLeft(x) > 0))
+                _ = InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
 
     private async Task ReloadAsync()
     {
         var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.get", "/api/notifications");
-        if (result.Ok && result.Data.ValueKind == JsonValueKind.Array) _items = result.Data.EnumerateArray().Select(x => x.Clone()).ToList();
+        if (result.Ok && result.Data.ValueKind == JsonValueKind.Array)
+        {
+            _items = result.Data.EnumerateArray().Select(x => x.Clone()).ToList();
+        }
         else _error = Error(result);
+    }
+
+    /// <summary>Soi (server) - toi (now) cho loi moi vao Room; dem nguoc duoc 1s/luc.</summary>
+    private int SecondsLeft(JsonElement item)
+    {
+        var raw = Text(item, "thoiDiemHetHanLoiMoi");
+        if (string.IsNullOrEmpty(raw)) return 0;
+        if (!DateTime.TryParse(raw, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out var expiry))
+            return 0;
+        return Math.Max(0, (int)Math.Ceiling((expiry - DateTime.UtcNow).TotalSeconds));
     }
 
     private async Task RespondAsync(long inviteId, bool accept, long notificationId)
@@ -82,4 +110,11 @@
     private static string Text(JsonElement item, string name) => item.ValueKind == JsonValueKind.Object && item.TryGetProperty(name, out var x) && x.ValueKind != JsonValueKind.Null ? x.ToString() : "";
     private static bool Bool(JsonElement item, string name) => item.ValueKind == JsonValueKind.Object && item.TryGetProperty(name, out var x) && x.ValueKind == JsonValueKind.True;
     private static string Error(BrowserApiResult result) => result.Data.ValueKind == JsonValueKind.Object && result.Data.TryGetProperty("message", out var x) ? x.GetString() ?? "Thao tác thất bại." : "Không thể tải thông báo.";
+
+    public ValueTask DisposeAsync()
+    {
+        _countdownTimer?.Dispose();
+        _countdownTimer = null;
+        return ValueTask.CompletedTask;
+    }
 }

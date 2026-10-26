@@ -1494,6 +1494,10 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
                     b.HasIndex(new[] { "ma_nguoi_dung", "loai_yeu_cau", "khoa_idempotency" }, "UX_yc_cl_nguoi_loai_khoa")
                         .IsUnique();
 
+                    b.HasIndex(new[] { "loai_yeu_cau", "khoa_idempotency" }, "UX_yc_cl_register_khoa")
+                        .IsUnique()
+                        .HasFilter("([loai_yeu_cau]='Register')");
+
                     b.ToTable("yeu_cau_chong_lap", (string)null);
                 });
 
@@ -1692,8 +1696,8 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
                         .HasConstraintName("FK_loi_moi_phong_nguoi_duoc_moi");
 
                     b.HasOne("CoTuong.Infrastructure.Entities.nguoi_dung", "ma_nguoi_moiNavigation")
-                        .WithOne("loi_moi_vao_phongma_nguoi_moiNavigation")
-                        .HasForeignKey("CoTuong.Infrastructure.Entities.loi_moi_vao_phong", "ma_nguoi_moi")
+                        .WithMany("loi_moi_vao_phongma_nguoi_moiNavigations")
+                        .HasForeignKey("ma_nguoi_moi")
                         .IsRequired()
                         .HasConstraintName("FK_loi_moi_phong_nguoi_moi");
 
@@ -1872,8 +1876,8 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
                         .HasConstraintName("FK_tv_phong_nguoi_dung");
 
                     b.HasOne("CoTuong.Infrastructure.Entities.phong", "ma_phongNavigation")
-                        .WithOne("thanh_vien_phong")
-                        .HasForeignKey("CoTuong.Infrastructure.Entities.thanh_vien_phong", "ma_phong")
+                        .WithMany("thanh_vien_phongs")
+                        .HasForeignKey("ma_phong")
                         .IsRequired()
                         .HasConstraintName("FK_tv_phong_phong");
 
@@ -1959,8 +1963,8 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CoTuong.Infrastructure.Entities.token_dat_lai_mat_khau", b =>
                 {
                     b.HasOne("CoTuong.Infrastructure.Entities.nguoi_dung", "ma_nguoi_dungNavigation")
-                        .WithOne("token_dat_lai_mat_khau")
-                        .HasForeignKey("CoTuong.Infrastructure.Entities.token_dat_lai_mat_khau", "ma_nguoi_dung")
+                        .WithMany("token_dat_lai_mat_khaus")
+                        .HasForeignKey("ma_nguoi_dung")
                         .IsRequired()
                         .HasConstraintName("FK_token_dat_lai_nguoi_dung");
 
@@ -1986,8 +1990,8 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
                         .HasConstraintName("FK_tran_dau_nguoi_tao");
 
                     b.HasOne("CoTuong.Infrastructure.Entities.phong", "ma_phongNavigation")
-                        .WithOne("tran_dau")
-                        .HasForeignKey("CoTuong.Infrastructure.Entities.tran_dau", "ma_phong")
+                        .WithMany("tran_daus")
+                        .HasForeignKey("ma_phong")
                         .HasConstraintName("FK_tran_dau_phong");
 
                     b.Navigation("ma_nguoi_choi_denNavigation");
@@ -2069,7 +2073,7 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
 
                     b.Navigation("loi_moi_vao_phongma_nguoi_duoc_moiNavigations");
 
-                    b.Navigation("loi_moi_vao_phongma_nguoi_moiNavigation");
+                    b.Navigation("loi_moi_vao_phongma_nguoi_moiNavigations");
 
                     b.Navigation("mat_ket_noi_tran_daus");
 
@@ -2099,7 +2103,7 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
 
                     b.Navigation("tin_nhan_phongma_nguoi_gui_tinNavigations");
 
-                    b.Navigation("token_dat_lai_mat_khau");
+                    b.Navigation("token_dat_lai_mat_khaus");
 
                     b.Navigation("tran_dauma_nguoi_choi_denNavigations");
 
@@ -2120,13 +2124,13 @@ namespace CoTuong.Infrastructure.Persistence.Migrations
 
                     b.Navigation("su_kien_thanh_vien_phongs");
 
-                    b.Navigation("thanh_vien_phong");
+                    b.Navigation("thanh_vien_phongs");
 
                     b.Navigation("thong_baos");
 
                     b.Navigation("tin_nhan_phongs");
 
-                    b.Navigation("tran_dau");
+                    b.Navigation("tran_daus");
                 });
 
             modelBuilder.Entity("CoTuong.Infrastructure.Entities.quan_co_tran_dau", b =>

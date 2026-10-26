@@ -25,26 +25,52 @@ public sealed class AuthService(
     private static readonly TimeSpan ResetTokenLifetime = TimeSpan.FromMinutes(15);
     private readonly AuthOptions _options = options.Value;
 
-    public async Task<TaiKhoanInfo> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task<TaiKhoanInfo> RegisterAsync(RegisterRequest request, string? idempotencyKey = null, CancellationToken cancellationToken = default)
     {
         ValidateRegistration(request);
 
         var username = request.TenDangNhap.Trim();
         var email = request.Email.Trim();
-        if (await db.nguoi_dungs.AnyAsync(x => x.ten_dang_nhap == username, cancellationToken))
+
+        idempotencyKey = string.IsNullOrWhiteSpace(idempotencyKey) ? null : idempotencyKey.Trim();
+        if (idempotencyKey is not null && idempotencyKey.Length > 64)
+            throw new BusinessException(BusinessErrorCode.ThaoTacKhongHopLe);
+        var displayName = request.TenHienThi.Trim();
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
+        if (idempotencyKey is not null)
         {
-            throw new BusinessException(BusinessErrorCode.TenDangNhapDaTonTai);
+            var prior = await FindIdempotentRegistrationAsync(idempotencyKey, username, displayName, email, cancellationToken);
+            if (prior is not null)
+            {
+                await transaction.CommitAsync(cancellationToken);
+                return prior;
+            }
         }
 
+        if (await db.nguoi_dungs.AnyAsync(x => x.ten_dang_nhap == username, cancellationToken))
+        {
+            if (idempotencyKey is not null)
+            {
+                var prior = await FindIdempotentRegistrationAsync(idempotencyKey, username, displayName, email, cancellationToken);
+                if (prior is not null) { await transaction.CommitAsync(cancellationToken); return prior; }
+            }
+            throw new BusinessException(BusinessErrorCode.TenDangNhapDaTonTai);
+        }
         if (await db.nguoi_dungs.AnyAsync(x => x.email == email, cancellationToken))
         {
+            if (idempotencyKey is not null)
+            {
+                var prior = await FindIdempotentRegistrationAsync(idempotencyKey, username, displayName, email, cancellationToken);
+                if (prior is not null) { await transaction.CommitAsync(cancellationToken); return prior; }
+            }
             throw new BusinessException(BusinessErrorCode.EmailDaTonTai);
         }
 
         var user = new nguoi_dung
         {
             ten_dang_nhap = username,
-            ten_hien_thi = request.TenHienThi.Trim(),
+            ten_hien_thi = displayName,
             email = email,
             mat_khau_bam = passwordHasher.Hash(request.MatKhau),
             dang_hoat_dong = true,
@@ -54,22 +80,55 @@ public sealed class AuthService(
         try
         {
             await db.SaveChangesAsync(cancellationToken);
+            if (idempotencyKey is not null)
+            {
+                db.yeu_cau_chong_laps.Add(new yeu_cau_chong_lap
+                {
+                    ma_nguoi_dung = user.ma,
+                    loai_yeu_cau = LoaiYeuCauChongLap.Register,
+                    khoa_idempotency = idempotencyKey,
+                    ket_qua_bam = user.ma.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    ngay_tao = clock.UtcNow
+                });
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            await transaction.CommitAsync(cancellationToken);
+            return ToAccountInfo(user);
         }
-        catch (DbUpdateException ex)
+        catch (DbUpdateException exception)
         {
-            db.Entry(user).State = EntityState.Detached;
+            await transaction.RollbackAsync(cancellationToken);
+            db.ChangeTracker.Clear();
+
+            if (idempotencyKey is not null)
+            {
+                var prior = await FindIdempotentRegistrationAsync(idempotencyKey, username, displayName, email, cancellationToken);
+                if (prior is not null) return prior;
+            }
+
             if (await db.nguoi_dungs.AnyAsync(x => x.ten_dang_nhap == username, cancellationToken))
-            {
-                throw new BusinessException(BusinessErrorCode.TenDangNhapDaTonTai, ex);
-            }
+                throw new BusinessException(BusinessErrorCode.TenDangNhapDaTonTai, exception);
             if (await db.nguoi_dungs.AnyAsync(x => x.email == email, cancellationToken))
-            {
-                throw new BusinessException(BusinessErrorCode.EmailDaTonTai, ex);
-            }
+                throw new BusinessException(BusinessErrorCode.EmailDaTonTai, exception);
             throw;
         }
+    }
 
-        return ToAccountInfo(user);
+    private async Task<TaiKhoanInfo?> FindIdempotentRegistrationAsync(
+        string idempotencyKey, string username, string displayName, string email, CancellationToken cancellationToken)
+    {
+        var userId = await db.yeu_cau_chong_laps.AsNoTracking()
+            .Where(x => x.loai_yeu_cau == LoaiYeuCauChongLap.Register && x.khoa_idempotency == idempotencyKey)
+            .Select(x => (long?)x.ma_nguoi_dung).SingleOrDefaultAsync(cancellationToken);
+        if (userId is null) return null;
+
+        var existing = await db.nguoi_dungs.AsNoTracking().SingleAsync(x => x.ma == userId.Value, cancellationToken);
+        if (!string.Equals(existing.ten_dang_nhap, username, StringComparison.Ordinal)
+            || !string.Equals(existing.ten_hien_thi, displayName, StringComparison.Ordinal)
+            || !string.Equals(existing.email, email, StringComparison.OrdinalIgnoreCase))
+            throw new BusinessException(BusinessErrorCode.ThaoTacKhongHopLe);
+
+        return ToAccountInfo(existing);
     }
 
     public async Task<LoginResult> LoginAsync(LoginRequest request, string? userAgent = null, string? ipAddress = null, CancellationToken cancellationToken = default)
@@ -117,11 +176,27 @@ public sealed class AuthService(
 
         var rotatedToken = TokenGenerator.GenerateOpaqueToken();
         var rotatedHash = TokenGenerator.HashToken(rotatedToken);
-        var updated = await db.phien_dang_nhaps.Where(x => x.ma == session.ma && x.refresh_token_bam == hash
-                && x.thoi_diem_thu_hoi == null && x.thoi_diem_het_han > now)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(x => x.refresh_token_bam, rotatedHash)
-                .SetProperty(x => x.lan_dung_cuoi, now), cancellationToken);
+        int updated;
+        if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            var tracked = await db.phien_dang_nhaps.SingleOrDefaultAsync(x => x.ma == session.ma
+                && x.refresh_token_bam == hash && x.thoi_diem_thu_hoi == null && x.thoi_diem_het_han > now, cancellationToken);
+            if (tracked is not null)
+            {
+                tracked.refresh_token_bam = rotatedHash;
+                tracked.lan_dung_cuoi = now;
+                updated = await db.SaveChangesAsync(cancellationToken);
+            }
+            else updated = 0;
+        }
+        else
+        {
+            updated = await db.phien_dang_nhaps.Where(x => x.ma == session.ma && x.refresh_token_bam == hash
+                    && x.thoi_diem_thu_hoi == null && x.thoi_diem_het_han > now)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.refresh_token_bam, rotatedHash)
+                    .SetProperty(x => x.lan_dung_cuoi, now), cancellationToken);
+        }
         if (updated != 1) throw new BusinessException(BusinessErrorCode.ThongTinDangNhapKhongDung);
         return CreateLoginResult(session.ma_nguoi_dungNavigation, rotatedToken, now, session.thoi_diem_het_han, session.ma);
     }
@@ -130,8 +205,14 @@ public sealed class AuthService(
     {
         var hash = TokenGenerator.HashToken(refreshToken);
         var now = clock.UtcNow;
-        await db.phien_dang_nhaps.Where(x => x.refresh_token_bam == hash && x.thoi_diem_thu_hoi == null)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.thoi_diem_thu_hoi, now), cancellationToken);
+        var sessions = db.phien_dang_nhaps.Where(x => x.refresh_token_bam == hash && x.thoi_diem_thu_hoi == null);
+        if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            var session = await sessions.SingleOrDefaultAsync(cancellationToken);
+            if (session is not null) { session.thoi_diem_thu_hoi = now; await db.SaveChangesAsync(cancellationToken); }
+        }
+        else
+            await sessions.ExecuteUpdateAsync(setters => setters.SetProperty(x => x.thoi_diem_thu_hoi, now), cancellationToken);
     }
 
     public async Task ForgotPasswordAsync(string email, string? ipAddress, CancellationToken cancellationToken = default)
@@ -144,11 +225,12 @@ public sealed class AuthService(
 
         var now = clock.UtcNow;
         var user = await db.nguoi_dungs.SingleOrDefaultAsync(x => x.email == normalizedEmail && x.dang_hoat_dong, cancellationToken);
-        var emailCount = await db.yeu_cau_dat_lai_mat_khaus.CountAsync(
-            x => x.email == normalizedEmail && x.thoi_diem_yeu_cau >= now.AddHours(-1), cancellationToken);
-        var ipCount = string.IsNullOrWhiteSpace(ipAddress) ? 0 : await db.yeu_cau_dat_lai_mat_khaus.CountAsync(
-            x => x.ip_yeu_cau == ipAddress && x.thoi_diem_yeu_cau >= now.AddHours(-1), cancellationToken);
 
+        // Luon ghi nhat ky truoc (dang email khong ton tai cung ghi) de rate limit
+        // lanh theo dung so luong yeu cau thuc su. Kiem tra gioi han sau khi ghi
+        // (count gom ca dong vua insert) tranh race check-then-insert khi nhieu
+        // yeu cau giong nhau den cung luc: 2 request song song se luon co mot
+        // ben xem don da vao va dung gui email.
         db.yeu_cau_dat_lai_mat_khaus.Add(new yeu_cau_dat_lai_mat_khau
         {
             email = normalizedEmail,
@@ -158,8 +240,16 @@ public sealed class AuthService(
         });
         await db.SaveChangesAsync(cancellationToken);
 
-        if (user is null || emailCount >= 3 || ipCount >= 10)
+        var emailCount = await db.yeu_cau_dat_lai_mat_khaus.CountAsync(
+            x => x.email == normalizedEmail && x.thoi_diem_yeu_cau >= now.AddHours(-1), cancellationToken);
+        var ipCount = string.IsNullOrWhiteSpace(ipAddress) ? 0 : await db.yeu_cau_dat_lai_mat_khaus.CountAsync(
+            x => x.ip_yeu_cau == ipAddress && x.thoi_diem_yeu_cau >= now.AddHours(-1), cancellationToken);
+
+        if (user is null || emailCount > 3 || ipCount > 10)
         {
+            // README: luon hien thong bao chung "Neu email nay duoc dang ky trong
+            // he thong, huong dan dat lai mat khau se duoc gui toi email." — khong
+            // cho biet tai khoan co ton tai khong.
             return;
         }
 
@@ -203,7 +293,7 @@ public sealed class AuthService(
         var now = clock.UtcNow;
         var tokenHash = TokenGenerator.HashToken(request.Token);
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
-        var token = await db.token_dat_lai_mat_khaus.AsNoTracking().Include(x => x.ma_nguoi_dungNavigation)
+        var token = await db.token_dat_lai_mat_khaus.Include(x => x.ma_nguoi_dungNavigation)
             .SingleOrDefaultAsync(x => x.token_bam == tokenHash, cancellationToken);
         if (token is null || token.trang_thai != TrangThaiTokenDatLai.Active || token.thoi_diem_het_han <= now
             || !token.ma_nguoi_dungNavigation.dang_hoat_dong)
@@ -211,11 +301,21 @@ public sealed class AuthService(
             throw new BusinessException(BusinessErrorCode.LinkDatLaiMatKhauKhongHieuLuc);
         }
 
-        var used = await db.token_dat_lai_mat_khaus.Where(x => x.ma == token.ma
-                && x.trang_thai == TrangThaiTokenDatLai.Active && x.thoi_diem_het_han > now)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(x => x.trang_thai, TrangThaiTokenDatLai.Used)
-                .SetProperty(x => x.thoi_diem_su_dung, now), cancellationToken);
+        int used;
+        if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            token.trang_thai = TrangThaiTokenDatLai.Used;
+            token.thoi_diem_su_dung = now;
+            used = await db.SaveChangesAsync(cancellationToken);
+        }
+        else
+        {
+            used = await db.token_dat_lai_mat_khaus.Where(x => x.ma == token.ma
+                    && x.trang_thai == TrangThaiTokenDatLai.Active && x.thoi_diem_het_han > now)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.trang_thai, TrangThaiTokenDatLai.Used)
+                    .SetProperty(x => x.thoi_diem_su_dung, now), cancellationToken);
+        }
         if (used != 1) throw new BusinessException(BusinessErrorCode.LinkDatLaiMatKhauKhongHieuLuc);
         var user = await db.nguoi_dungs.SingleAsync(x => x.ma == token.ma_nguoi_dung, cancellationToken);
         user.mat_khau_bam = passwordHasher.Hash(request.MatKhauMoi);
@@ -243,7 +343,8 @@ public sealed class AuthService(
             new Claim(JwtRegisteredClaimNames.Sub, user.ma.ToString(System.Globalization.CultureInfo.InvariantCulture)),
             new Claim(ClaimTypes.NameIdentifier, user.ma.ToString(System.Globalization.CultureInfo.InvariantCulture)),
             new Claim(ClaimTypes.Name, user.ten_dang_nhap),
-            new Claim("display_name", user.ten_hien_thi)
+            new Claim("display_name", user.ten_hien_thi),
+            new Claim("session_id", sessionId.ToString(System.Globalization.CultureInfo.InvariantCulture))
         };
         var credentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey)), SecurityAlgorithms.HmacSha256);
         var jwt = new JwtSecurityToken(_options.Issuer, _options.Audience, claims, now, accessExpiry, credentials);
