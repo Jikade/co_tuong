@@ -24,3 +24,6 @@ Thumbs.db
 # Local diagnostics
 realtime-error.txt
 test-result.txt
+
+# Local HTTPS development certificates
+/certs/
