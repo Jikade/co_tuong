@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
+import { createMemoryPersistence } from '../src/persistence/index.js';
 
 function createClient(url) {
   const socket = new WebSocket(url);
@@ -59,12 +57,11 @@ function createClient(url) {
 }
 
 test('creates, synchronizes and persists a server-authoritative online match', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-server-test-'));
-  const dataFile = path.join(directory, 'rooms.json');
+  const persistence = createMemoryPersistence();
   const server = createGameServer({
     host: '127.0.0.1',
     port: 0,
-    dataFile,
+    persistence,
     countdownMs: 30,
     ackTimeoutMs: 1000,
     turnSeconds: 10,
@@ -76,7 +73,6 @@ test('creates, synchronizes and persists a server-authoritative online match', a
   t.after(async () => {
     await Promise.all([host.close(), opponent.close(), spectator.close()]);
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   await Promise.all([host.open(), opponent.open(), spectator.open()]);
 
@@ -163,7 +159,7 @@ test('creates, synchronizes and persists a server-authoritative online match', a
   });
   assert.match((await spectatorDenied).message, /Khán giả/);
 
-  const storedRooms = JSON.parse(await readFile(dataFile, 'utf8'));
+  const storedRooms = await persistence.rooms.loadAll();
   const storedRoom = storedRooms.find((room) => room.code === roomCode);
   assert.equal(storedRoom.match.history.length, 1);
   assert.equal(storedRoom.match.pieces.some((piece) => piece.id === 'red-pawn-0' && piece.y === 5), true);

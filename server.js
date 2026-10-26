@@ -2,7 +2,6 @@ import { createServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
 import { randomInt, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -14,8 +13,8 @@ import {
 } from './src/xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './src/constants.js';
 import { createHistoryStore } from './src/history-store.js';
+import { createPersistenceFromEnv } from './src/persistence/index.js';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
 const corsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, OPTIONS',
@@ -122,8 +121,7 @@ function isActiveMatch(match) {
 export function createGameServer({
   host = '0.0.0.0',
   port = Number(process.env.PORT) || 3001,
-  dataFile = path.join(root, 'data', 'rooms.json'),
-  historyFile = path.join(path.dirname(dataFile), 'matches.json'),
+  persistence = createPersistenceFromEnv(),
   countdownMs = 3000,
   ackTimeoutMs = 15000,
   turnSeconds = 60,
@@ -141,7 +139,8 @@ export function createGameServer({
   }
   const rooms = new Map();
   const peers = new Map();
-  const history = createHistoryStore(historyFile);
+  const roomRepository = persistence.rooms;
+  const history = createHistoryStore(persistence.matches);
   const calls = new Map();
   const computerMatches = new Map();
   const computerSockets = new Map();
@@ -223,13 +222,8 @@ export function createGameServer({
   }
 
   function persistRooms() {
-    const contents = JSON.stringify([...rooms.values()].map(serializeRoom));
-    const write = writeQueue.then(async () => {
-      await mkdir(path.dirname(dataFile), { recursive: true });
-      const temporaryFile = `${dataFile}.${process.pid}.${randomUUID()}.tmp`;
-      await writeFile(temporaryFile, contents, 'utf8');
-      await rename(temporaryFile, dataFile);
-    });
+    const snapshot = [...rooms.values()].map(serializeRoom);
+    const write = writeQueue.then(() => roomRepository.saveAll(snapshot));
     writeQueue = write.catch((error) => {
       console.error('Could not persist game state:', error);
     });
@@ -761,14 +755,7 @@ export function createGameServer({
   }
 
   async function loadRooms() {
-    let contents;
-    try {
-      contents = await readFile(dataFile, 'utf8');
-    } catch (error) {
-      if (error.code === 'ENOENT') return;
-      throw error;
-    }
-    const savedRooms = JSON.parse(contents);
+    const savedRooms = await roomRepository.loadAll();
     if (!Array.isArray(savedRooms)) throw new Error('Saved game state has an invalid format.');
     let pruned = false;
     for (const saved of savedRooms) {
@@ -1826,6 +1813,7 @@ export function createGameServer({
   return {
     async listen() {
       if (started) throw new Error('Game server is already listening.');
+      await persistence.init?.();
       await loadRooms();
       await history.load();
       await restoreComputerMatches();
@@ -1873,12 +1861,14 @@ export function createGameServer({
         clearTimeout(room.ackTimer);
       }
       await writeQueue;
+      await persistence.close?.();
     },
     address() {
       return httpServer.address();
     },
     rooms,
     history,
+    persistence,
   };
 }
 

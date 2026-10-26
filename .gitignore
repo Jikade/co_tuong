@@ -15,3 +15,12 @@ coverage/
 # Tệp hệ thống
 .DS_Store
 Thumbs.db
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local diagnostics
+realtime-error.txt
+test-result.txt

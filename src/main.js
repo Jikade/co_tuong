@@ -438,7 +438,7 @@ function handleServerMessage(message) {
     lobbyEl.hidden = false;
     realtimePanel.hidden = true;
     renderPrivatePanels();
-    showNotice('Báº¡n Ä‘Ă£ rá»i phĂ²ng.');
+    showNotice('Bạn đã rời phòng.');
     return;
   }
   if (message.type === 'error') {
@@ -635,7 +635,7 @@ function renderPrivatePanels() {
   chatForm.hidden = false;
   const online = socket?.readyState === WebSocket.OPEN;
   chatNote.textContent = opponent
-    ? `Chat riêng với ${opponent.name}${opponent.connected ? '' : ' (đang ngoại tuyến)'}`
+    ? `Chat phòng với ${opponent.name}${opponent.connected ? '' : ' (đang ngoại tuyến)'} · khán giả có thể xem`
     : 'Đang chờ người chơi thứ hai.';
   chatInput.disabled = !online || !opponent?.connected;
   document.querySelector('#chat-send').disabled = chatInput.disabled;

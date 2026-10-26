@@ -1,11 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { readFile, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
+import { createMemoryPersistence } from '../src/persistence/index.js';
 
 function client(url) {
   const socket = new WebSocket(url);
@@ -60,15 +57,14 @@ function client(url) {
 }
 
 async function setup(t, options = {}) {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-realtime-test-'));
+  const persistence = options.persistence ?? createMemoryPersistence();
   const server = createGameServer({ host: '127.0.0.1', port: 0,
-    dataFile: path.join(directory, 'rooms.json'), ...options });
+    ...options, persistence });
   const url = await server.listen();
   const sockets = [];
   t.after(async () => {
     await Promise.all(sockets.map((item) => item.close()));
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   const connect = async () => {
     const item = client(url);
@@ -213,14 +209,12 @@ test('rejecting or disconnecting clears only that room call state', async (t) =>
 });
 
 test('a server restart restores membership as offline and allows a valid reconnect', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-room-restart-'));
-  const dataFile = path.join(directory, 'rooms.json');
+  const persistence = createMemoryPersistence();
   let clients = [];
-  let server = createGameServer({ host: '127.0.0.1', port: 0, dataFile });
+  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
   t.after(async () => {
     await Promise.all(clients.map((item) => item.close()));
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   let url = await server.listen();
   const originalHost = client(url);
@@ -232,7 +226,7 @@ test('a server restart restores membership as offline and allows a valid reconne
   await originalHost.close();
   await server.close();
 
-  server = createGameServer({ host: '127.0.0.1', port: 0, dataFile });
+  server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
   url = await server.listen();
   const room = server.rooms.get(code);
   assert.ok(room);
@@ -254,20 +248,18 @@ test('a server restart restores membership as offline and allows a valid reconne
   await Promise.all([guest.close(), returningHost.close()]);
   await server.close();
 
-  const savedRooms = JSON.parse(await readFile(dataFile, 'utf8'));
+  const savedRooms = await persistence.rooms.loadAll();
   delete savedRooms[0].lastActivityAt;
   savedRooms[0].lastPersistAt = Date.now();
-  await writeFile(dataFile, JSON.stringify(savedRooms), 'utf8');
-  server = createGameServer({ host: '127.0.0.1', port: 0, dataFile });
+  await persistence.rooms.saveAll(savedRooms);
+  server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
   await server.listen();
   assert.equal(server.rooms.size, 0, 'legacy inactive rooms without a lease must not be revived');
 });
 
 test('expired rooms are removed while completed match history is preserved', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-room-expiry-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  const historyFile = path.join(directory, 'matches.json');
-  const server = createGameServer({ host: '127.0.0.1', port: 0, dataFile, historyFile,
+  const persistence = createMemoryPersistence();
+  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
     roomTtlMs: 100, roomCleanupIntervalMs: 15 });
   const url = await server.listen();
   const host = client(url);
@@ -275,7 +267,6 @@ test('expired rooms are removed while completed match history is preserved', asy
   t.after(async () => {
     await host.close();
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   const archived = { id: 'archived-match', players: { red: { id: 'r' }, black: { id: 'b' } },
     result: { outcome: 'draw' }, moves: [] };

@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
+import { createMemoryPersistence } from '../src/persistence/index.js';
 import { applyLegalMove, createInitialPieces, getLegalMoves } from '../src/xiangqi.js';
 import { MATCH_STATUS } from '../src/constants.js';
 
@@ -50,16 +48,30 @@ function client(url) {
   };
 }
 
-async function setup(t, { turnSeconds = 60, computerMoveDelayMs = 25 } = {}) {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-computer-test-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  const server = createGameServer({ host: '127.0.0.1', port: 0, dataFile, turnSeconds, computerMoveDelayMs });
+function withMatchWriteControl(persistence = createMemoryPersistence()) {
+  let failWrites = false;
+  return {
+    persistence: {
+      ...persistence,
+      matches: {
+        loadAll: (...args) => persistence.matches.loadAll(...args),
+        upsert: (...args) => failWrites
+          ? Promise.reject(new Error('Simulated matches.upsert failure'))
+          : persistence.matches.upsert(...args),
+      },
+    },
+    setFailWrites(value) { failWrites = value; },
+  };
+}
+
+async function setup(t, { turnSeconds = 60, computerMoveDelayMs = 25, writeControl = withMatchWriteControl() } = {}) {
+  const { persistence } = writeControl;
+  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds, computerMoveDelayMs });
   const url = await server.listen();
   const sockets = [];
   t.after(async () => {
     await Promise.all(sockets.map((socket) => socket.close().catch(() => {})));
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   const connect = async () => {
     const socket = client(url);
@@ -67,7 +79,7 @@ async function setup(t, { turnSeconds = 60, computerMoveDelayMs = 25 } = {}) {
     await socket.open();
     return socket;
   };
-  return { server, connect, directory, historyFile: path.join(directory, 'matches.json') };
+  return { server, connect, persistence, writeControl };
 }
 
 function start(socket, side, playerId = 'human-player-001') {
@@ -150,9 +162,8 @@ test('resumes a Black human match with the same board, history, and deadline', a
 });
 
 test('server restart during the computer turn applies exactly one reply and continues the match', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-computer-turn-restart-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  let server = createGameServer({ host: '127.0.0.1', port: 0, dataFile,
+  const persistence = createMemoryPersistence();
+  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
     turnSeconds: 30, computerMoveDelayMs: 180 });
   let url = await server.listen();
   const sockets = [];
@@ -165,7 +176,6 @@ test('server restart during the computer turn applies exactly one reply and cont
   t.after(async () => {
     await Promise.all(sockets.map((socket) => socket.close().catch(() => {})));
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
 
   const firstPlayer = await connect();
@@ -180,7 +190,7 @@ test('server restart during the computer turn applies exactly one reply and cont
 
   await server.close();
   await firstPlayer.close();
-  server = createGameServer({ host: '127.0.0.1', port: 0, dataFile,
+  server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
     turnSeconds: 30, computerMoveDelayMs: 180 });
   url = await server.listen();
 
@@ -220,9 +230,7 @@ test('retrying the same player requestId returns current state without applying 
 });
 
 test('computer with no legal moves loses by checkmate and persists the result in history', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-computer-no-moves-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  const historyFile = path.join(directory, 'matches.json');
+  const persistence = createMemoryPersistence();
   const humanPlayerId = 'human-player-no-moves-1';
   const computerPlayerId = 'computer:pvc-no-moves-1';
   const matchId = 'pvc-no-moves-match-1';
@@ -234,7 +242,7 @@ test('computer with no legal moves loses by checkmate and persists the result in
     { id: 'black-rook-3', type: 'rook', color: 'black', x: 5, y: 8 },
   ];
   const now = Date.now();
-  await writeFile(historyFile, JSON.stringify([{
+  await persistence.matches.upsert({
     id: matchId, mode: 'computer', roomCode: null, roomName: 'ChÆ¡i vá»›i mĂ¡y',
     players: { red: { id: computerPlayerId, name: 'MĂ¡y' }, black: { id: humanPlayerId, name: 'NgÆ°á»i chÆ¡i' } },
     humanPlayerId, humanSide: 'black', computerSide: 'red', redPlayerId: computerPlayerId,
@@ -242,15 +250,13 @@ test('computer with no legal moves loses by checkmate and persists the result in
     currentSide: 'red', pieces, result: null, startedAt: now, endedAt: null,
     turnDeadline: null, timeRemaining: 0, inCheck: true, initialPieces: createInitialPieces(),
     finalPieces: pieces, capturedPieces: [], history: [], moves: [],
-  }]), 'utf8');
-  const server = createGameServer({ host: '127.0.0.1', port: 0, dataFile,
-    historyFile, computerMoveDelayMs: 180 });
+  });
+  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence, computerMoveDelayMs: 180 });
   const url = await server.listen();
   const player = client(url);
   t.after(async () => {
     await player.close().catch(() => {});
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   await player.open();
   player.send({ action: 'computer-resume', matchId, playerId: humanPlayerId,
@@ -259,8 +265,8 @@ test('computer with no legal moves loses by checkmate and persists the result in
     && message.match.status === MATCH_STATUS.FINISHED)).match;
   assert.equal(finished.result.outcome, 'black-win');
   assert.equal(finished.result.reason, 'checkmate');
-  const diskRecords = JSON.parse(await readFile(historyFile, 'utf8'));
-  assert.equal(diskRecords.find((record) => record.id === matchId).result.reason, 'checkmate');
+  const storedRecords = await persistence.matches.loadAll();
+  assert.equal(storedRecords.find((record) => record.id === matchId).result.reason, 'checkmate');
   assert.equal(server.history.list(humanPlayerId)[0].reason, 'checkmate');
 });
 
@@ -301,27 +307,23 @@ test('a delayed computer callback cannot change a terminal match', async (t) => 
 });
 
 test('history persistence failure is rejected and a failed PvC start is not reported as successful', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-computer-write-failure-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  const historyFile = path.join(directory, 'matches.json');
-  await writeFile(historyFile, '[]', 'utf8');
-  const server = createGameServer({ host: '127.0.0.1', port: 0, dataFile, historyFile });
+  const writeControl = withMatchWriteControl();
+  const { persistence } = writeControl;
+  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
   const url = await server.listen();
   const player = client(url);
   t.after(async () => {
     await player.close().catch(() => {});
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   await player.open();
-  await rm(historyFile, { force: true });
-  await mkdir(historyFile);
+  writeControl.setFailWrites(true);
   start(player, 'red', 'human-player-write-failure-1');
   const failure = await player.next((message) => message.type === 'error');
   assert.match(failure.message, /lưu|persist/i);
   assert.equal(server.history.findActiveComputerMatch('human-player-write-failure-1'), null);
 
-  await rm(historyFile, { recursive: true, force: true });
+  writeControl.setFailWrites(false);
   start(player, 'red', 'human-player-write-failure-1');
   const started = (await player.next((message) => message.type === 'computer-state')).match;
   assert.equal(started.status, MATCH_STATUS.PLAYING);
@@ -329,13 +331,12 @@ test('history persistence failure is rejected and a failed PvC start is not repo
 });
 
 test('failed human-move persistence rolls back the move and accepts a safe retry', async (t) => {
-  const { connect, server, historyFile } = await setup(t, { computerMoveDelayMs: 80 });
+  const { connect, server, writeControl } = await setup(t, { computerMoveDelayMs: 80 });
   const player = await connect();
   start(player, 'red', 'human-player-move-write-failure-1');
   const initial = (await player.next((message) => message.type === 'computer-state')).match;
   const move = getLegalMoves(initial.pieces, 'red')[0];
-  await rm(historyFile, { force: true });
-  await mkdir(historyFile);
+  writeControl.setFailWrites(true);
 
   const request = { action: 'computer-move', matchId: initial.id,
     playerId: initial.humanPlayerId, requestId: 'failed-save-request-1',
@@ -347,7 +348,7 @@ test('failed human-move persistence rolls back the move and accepts a safe retry
   assert.equal(durable.currentSide, 'red');
   assert.equal(durable.history.length, 0);
 
-  await rm(historyFile, { recursive: true, force: true });
+  writeControl.setFailWrites(false);
   player.send(request);
   const accepted = await player.next((message) => message.type === 'computer-move-accepted'
     && message.requestId === request.requestId);
@@ -358,19 +359,18 @@ test('failed human-move persistence rolls back the move and accepts a safe retry
 });
 
 test('failed terminal persistence restores the active match and a later resign can finish it', async (t) => {
-  const { connect, server, historyFile } = await setup(t);
+  const { connect, server, writeControl } = await setup(t);
   const player = await connect();
   start(player, 'red', 'human-player-finish-write-failure-1');
   const active = (await player.next((message) => message.type === 'computer-state')).match;
-  await rm(historyFile, { force: true });
-  await mkdir(historyFile);
+  writeControl.setFailWrites(true);
 
   player.send({ action: 'computer-resign', matchId: active.id });
   const failure = await player.next((message) => message.type === 'error');
   assert.match(failure.message, /không thể lưu/i);
   assert.equal(server.history.find(active.id).status, MATCH_STATUS.PLAYING);
 
-  await rm(historyFile, { recursive: true, force: true });
+  writeControl.setFailWrites(false);
   player.send({ action: 'computer-resign', matchId: active.id });
   const finished = (await player.next((message) => message.type === 'computer-state'
     && message.match.status === MATCH_STATUS.FINISHED)).match;
@@ -379,7 +379,7 @@ test('failed terminal persistence restores the active match and a later resign c
 });
 
 test('failed computer-move persistence restores the computer turn and resume retries it once', async (t) => {
-  const { connect, server, historyFile } = await setup(t, { computerMoveDelayMs: 220 });
+  const { connect, server, writeControl } = await setup(t, { computerMoveDelayMs: 220 });
   const player = await connect();
   start(player, 'red', 'human-player-computer-write-failure-1');
   const initial = (await player.next((message) => message.type === 'computer-state')).match;
@@ -388,15 +388,14 @@ test('failed computer-move persistence restores the computer turn and resume ret
     requestId: 'saved-before-computer-failure-1', pieceId: redMove.pieceId, to: redMove.to });
   const computerTurn = (await player.next((message) => message.type === 'computer-state'
     && message.match.currentSide === 'black' && message.match.history.length === 1)).match;
-  await rm(historyFile, { force: true });
-  await mkdir(historyFile);
+  writeControl.setFailWrites(true);
 
   const failure = await player.next((message) => message.type === 'error');
   assert.match(failure.message, /không thể lưu/i);
   assert.equal(server.history.find(initial.id).currentSide, 'black');
   assert.equal(server.history.find(initial.id).history.length, 1);
 
-  await rm(historyFile, { recursive: true, force: true });
+  writeControl.setFailWrites(false);
   player.send({ action: 'computer-resume', matchId: initial.id,
     playerId: initial.humanPlayerId, displayName: 'NgÆ°á»i chÆ¡i' });
   const resumed = (await player.next((message) => message.type === 'computer-state'
@@ -437,9 +436,8 @@ test('human timeout awards the computer a win and completed matches appear in hi
 });
 
 test('refresh recovery keeps the same match and its original human deadline', async (t) => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-computer-recovery-'));
-  const dataFile = path.join(directory, 'rooms.json');
-  let server = createGameServer({ host: '127.0.0.1', port: 0, dataFile, turnSeconds: 30, computerMoveDelayMs: 40 });
+  const persistence = createMemoryPersistence();
+  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
   let url = await server.listen();
   const sockets = [];
   let firstPlayer = client(url);
@@ -448,7 +446,6 @@ test('refresh recovery keeps the same match and its original human deadline', as
   t.after(async () => {
     await Promise.all(sockets.map((socket) => socket.close().catch(() => {})));
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
   await firstPlayer.open();
   start(firstPlayer, 'red', 'human-player-recovery-1');
@@ -457,7 +454,7 @@ test('refresh recovery keeps the same match and its original human deadline', as
   await server.close();
   await firstPlayer.close();
 
-  server = createGameServer({ host: '127.0.0.1', port: 0, dataFile, turnSeconds: 30, computerMoveDelayMs: 40 });
+  server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
   url = await server.listen();
   returningPlayer = client(url);
   sockets.push(returningPlayer);

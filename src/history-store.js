@@ -1,6 +1,3 @@
-import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { randomUUID } from 'node:crypto';
 import { MATCH_RESULT } from './constants.js';
 
 function sideOf(record, playerId) {
@@ -37,33 +34,25 @@ function summarize(record, playerId) {
   };
 }
 
-export function createHistoryStore(filePath) {
+export function createHistoryStore(matchRepository) {
+  if (!matchRepository || typeof matchRepository.loadAll !== 'function'
+      || typeof matchRepository.upsert !== 'function') {
+    throw new TypeError('History store cần match repository loadAll/upsert.');
+  }
+
   let records = [];
   let queue = Promise.resolve();
 
-  async function persist(nextRecords) {
-    await mkdir(path.dirname(filePath), { recursive: true });
-    const temporaryFile = `${filePath}.${randomUUID()}.tmp`;
-    try {
-      await writeFile(temporaryFile, JSON.stringify(nextRecords), 'utf8');
-      await rename(temporaryFile, filePath);
-    } catch (error) {
-      await unlink(temporaryFile).catch(() => {});
-      throw error;
-    }
-  }
-
   function append(record) {
     const operation = queue.then(async () => {
-      const nextRecords = records.slice();
-      const existing = nextRecords.findIndex((candidate) => candidate.id === record.id);
-      if (existing >= 0) nextRecords[existing] = record;
-      else nextRecords.push(record);
-      await persist(nextRecords);
-      records = nextRecords;
+      await matchRepository.upsert(record);
+      const next = records.slice();
+      const index = next.findIndex((item) => item.id === record.id);
+      if (index >= 0) next[index] = record;
+      else next.push(record);
+      records = next;
       return record;
     });
-    // Keep later writes usable while returning this operation's failure to its caller.
     queue = operation.catch(() => {});
     return operation;
   }
@@ -71,32 +60,24 @@ export function createHistoryStore(filePath) {
   return {
     async load() {
       await queue;
-      try {
-        const contents = await readFile(filePath, 'utf8');
-        const parsed = JSON.parse(contents);
-        records = Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        if (error.code !== 'ENOENT') throw error;
-        records = [];
-      }
+      const loaded = await matchRepository.loadAll();
+      records = Array.isArray(loaded) ? loaded : [];
       return records.length;
     },
     append,
-    async save(record) {
-      return append(record);
-    },
+    save: append,
     list(playerId) {
       return records
         .filter((record) => record.result && Number.isFinite(record.endedAt)
           && sideOf(record, playerId) !== null)
         .map((record) => summarize(record, playerId))
-        .sort((first, second) => (second.endedAt ?? 0) - (first.endedAt ?? 0));
+        .sort((a, b) => (b.endedAt ?? 0) - (a.endedAt ?? 0));
     },
     findActiveComputerMatch(playerId) {
       return records
         .filter((record) => record.mode === 'computer' && record.status === 'playing'
           && record.humanPlayerId === playerId)
-        .sort((first, second) => (second.startedAt ?? 0) - (first.startedAt ?? 0))[0] ?? null;
+        .sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0))[0] ?? null;
     },
     activeComputerMatches() {
       return records.filter((record) => record.mode === 'computer' && record.status === 'playing');
