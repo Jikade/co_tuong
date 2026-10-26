@@ -1,0 +1,55 @@
+@inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div class="page">
+    <div class="sidebar"><NavMenu /></div>
+    <main>
+        @if (!string.IsNullOrWhiteSpace(_toast))
+        {
+            <div class="realtime-toast" role="status"><span>@_toast</span><a href="/notifications">Xem thông báo</a></div>
+        }
+        <article class="content px-4">@Body</article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Đã xảy ra lỗi không mong muốn.
+    <a href="." class="reload">Tải lại</a>
+    <span class="dismiss">×</span>
+</div>
+
+@code {
+    private DotNetObjectReference<MainLayout>? _reference;
+    private string? _toast;
+    private System.Threading.Timer? _toastTimer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _reference = DotNetObjectReference.Create(this);
+        try { await JS.InvokeAsync<bool>("coTuongRealtime.connect", (long?)null, _reference, "global"); }
+        catch (JSException) { }
+    }
+
+    [JSInvokable]
+    public Task OnGlobalEvent(string eventName, System.Text.Json.JsonElement data)
+    {
+        if (eventName is "InviteReceived" or "NotificationReceived")
+        {
+            _toast = eventName == "InviteReceived" ? "Bạn vừa nhận được lời mời vào Room." : "Bạn có thông báo mới.";
+            _toastTimer?.Dispose();
+            _toastTimer = new System.Threading.Timer(_ => _ = InvokeAsync(() => { _toast = null; StateHasChanged(); }), null,
+                TimeSpan.FromSeconds(8), Timeout.InfiniteTimeSpan);
+            return InvokeAsync(StateHasChanged);
+        }
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _toastTimer?.Dispose();
+        _reference?.Dispose();
+        try { await JS.InvokeVoidAsync("coTuongRealtime.disconnect", "global"); } catch (JSException) { }
+    }
+}

@@ -1,0 +1,276 @@
+@page "/room/{RoomId:long}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@implements IAsyncDisposable
+@using System.Text.Json
+@using CoTuong.Web.Components.Pages.Account
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Room | Cờ Tướng</PageTitle>
+@if (_snapshot.ValueKind != JsonValueKind.Object)
+{
+    <p>Đang tải Room…</p>
+}
+else
+{
+    <div class="room-header">
+        <div><p class="eyebrow">ROOM @_snapshot.GetProperty("maSoPhong").GetString()</p><h1>@Text(_snapshot, "tenPhong")</h1><p>@RoleName(_role) · @Status(Text(_snapshot, "trangThai"))</p></div>
+        <a class="btn btn-outline-secondary" href="/">Trang chính</a>
+    </div>
+    @if (!string.IsNullOrEmpty(_error)) { <p class="error-message" role="alert">@_error</p> }
+    @if (!string.IsNullOrEmpty(_message)) { <p class="success-message" role="status">@_message</p> }
+    <section class="panel room-board">
+        <div class="player-slot host-slot"><span>Chủ Room</span><strong>@Text(_snapshot, "tenHienThiChuPhong")</strong><small>@(Bool(_snapshot, "sanSangChuPhong") ? "Sẵn sàng" : "Chưa sẵn sàng")</small></div>
+        <div class="board-placeholder"><strong>Room đã tạo</strong><span>Phần chơi cờ được triển khai ở phase sau.</span></div>
+        <div class="player-slot opponent-slot"><span>Đối thủ</span><strong>@(Text(_snapshot, "tenHienThiDoiThu") is { Length: > 0 } opponent ? opponent : "Đang trống")</strong><small>@(Bool(_snapshot, "sanSangDoiThu") ? "Sẵn sàng" : "Chưa sẵn sàng")</small></div>
+    </section>
+
+    <div class="dashboard-grid mt-4">
+        <section class="panel">
+            <h2>Chia sẻ Room</h2>
+            <p>Mã Room <strong>@Text(_snapshot, "maSoPhong")</strong></p>
+            <button class="btn btn-outline-primary" @onclick="CopyCodeAsync">Sao chép mã</button>
+            <button class="btn btn-outline-primary ms-2" @onclick="CopyLinkAsync">Sao chép link</button>
+            <p class="mt-3">Link này cho phép người nhận vào Room khi còn hoạt động.</p>
+        </section>
+        <section class="panel">
+            <h2>Thao tác</h2>
+            @if (_role is "Host" or "Opponent")
+            {
+                <button class="btn @(_ready ? "btn-success" : "btn-outline-success")" @onclick="ToggleReadyAsync">@(_ready ? "Bỏ sẵn sàng" : "Sẵn sàng")</button>
+            }
+            @if (_role == "Spectator" && Long(_snapshot, "maDoiThu") == 0)
+            {
+                <button class="btn btn-primary" @onclick="BecomeOpponentAsync">Vào vị trí Đối thủ</button>
+            }
+            @if (_role == "Host")
+            {
+                <button class="btn btn-primary ms-2" disabled="@(!Bool(_snapshot, "sanSangChuPhong") || !Bool(_snapshot, "sanSangDoiThu") || _matchStarted)" @onclick="StartMatchAsync">Bắt đầu</button>
+                @if (_matchStarted) { <span class="ms-2" style="color:var(--bs-success-text)">Match đã được tạo</span> }
+                @if (Text(_snapshot, "tenHienThiDoiThu").Length > 0 && !_matchStarted) { <button class="btn btn-outline-danger ms-2" @onclick="RemoveOpponentAsync">Loại khỏi vị trí Đối thủ</button> }
+                <div class="invite-box mt-3">
+                    <label for="friend-invite">Mời bạn đang online</label>
+                    <select id="friend-invite" class="form-select" @bind="_selectedFriend">
+                        <option value="0">Chọn bạn</option>
+                        @foreach (var friend in _friends)
+                        {
+                            @if (Bool(friend, "dangOnline"))
+                            {
+                                <option value="@Long(friend, "maBanBe")">@Text(friend, "tenHienThi") (@Text(friend, "tenDangNhap"))</option>
+                            }
+                            else
+                            {
+                                // README muc 4: hong cho chon ban offline, nhan ly do
+                                <option value="@Long(friend, "maBanBe")" disabled>@Text(friend, "tenHienThi") — offline, khong the moi</option>
+                            }
+                        }
+                    </select>
+                    <button class="btn btn-outline-primary mt-2" disabled="@(_selectedFriend == 0)" @onclick="InviteAsync">Gửi lời mời 60 giây</button>
+                    @if (_invite.ValueKind == JsonValueKind.Object)
+                    {
+                        <p class="mt-2">Đang chờ phản hồi · còn @_secondsLeft giây</p>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="CancelInviteAsync">Hủy lời mời</button>
+                    }
+                </div>
+            }
+            <button class="btn btn-outline-secondary mt-3" @onclick="LeaveAsync">Rời Room</button>
+        </section>
+
+        @if (_receivedInvite.ValueKind == JsonValueKind.Object)
+        {
+            <section class="panel panel-wide received-invite">
+                <h2>Bạn nhận được lời mời</h2>
+                <p><strong>@Text(_receivedInvite, "tenHienThiNgudiMoi")</strong> mời bạn vào Room "@Text(_snapshot, "tenPhong")" — còn @_secondsLeft giây để phản hồi.</p>
+                <button class="btn btn-primary" @onclick="AcceptReceivedInviteAsync">Tham gia</button>
+                <button class="btn btn-outline-secondary ms-2" @onclick="DeclineReceivedInviteAsync">Từ chối</button>
+            </section>
+        }
+
+        <section class="panel panel-wide">
+            <h2>Khán giả (@ArrayCount(_snapshot, "khanGia"))</h2>
+            @if (_snapshot.TryGetProperty("khanGia", out var guests) && guests.ValueKind == JsonValueKind.Array)
+            {
+                @foreach (var guest in guests.EnumerateArray())
+                {
+                    <div class="friend-row">
+                        <div><strong>@Text(guest, "tenHienThi")</strong><small>@@@Text(guest, "tenDangNhap")</small></div>
+                        @if (_role == "Host")
+                        {
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => KickAsync(guest)">Đá khỏi Room</button>
+                        }
+                    </div>
+                }
+            }
+            else { <p>Chưa có khán giả.</p> }
+        </section>
+    </div>
+}
+
+@code {
+    [Parameter] public long RoomId { get; set; }
+    private JsonElement _snapshot;
+    private JsonElement _invite;
+    private JsonElement _receivedInvite;
+    private List<JsonElement> _friends = [];
+    private long _viewerId;
+    private long _selectedFriend;
+    private string _role = "";
+    private bool _matchStarted;
+    private string? _message;
+    private string? _error;
+    private int _secondsLeft;
+    private TimeSpan _serverClockOffset;
+    private string _startKey = Guid.NewGuid().ToString("N");
+    private DotNetObjectReference<RoomPage>? _reference;
+    private System.Threading.Timer? _timer;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await RefreshAsync();
+        var friends = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.get", "/api/friends");
+        if (friends.Ok && friends.Data.ValueKind == JsonValueKind.Array) _friends = friends.Data.EnumerateArray().Select(x => x.Clone()).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _reference = DotNetObjectReference.Create(this);
+            try { await JS.InvokeAsync<bool>("coTuongRealtime.connect", RoomId, _reference, $"room:{RoomId}"); }
+            catch (JSException) { }
+        }
+    }
+
+    private async Task RefreshAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.get", $"/api/rooms/{RoomId}");
+        if (!result.Ok) { _error = Error(result); return; }
+        _snapshot = result.Data.GetProperty("snapshot").Clone();
+        _viewerId = result.Data.GetProperty("viewerId").GetInt64();
+        if (DateTime.TryParse(Text(_snapshot, "thoiDiemServerUtc"), System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out var serverNow))
+            _serverClockOffset = serverNow - DateTime.UtcNow;
+        _role = _viewerId == Long(_snapshot, "maChuPhong") ? "Host"
+            : _viewerId == Long(_snapshot, "maDoiThu") ? "Opponent" : "Spectator";
+        _ready = _role == "Host" ? Bool(_snapshot, "sanSangChuPhong") : _role == "Opponent" && Bool(_snapshot, "sanSangDoiThu");
+        _invite = _snapshot.TryGetProperty("loiMoiDangCho", out var invite) && invite.ValueKind == JsonValueKind.Object ? invite.Clone() : default;
+        _receivedInvite = _snapshot.TryGetProperty("loiMoiNhanDuoc", out var recv) && recv.ValueKind == JsonValueKind.Object ? recv.Clone() : default;
+        _matchStarted = Bool(_snapshot, "daCoMatch");
+        UpdateCountdown();
+    }
+
+    private bool _ready;
+    private async Task ToggleReadyAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/{RoomId}/ready", new { ready = !_ready });
+        if (!result.Ok) _error = Error(result); else { _error = null; await RefreshAsync(); }
+    }
+
+    private async Task StartMatchAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/{RoomId}/start", new { }, _startKey);
+        if (!result.Ok) _error = Error(result); else { _startKey = Guid.NewGuid().ToString("N"); _message = "Match đã được tạo và bàn cờ đã khởi tạo."; await RefreshAsync(); }
+    }
+
+    private async Task BecomeOpponentAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/{RoomId}/opponent", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task RemoveOpponentAsync()
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Chuyển Đối thủ về danh sách Khán giả?")) return;
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.delete", $"/api/rooms/{RoomId}/opponent");
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task KickAsync(JsonElement guest)
+    {
+        var userId = Long(guest, "maNguoiDung");
+        var displayName = Text(guest, "tenHienThi");
+        if (userId <= 0 || !await JS.InvokeAsync<bool>("confirm", $"Đá {displayName} khỏi Room này? Người đó sẽ không thể vào lại Room.")) return;
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.delete", $"/api/rooms/{RoomId}/members/{userId}");
+        if (!result.Ok) _error = Error(result); else { _error = null; await RefreshAsync(); }
+    }
+
+    private async Task InviteAsync()
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/{RoomId}/invites", new { userId = _selectedFriend });
+        if (!result.Ok) _error = Error(result); else { _message = "Đã gửi lời mời."; await RefreshAsync(); }
+    }
+
+    private async Task CancelInviteAsync()
+    {
+        var id = Long(_invite, "maLoiMoi");
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/invites/{id}/cancel", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task AcceptReceivedInviteAsync()
+    {
+        var id = Long(_receivedInvite, "maLoiMoi");
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/invites/{id}/accept", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task DeclineReceivedInviteAsync()
+    {
+        var id = Long(_receivedInvite, "maLoiMoi");
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/invites/{id}/decline", new { });
+        if (!result.Ok) _error = Error(result); else await RefreshAsync();
+    }
+
+    private async Task LeaveAsync()
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Bạn muốn rời Room này?")) return;
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", $"/api/rooms/{RoomId}/leave", new { });
+        if (!result.Ok) _error = Error(result); else Navigation.NavigateTo("/");
+    }
+
+    private async Task CopyCodeAsync()
+    {
+        await JS.InvokeVoidAsync("coTuongClipboard.copy", Text(_snapshot, "maSoPhong"));
+        _message = "Đã sao chép mã Room.";
+    }
+
+    private async Task CopyLinkAsync()
+    {
+        var link = Navigation.ToAbsoluteUri($"/room/join/{Text(_snapshot, "tokenMoi")}").ToString();
+        await JS.InvokeVoidAsync("coTuongClipboard.copy", link);
+        _message = "Đã sao chép link Room.";
+    }
+
+    private void UpdateCountdown()
+    {
+        _timer?.Dispose();
+        // Dem nguoc boi loi moi do chu room gui (host) HOAC loi moi ngui xem nhan duoc.
+        var activeInvite = _invite.ValueKind == JsonValueKind.Object ? _invite : _receivedInvite;
+        if (activeInvite.ValueKind != JsonValueKind.Object) return;
+        _timer = new System.Threading.Timer(_ => _ = InvokeAsync(() =>
+        {
+            var expires = DateTime.Parse(Text(activeInvite, "thoiDiemHetHan"), System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal);
+            _secondsLeft = Math.Max(0, (int)Math.Ceiling((expires - (DateTime.UtcNow + _serverClockOffset)).TotalSeconds));
+            StateHasChanged();
+        }), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    [JSInvokable]
+    public async Task OnRoomChanged() { await RefreshAsync(); await InvokeAsync(StateHasChanged); }
+
+    public async ValueTask DisposeAsync()
+    {
+        _timer?.Dispose();
+        _reference?.Dispose();
+        try { await JS.InvokeVoidAsync("coTuongRealtime.disconnect", $"room:{RoomId}"); } catch (JSException) { }
+    }
+
+    private static long Long(JsonElement value, string name) => value.TryGetProperty(name, out var item) && item.TryGetInt64(out var number) ? number : 0;
+    private static string Text(JsonElement value, string name) => value.ValueKind == JsonValueKind.Object && value.TryGetProperty(name, out var item) && item.ValueKind != JsonValueKind.Null ? item.ToString() : "";
+    private static bool Bool(JsonElement value, string name) => value.TryGetProperty(name, out var item) && item.ValueKind == JsonValueKind.True;
+    private static int ArrayCount(JsonElement value, string name) => value.TryGetProperty(name, out var item) && item.ValueKind == JsonValueKind.Array ? item.GetArrayLength() : 0;
+    private static string Error(BrowserApiResult result) => result.Data.TryGetProperty("message", out var value) ? value.GetString() ?? "Thao tác thất bại." : "Thao tác thất bại.";
+    private static string Status(string value) => value switch { "WaitingOpponent" => "Đang chờ Đối thủ", "Full" => "Đã đủ người chơi", "InMatch" => "Đang diễn ra", _ => value };
+    private static string RoleName(string value) => value switch { "Host" => "Chủ Room", "Opponent" => "Đối thủ", _ => "Khán giả" };
+}

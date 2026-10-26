@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <!--
+    Core khong tham chieu EF Core hay ASP.NET Core: no chua chi domain + abstraction.
+    moi can noi noi dung (Service) se dung interface trong Abstractions/.
+  -->
+
+</Project>
