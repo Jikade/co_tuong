@@ -1,4 +1,4 @@
-import { createInitialPieces } from './xiangqi.js';
+import { createInitialPieces, getLegalMoves } from './xiangqi.js';
 
 const CELL = 49;
 const PAD = 20;
@@ -443,6 +443,21 @@ function canPlay() {
 function renderPieces() {
   const matchPieces = currentRoom?.match?.pieces ?? createInitialPieces();
   piecesEl.replaceChildren();
+  const selectedPiece = canPlay()
+    ? matchPieces.find((piece) => piece.id === selectedPieceId && piece.color === currentRoom.match.currentSide)
+    : null;
+  if (selectedPiece) {
+    for (const move of getLegalMoves(matchPieces, selectedPiece.id)) {
+      const target = matchPieces.find((piece) => piece.x === move.x && piece.y === move.y);
+      const marker = document.createElement('span');
+      marker.className = `legal-move${target ? ' capture' : ''}`;
+      marker.setAttribute('aria-hidden', 'true');
+      const markerRadius = target ? 27 : 8;
+      marker.style.left = `${PAD + move.x * CELL - markerRadius}px`;
+      marker.style.top = `${PAD + move.y * CELL - markerRadius}px`;
+      piecesEl.appendChild(marker);
+    }
+  }
   for (const piece of matchPieces) {
     const element = document.createElement('button');
     const name = pieceTypes[piece.type].name;

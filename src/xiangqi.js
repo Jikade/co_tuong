@@ -116,6 +116,16 @@ export function applyLegalMove(pieces, pieceId, to) {
   return { pieces: next, capturedPiece: target ? { ...target } : null };
 }
 
+export function getLegalMoves(pieces, pieceId) {
+  const moves = [];
+  for (let y = 0; y <= 9; y++) {
+    for (let x = 0; x <= 8; x++) {
+      if (applyLegalMove(pieces, pieceId, { x, y })) moves.push({ x, y });
+    }
+  }
+  return moves;
+}
+
 export function hasLegalMove(pieces, color) {
   for (const piece of pieces) {
     if (piece.color !== color) continue;

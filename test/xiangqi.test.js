@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   applyLegalMove,
   createInitialPieces,
+  getLegalMoves,
   getTurnStatus,
   isInCheck,
 } from '../src/xiangqi.js';
@@ -35,6 +36,13 @@ test('enforces rook paths, horse legs, elephant eyes, river and palace rules', (
     { id: 'red-elephant', type: 'elephant', color: 'red', x: 2, y: 6 },
   ];
   assert.equal(applyLegalMove(riverBlocked, 'red-elephant', { x: 4, y: 4 }), null);
+});
+
+test('lists every legal destination for a selected piece', () => {
+  const pieces = createInitialPieces();
+  assert.deepEqual(getLegalMoves(pieces, 'red-horse-1'), [{ x: 0, y: 7 }, { x: 2, y: 7 }]);
+  assert.deepEqual(getLegalMoves(pieces, 'red-pawn-0'), [{ x: 0, y: 5 }]);
+  assert.deepEqual(getLegalMoves(pieces, 'missing-piece'), []);
 });
 
 test('allows cannon captures only across one screen', () => {
