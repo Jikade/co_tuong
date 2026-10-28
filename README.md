@@ -1,4 +1,3 @@
-# Cờ Tướng Trực Tuyến
 
 Ứng dụng cờ tướng trực tuyến với máy chủ giữ trạng thái trận, đồng bộ WebSocket, khán giả chỉ xem, tự lưu nước đi và kiểm tra luật cờ tướng.
 

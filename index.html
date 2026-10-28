@@ -45,6 +45,9 @@
           </form>
         </div>
         <p class="lobby-note">Người vào sau khi đủ hai đấu thủ sẽ tham gia với quyền khán giả. Mỗi Room hỗ trợ tối đa 10 khán giả.</p>
+        <div class="lobby-history">
+          <button id="history-button-lobby" class="button button-quiet" type="button">Xem lịch sử trận đã chơi</button>
+        </div>
       </section>
 
       <section id="room-view" class="room-view" hidden>
@@ -98,6 +101,11 @@
                 <button id="ready-button" class="button button-secondary" type="button" hidden>Sẵn sàng</button>
                 <button id="start-button" class="button button-primary" type="button" hidden>Bắt đầu</button>
               </div>
+              <div id="match-actions" class="room-controls room-controls-match">
+                <button id="draw-button" class="button button-secondary" type="button" hidden>Xin hòa</button>
+                <button id="resign-button" class="button button-quiet" type="button" hidden>Đầu hàng</button>
+                <button id="leave-button" class="button button-quiet danger" type="button" hidden>Rời trận</button>
+              </div>
             </section>
 
             <section class="panel match-panel">
@@ -108,11 +116,19 @@
               <p id="turn-label" class="turn-label">Chưa có trận đấu</p>
               <p id="check-label" class="check-label" hidden>Chiếu Tướng</p>
               <p id="countdown-label" class="countdown-label" hidden></p>
+              <p id="reconnect-label" class="reconnect-label" hidden></p>
               <div class="clock-row">
                 <span>Thời gian lượt</span>
                 <strong id="turn-clock">—</strong>
               </div>
               <div id="result-label" class="result-label" hidden></div>
+              <div id="draw-prompt" class="draw-prompt" hidden>
+                <p id="draw-prompt-text"></p>
+                <div class="draw-prompt-actions">
+                  <button id="draw-accept" class="button button-primary" type="button">Chấp nhận</button>
+                  <button id="draw-decline" class="button button-quiet" type="button">Từ chối</button>
+                </div>
+              </div>
             </section>
 
             <section class="panel captured-panel">
@@ -125,12 +141,38 @@
               <h2>Lịch sử nước đi</h2>
               <ol id="move-history" class="move-history"></ol>
             </section>
+            <section class="panel matches-panel">
+              <h2>Lịch sử trận</h2>
+              <button id="history-button" class="button button-secondary" type="button">Xem lại trận đã chơi</button>
+            </section>
           </aside>
         </div>
       </section>
       <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <div id="replay-bar" class="replay-bar" hidden>
+        <p id="replay-label" class="replay-label"></p>
+        <div class="replay-controls">
+          <button id="replay-first" class="button button-quiet" type="button" aria-label="Nước đầu">⏮</button>
+          <button id="replay-prev" class="button button-quiet" type="button" aria-label="Nước trước">◀</button>
+          <button id="replay-next" class="button button-quiet" type="button" aria-label="Nước tiếp theo">▶</button>
+          <button id="replay-last" class="button button-quiet" type="button" aria-label="Nước cuối">⏭</button>
+          <button id="replay-exit" class="button button-secondary" type="button">Thoát xem lại</button>
+        </div>
+      </div>
     </main>
   </div>
+  <div id="history-overlay" class="overlay" hidden>
+    <div class="overlay-card panel">
+      <div class="panel-heading">
+        <h2>Lịch sử trận đã chơi</h2>
+        <button id="close-history" class="button button-quiet" type="button">Đóng</button>
+      </div>
+      <p class="muted overlay-note">Mỗi trận đã kết thúc được lưu riêng. Chọn một trận để xem lại từng nước đi.</p>
+      <p id="history-empty" class="muted" hidden>Chưa có trận nào đã kết thúc.</p>
+      <ul id="history-list" class="history-items"></ul>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
