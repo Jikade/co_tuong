@@ -1,4 +1,4 @@
-import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
+import { createInitialPieces, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constants.js';
 import { createAccountUi } from './account-ui.js';
 import {
@@ -393,7 +393,8 @@ function sendAction(action, details = {}) {
 }
 
 function connect() {
-  if (!authenticated) return;
+  if (!authenticated || !navigator.onLine) return;
+  if (socket && [WebSocket.CONNECTING, WebSocket.OPEN].includes(socket.readyState)) return;
   clearTimeout(reconnectTimer);
   const url = endpoints.webSocketUrl;
   socket = new WebSocket(url);
@@ -435,7 +436,21 @@ function connect() {
   });
 }
 
+window.addEventListener('offline', () => {
+  clearTimeout(reconnectTimer);
+  socket?.close();
+  setConnection('disconnected', 'Mất mạng — chờ kết nối lại');
+});
+window.addEventListener('online', () => {
+  clearTimeout(reconnectTimer);
+  connect();
+});
+
 function handleServerMessage(message) {
+  if (message.type === 'account-updated' || message.type === 'rooms-updated') {
+    accountUi.refresh(message.type === 'rooms-updated' ? 'rooms' : 'social');
+    return;
+  }
   if (message.type === 'computer-state') {
     const previousMatch = computerMatch;
     currentRoom = null;
@@ -512,6 +527,9 @@ function handleServerMessage(message) {
       const joined = [currentRoom.host, currentRoom.opponent, ...currentRoom.spectators]
         .filter((participant) => participant && !knownIds.has(participant.id) && participant.id !== playerId);
       if (joined.length) showNotice(`${joined.map((participant) => participant.name).join(', ')} đã vào phòng.`);
+      if (previousRoom.spectators.some((person) => person.id === playerId) && currentRoom.opponent?.id === playerId) {
+        showNotice('Bạn đã trở thành Đối thủ.');
+      }
       if (previousMatchStatus !== MATCH_STATUS.FINISHED
           && currentRoom.match?.status === MATCH_STATUS.FINISHED) {
         showNotice(`Trận đấu đã kết thúc. ${describeResult(currentRoom.match)}`);
@@ -825,7 +843,13 @@ async function acquireCallMedia(state) {
   if (!navigator.mediaDevices?.getUserMedia) {
     throw new Error('Trình duyệt này không hỗ trợ API camera/microphone (getUserMedia). Hãy dùng Safari bản mới nhất.');
   }
-  state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  try {
+    state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  } catch (error) {
+    if (!['NotFoundError', 'DevicesNotFoundError', 'NotReadableError', 'OverconstrainedError'].includes(error?.name)) throw error;
+    state.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+    showNotice('Camera không khả dụng. Cuộc gọi tiếp tục bằng âm thanh.');
+  }
   if (callState !== state) {
     state.localStream.getTracks().forEach((track) => track.stop());
     throw new Error('Cuộc gọi đã kết thúc.');
@@ -1152,22 +1176,6 @@ function renderPieces() {
     ? replayView.pieces
     : computerMatch?.pieces ?? currentRoom?.match?.pieces ?? createInitialPieces();
   piecesEl.replaceChildren();
-  const selectedPiece = canPlay()
-    ? matchPieces.find((piece) => piece.id === selectedPieceId && piece.color === (computerMatch ?? currentRoom.match).currentSide)
-    : null;
-  if (selectedPiece) {
-    for (const move of getLegalDestinations(matchPieces, selectedPiece.id)) {
-      const target = matchPieces.find((piece) => piece.x === move.x && piece.y === move.y);
-      const marker = document.createElement('span');
-      marker.className = `legal-move${target ? ' capture' : ''}`;
-      marker.setAttribute('aria-hidden', 'true');
-      const markerRadius = target ? 27 : 8;
-      const displayMove = toDisplayCoordinate(move, isBlackPerspective());
-      marker.style.left = `${PAD + displayMove.x * CELL - markerRadius}px`;
-      marker.style.top = `${PAD + displayMove.y * CELL - markerRadius}px`;
-      piecesEl.appendChild(marker);
-    }
-  }
   for (const piece of matchPieces) {
     const displayCoordinate = toDisplayCoordinate(piece, isBlackPerspective());
     const element = document.createElement('button');
@@ -1567,26 +1575,49 @@ document.querySelector('#copy-room-code').addEventListener('click', async () => 
   }
 });
 
-document.querySelector('#share-room').addEventListener('click', async () => {
-  if (!currentRoom || replayView) return;
-  const url = new URL(location.href);
+const shareButton = document.querySelector('#share-room');
+const shareMenu = document.createElement('section');
+shareMenu.id = 'room-share-menu';
+shareMenu.className = 'panel room-share-menu';
+shareMenu.hidden = true;
+shareMenu.innerHTML = '<div class="panel-heading"><h2>Chia sẻ phòng</h2><button id="close-room-share" class="button button-quiet" type="button" aria-label="Đóng chia sẻ">×</button></div><label for="room-invite-link">Liên kết phòng</label><input id="room-invite-link" class="text-input" readonly><button id="copy-room-link" class="button button-secondary" type="button">Sao chép link</button><button id="native-room-share" class="button button-quiet" type="button">Chia sẻ qua ứng dụng</button>';
+document.querySelector('.room-banner').append(shareMenu);
+shareButton.setAttribute('aria-controls', shareMenu.id);
+shareButton.setAttribute('aria-expanded', 'false');
+function setShareMenu(open) {
+  shareMenu.hidden = !open;
+  shareButton.setAttribute('aria-expanded', String(open));
+}
+function roomInvitation() {
+  const url = new URL(location.pathname, location.origin);
   url.searchParams.set('room', currentRoom.code);
-  const text = `${currentRoom.name} · Mã phòng ${currentRoom.code}`;
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: 'Cờ Tướng Online', text, url: url.href });
-      return;
-    } catch (error) {
-      if (error.name === 'AbortError') return;
-    }
-  }
+  return { title: 'Cờ Tướng Online', text: `${currentRoom.name} · Mã phòng ${currentRoom.code}`, url: url.href };
+}
+shareButton.addEventListener('click', () => {
+  if (!currentRoom || replayView) return;
+  document.querySelector('#room-invite-link').value = roomInvitation().url;
+  document.querySelector('#native-room-share').hidden = typeof navigator.share !== 'function';
+  setShareMenu(shareMenu.hidden);
+});
+document.querySelector('#copy-room-link').addEventListener('click', async () => {
+  if (!currentRoom || replayView) return;
+  const { text, url } = roomInvitation();
   try {
-    await navigator.clipboard.writeText(`${text}\n${url.href}`);
+    await navigator.clipboard.writeText(`${text}\n${url}`);
     showNotice('Đã sao chép lời mời và liên kết phòng.');
   } catch {
-    showNotice(`${text} · ${url.href}`);
+    document.querySelector('#room-invite-link').select();
+    showNotice('Chọn và sao chép liên kết phòng đang hiển thị.');
   }
 });
+document.querySelector('#native-room-share').addEventListener('click', async () => {
+  if (!currentRoom || replayView || typeof navigator.share !== 'function') return;
+  try { await navigator.share(roomInvitation()); }
+  catch (error) { if (error.name !== 'AbortError') showNotice('Bạn có thể dùng nút Sao chép link để chia sẻ phòng.'); }
+});
+document.querySelector('#close-room-share').addEventListener('click', () => { setShareMenu(false); shareButton.focus(); });
+document.addEventListener('click', (event) => { if (!event.target.closest('#room-share-menu, #share-room')) setShareMenu(false); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setShareMenu(false); });
 document.querySelector('#room-settings-toggle').addEventListener('click', () => {
   setRoomSettings(document.querySelector('#room-settings-menu').hidden);
 });

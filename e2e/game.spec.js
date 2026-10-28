@@ -34,10 +34,12 @@ test('two browser sessions play, chat privately, reconnect, finish, replay and l
     await expect(a.locator('#start-button')).toBeEnabled(); await a.locator('#start-button').click();
     await expect(a.locator('#room-view')).toHaveAttribute('data-phase', 'playing');
     await expect(b.locator('#room-view')).toHaveAttribute('data-phase', 'playing');
-    await a.getByRole('button', { name: 'Tốt Đỏ, cột 1, hàng 7', exact: true }).click();
-    await expect(a.locator('.legal-move')).toHaveCount(1);
+    const redPage = (await a.locator('#host-slot').getAttribute('data-side')) === 'red' ? a : b;
+    await redPage.getByRole('button', { name: 'Tốt Đỏ, cột 1, hàng 7', exact: true }).click();
+    await expect(redPage.locator('.piece.selected')).toHaveCount(1);
+    await expect(redPage.locator('.legal-move')).toHaveCount(0);
     // Board canvas coordinates are transformed by the responsive scene scale.
-    const canvas = a.locator('#board-canvas');
+    const canvas = redPage.locator('#board-canvas');
     const box = await canvas.boundingBox();
     const size = await canvas.evaluate((el) => ({ width: el.width, height: el.height }));
     await canvas.click({ position: { x: 20 / size.width * box.width, y: (20 + 5 * 49) / size.height * box.height } });
@@ -78,7 +80,7 @@ test('two browser sessions play, chat privately, reconnect, finish, replay and l
   } finally { await ctxA.close(); await ctxB.close(); }
 });
 
-test('mobile account flow fits the viewport and computer play displays legal moves', async ({ browser }) => {
+test('mobile account flow fits the viewport and computer play selects without move hints', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   try {
@@ -89,7 +91,8 @@ test('mobile account flow fits the viewport and computer play displays legal mov
     await expect(page.locator('#room-view')).toHaveAttribute('data-phase', 'playing');
     await expect(page.locator('#move-history li')).toHaveCount(1);
     await page.getByRole('button', { name: 'Tốt Đen, cột 1, hàng 4', exact: true }).click();
-    await expect(page.locator('.legal-move')).toHaveCount(1);
+    await expect(page.locator('.piece.selected')).toHaveCount(1);
+    await expect(page.locator('.legal-move')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: 'test-results/integration-mobile.png', fullPage: true });
     expect(errors).toEqual([]);

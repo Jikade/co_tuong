@@ -326,6 +326,8 @@ test('an eligible player can leave and rejoin the open opponent seat without dup
   await Promise.all([left, hostUpdate]);
 
   opponent.send({ action: 'join-room', playerId: 'opponent-player-123', displayName: 'Opponent back', roomCode: code });
+  await opponent.next((m) => m.type === 'room-state' && !m.room.opponent && m.room.spectators.some((p) => p.id === 'opponent-player-123'));
+  opponent.send({ action: 'become-opponent' });
   const returned = await opponent.next((m) => m.type === 'room-state' && m.room.opponent?.id === 'opponent-player-123');
   assert.equal(returned.room.host.id, 'host-player-123');
   assert.equal(returned.room.opponent.ready, false);
@@ -388,8 +390,8 @@ test('a player cannot leave a room during a match and a closed room cannot be re
   assert.match((await unavailable).message, /không còn tồn tại/);
 });
 
-test('replacing the opponent keeps the owner Red and initializes a fresh match with Red to move', async (t) => {
-  const { host, opponent, connect, code } = await setup(t, { countdownMs: 5, turnSeconds: 30 });
+test('replacing the opponent initializes a fresh match with Red to move (deterministic color draw fixture)', async (t) => {
+  const { host, opponent, connect, code } = await setup(t, { countdownMs: 5, turnSeconds: 30, chooseRedPlayerIndex: () => 0 });
   host.send({ action: 'set-ready', ready: true });
   opponent.send({ action: 'set-ready', ready: true });
   const bothReady = (m) => m.type === 'room-state' && m.room.host.ready && m.room.opponent.ready;
@@ -409,6 +411,8 @@ test('replacing the opponent keeps the owner Red and initializes a fresh match w
   await host.next((m) => m.type === 'room-state' && m.room.match?.status === 'finished');
   const replacement = await connect();
   replacement.send({ action: 'join-room', playerId: 'replacement-player-123', displayName: 'C', roomCode: code });
+  await replacement.next((m) => m.type === 'room-state' && !m.room.opponent && m.room.spectators.some((p) => p.id === 'replacement-player-123'));
+  replacement.send({ action: 'become-opponent' });
   await Promise.all([
     replacement.next((m) => m.type === 'room-state' && m.room.opponent?.id === 'replacement-player-123'),
     host.next((m) => m.type === 'room-state' && m.room.opponent?.id === 'replacement-player-123'),

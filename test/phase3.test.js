@@ -426,7 +426,7 @@ test('online persistence failures roll back unacknowledged moves and allow a saf
     return originalUpsert(record);
   };
   const context = await startServer(t, { persistence });
-  const { host, opponent, roomCode } = await startMatch(context);
+  const { red: host, black: opponent, roomCode } = await startMatch(context);
   const room = context.server.rooms.get(roomCode);
   const before = structuredClone(room.match);
   const message = { action: 'move', requestId: 'online-safe-retry-123', pieceId: 'red-pawn-0', to: { x: 0, y: 5 } };

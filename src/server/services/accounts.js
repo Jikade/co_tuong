@@ -120,6 +120,9 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
         for (const s of d.sessions.filter((s) => s.userId === reset.userId)) s.revokedAt = now();
       });
     },
+    validResetToken(token) {
+      return typeof token === 'string' && state.resets.some((r) => r.hash === tokenHash(token) && !r.usedAt && r.expiresAt > now());
+    },
     search(userId, query) {
       query = String(query ?? '').trim().toLowerCase();
       if (query.length < 2) return [];
@@ -155,23 +158,35 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
       });
     },
     async unfriend(userId, other) { return mutate((d) => { d.friends = d.friends.filter((f) => !(f.includes(userId) && f.includes(other))); }); },
-    async invite(from, to, roomCode) {
+    async invite(from, to, roomCode, roomName = '') {
       return mutate((d) => {
         if (!d.friends.some((f) => f.includes(from) && f.includes(to))) throw new ApiError(400, 'Chỉ có thể mời bạn bè.');
         for (const i of d.invites.filter((i) => i.status === 'Pending' && i.expiresAt <= now())) i.status = 'Expired';
         if (d.invites.some((i) => i.from === from && i.status === 'Pending')) throw new ApiError(409, 'Đang có lời mời chờ phản hồi.');
-        const invite = { id: randomUUID(), from, to, roomCode, status: 'Pending', createdAt: now(), expiresAt: now() + 60000 };
+        const invite = { id: randomUUID(), from, to, roomCode, roomName, fromName: userFor(from).displayName, status: 'Pending', createdAt: now(), expiresAt: now() + 60000 };
         d.invites.push(invite);
         notification(d, to, `${userFor(from).displayName} mời bạn vào phòng ${roomCode}.`, { roomCode });
         return invite;
       });
     },
-    async respondInvite(userId, id, action, validRoom) {
+    async invalidateInvites(isValid) {
+      if (!state.invites.some((i) => i.status === 'Pending' && (i.expiresAt <= now() || !isValid(i)))) return;
       return mutate((d) => {
+        for (const i of d.invites.filter((i) => i.status === 'Pending')) {
+          if (i.expiresAt > now() && isValid(i)) continue;
+          i.status = i.expiresAt <= now() ? 'Expired' : 'Cancelled';
+          notification(d, i.to, `Lời mời vào phòng ${i.roomCode} đã hết hiệu lực.`);
+          notification(d, i.from, `Lời mời vào phòng ${i.roomCode} đã hết hiệu lực.`);
+        }
+      });
+    },
+    async respondInvite(userId, id, action, validRoom) {
+      return mutate(async (d) => {
         const i = d.invites.find((i) => i.id === id && i.status === 'Pending');
         if (!i || (action === 'cancel' ? i.from : i.to) !== userId || i.expiresAt <= now()) throw new ApiError(404, 'Lời mời đã hết hiệu lực.');
-        if (!validRoom(i)) throw new ApiError(409, 'Phòng không còn khả dụng.');
+        if (!await validRoom(i)) throw new ApiError(409, 'Phòng không còn khả dụng hoặc đã đầy.');
         i.status = action === 'accept' ? 'Completed' : action === 'cancel' ? 'Cancelled' : 'Declined';
+        notification(d, action === 'cancel' ? i.to : i.from, action === 'decline' ? 'Người chơi đã từ chối lời mời.' : `Lời mời vào phòng ${i.roomCode}: ${i.status}.`);
         return { roomCode: i.roomCode };
       });
     },

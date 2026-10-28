@@ -21,8 +21,18 @@ export function closeInvalidSessions(wss, accounts) {
 }
 
 // Transport owns upgrade/authentication/JSON framing. Game state remains in game-server.
-export function createWebSocketTransport({ httpServer, accounts, requireAuth, onMessage, onDisconnect }) {
+export function createWebSocketTransport({ httpServer, accounts, requireAuth, onMessage, onDisconnect, onPresenceChange = () => {} }) {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
+  // Detect broken TCP paths even when a browser cannot send a close frame.
+  const heartbeat = setInterval(() => {
+    for (const socket of wss.clients) {
+      if (socket.isAlive === false) { socket.terminate(); continue; }
+      socket.isAlive = false;
+      socket.ping();
+    }
+  }, 15000);
+  heartbeat.unref?.();
+  httpServer.once('close', () => clearInterval(heartbeat));
   httpServer.on('upgrade', (request, socket, head) => {
     let pathname;
     try { pathname = new URL(request.url, 'http://localhost').pathname; }
@@ -39,6 +49,9 @@ export function createWebSocketTransport({ httpServer, accounts, requireAuth, on
     });
   });
   wss.on('connection', (socket) => {
+    socket.isAlive = true;
+    socket.on('pong', () => { socket.isAlive = true; });
+    onPresenceChange();
     socket.on('error', (error) => console.error('WebSocket connection failed:', error.message));
     socket.on('message', (raw) => {
       let message;
@@ -51,7 +64,7 @@ export function createWebSocketTransport({ httpServer, accounts, requireAuth, on
       try { Promise.resolve(onMessage(socket, message)).catch(reportError); }
       catch (error) { reportError(error); }
     });
-    socket.on('close', () => onDisconnect(socket));
+    socket.on('close', () => { onDisconnect(socket); onPresenceChange(); });
   });
   return wss;
 }

@@ -16,11 +16,14 @@ export async function client(url, cookie) {
   return {
     socket,
     send(message) { socket.send(JSON.stringify(message)); },
-    next(predicate) {
+    drain(predicate = () => true) {
+      for (let i = queued.length - 1; i >= 0; i--) if (predicate(queued[i])) queued.splice(i, 1);
+    },
+    next(predicate, timeoutMs = 15000) {
       const i = queued.findIndex(predicate);
       if (i >= 0) return Promise.resolve(queued.splice(i, 1)[0]);
       return new Promise((resolve, reject) => {
-        const w = { predicate, resolve, timer: setTimeout(() => { waiting.splice(waiting.indexOf(w), 1); reject(new Error(`WebSocket timeout: ${JSON.stringify(queued).slice(0, 1000)}`)); }, 15000) };
+        const w = { predicate, resolve, timer: setTimeout(() => { waiting.splice(waiting.indexOf(w), 1); reject(new Error(`WebSocket timeout: ${JSON.stringify(queued).slice(0, 1000)}`)); }, timeoutMs) };
         waiting.push(w);
       });
     },
@@ -45,7 +48,7 @@ export async function register(base, label) {
   return { ...data, user: result.body.user, cookie: result.cookie.split(';')[0] };
 }
 export async function playAuthenticatedGame(t, persistence, { restartPersistence = () => persistence, turnSeconds = 30 } = {}) {
-  const options = { host: '127.0.0.1', port: 0, countdownMs: 30, ackTimeoutMs: 15000, turnSeconds, reconnectSeconds: 30 };
+  const options = { host: '127.0.0.1', port: 0, countdownMs: 30, ackTimeoutMs: 15000, turnSeconds, reconnectSeconds: 30, chooseRedPlayerIndex: () => 0 };
   let server = createGameServer({ ...options, persistence });
   let sockets = [];
   t.after(async () => { await Promise.all(sockets.map((s) => s.close())); await server.close(); });

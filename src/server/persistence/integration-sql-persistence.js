@@ -15,7 +15,7 @@ function projectMatch(record, suffix, archived = false, roomVariable = 'NULL') {
   const red = uid(record.players?.red?.id ?? record.redPlayerId);
   const black = uid(record.players?.black?.id ?? record.blackPlayerId);
   const computer = record.mode === 'computer';
-  const creator = computer ? uid(record.humanPlayerId) : red;
+  const creator = computer ? uid(record.humanPlayerId) : record.creatorId ? uid(record.creatorId) : red;
   const result = record.result;
   const status = result ? 'Finished' : statuses[record.status] || 'InProgress';
   const initial = record.initialPieces || [];
@@ -136,6 +136,14 @@ export function createIntegrationSqlPersistence({ env = process.env } = {}) {
               INSERT dbo.integration_friend_request_map VALUES(${v(r.id)},@friend${i});
             END ELSE UPDATE dbo.loi_moi_ket_ban SET trang_thai=${v(status)},thoi_diem_phan_hoi=CASE WHEN ${v(status)}='Pending' THEN NULL ELSE COALESCE(thoi_diem_phan_hoi,SYSUTCDATETIME()) END WHERE ma=@friend${i};`;
         });
+        // Project the authoritative relationship set for integration-managed users.
+        // Match history has no cascade to this table and remains unchanged on unfriend.
+        sql += 'DECLARE @friends TABLE(low_id bigint,high_id bigint);';
+        for (const [a, b] of state.friends) sql += `INSERT @friends SELECT CASE WHEN ${uid(a)}<${uid(b)} THEN ${uid(a)} ELSE ${uid(b)} END,CASE WHEN ${uid(a)}<${uid(b)} THEN ${uid(b)} ELSE ${uid(a)} END;`;
+        sql += `DELETE f FROM dbo.ban_be f JOIN dbo.integration_user_map a ON a.user_id=f.ma_nguoi_dung_nho JOIN dbo.integration_user_map b ON b.user_id=f.ma_nguoi_dung_lon
+          WHERE NOT EXISTS(SELECT 1 FROM @friends expected WHERE expected.low_id=f.ma_nguoi_dung_nho AND expected.high_id=f.ma_nguoi_dung_lon);
+          INSERT dbo.ban_be(ma_nguoi_dung_nho,ma_nguoi_dung_lon)
+          SELECT low_id,high_id FROM @friends expected WHERE NOT EXISTS(SELECT 1 FROM dbo.ban_be f WHERE f.ma_nguoi_dung_nho=expected.low_id AND f.ma_nguoi_dung_lon=expected.high_id);`;
         sql += `UPDATE dbo.integration_account_state SET payload=${v(JSON.stringify(state))},version=version+1 WHERE singleton=1;`;
         await write(sql);
         version += 1;

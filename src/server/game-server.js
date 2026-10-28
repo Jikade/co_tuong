@@ -14,6 +14,7 @@ import { createHistoryStore } from './services/history-store.js';
 import { createPersistenceFromEnv } from './persistence/index.js';
 import { createMemoryPersistence } from './persistence/memory-persistence.js';
 import { createAccounts } from './services/accounts.js';
+import { assertActiveSnapshot } from './services/snapshot.js';
 import { createAccountHttp } from './http/account-routes.js';
 import { createHttpHandler } from './http/handler.js';
 import { sendJson } from './http/responses.js';
@@ -135,6 +136,7 @@ export function createGameServer(options = {}) {
     roomTtlMs = 12 * 60 * 60 * 1000,
     roomCleanupIntervalMs = 60_000,
     computerMoveDelayMs = 180,
+    chooseRedPlayerIndex = () => randomInt(2),
     tlsCertFile = config.tlsCertFile,
     tlsKeyFile = config.tlsKeyFile,
   } = options;
@@ -162,6 +164,17 @@ export function createGameServer(options = {}) {
   let shuttingDown = false;
   let cleanupTimer = null;
   let actionQueue = Promise.resolve();
+  let publicRoomsSignature = '';
+  function notifyAccounts() {
+    for (const peer of wss.clients) if (peer.accountId) send(peer, { type: 'account-updated' });
+  }
+  function notifyRoomList() {
+    const signature = JSON.stringify([...rooms.values()].filter((r) => r.visibility !== 'private')
+      .map((r) => [r.code, r.name, r.match?.status, r.host?.id, r.opponent?.id, r.spectators.length]));
+    if (signature === publicRoomsSignature) return;
+    publicRoomsSignature = signature;
+    for (const peer of wss.clients) if (peer.accountId) send(peer, { type: 'rooms-updated' });
+  }
   function enqueueAction(action) {
     const operation = actionQueue.then(action);
     actionQueue = operation.catch(() => {});
@@ -174,6 +187,17 @@ export function createGameServer(options = {}) {
     roomList: () => [...rooms.values()].filter((r) => r.visibility !== 'private').map((r) => publicRoom(r, warningSeconds)),
     roomForInvite: (code) => rooms.get(code),
     isOnline: (id) => isAccountOnline(wss, id),
+    notifyAccounts,
+    withRoomAction: enqueueAction,
+    invalidateInvites: () => accounts.invalidateInvites((invite) => {
+      const room = rooms.get(invite.roomCode);
+      return Boolean(room && room.host.id === invite.from && !room.blocked.includes(invite.to));
+    }),
+    joinInvite: async (user, token, roomCode) => {
+      const socket = [...wss.clients].find((peer) => peer.accountId === user.id && peer.authToken === token && peer.readyState === 1);
+      if (!socket) return false;
+      return await joinRoom(socket, { playerId: user.id, displayName: user.displayName, roomCode });
+    },
     revokeSockets: () => closeInvalidSessions(wss, accounts),
   });
 
@@ -186,6 +210,7 @@ export function createGameServer(options = {}) {
     httpServer, accounts, requireAuth,
     onMessage: (socket, message) => enqueueAction(() => dispatch(socket, message)),
     onDisconnect: handleSocketDisconnect,
+    onPresenceChange: notifyAccounts,
   });
 
   function connectedParticipants(room) {
@@ -199,6 +224,7 @@ export function createGameServer(options = {}) {
 
   function broadcastRoom(room) {
     broadcast(room, { type: 'room-state', room: publicRoom(room, warningSeconds) });
+    notifyRoomList();
   }
 
   function serializeRoom(room) {
@@ -760,6 +786,7 @@ export function createGameServer(options = {}) {
       if (room.match) {
         const archived = history.find(room.match.id);
         if (archived?.result) room.match = { ...room.match, status: MATCH_STATUS.FINISHED, result: archived.result, endedAt: archived.endedAt, pieces: archived.finalPieces, history: archived.moves, capturedPieces: archived.capturedPieces, turnDeadline: null, timeRemaining: 0 };
+        assertActiveSnapshot(room.match);
         room.match.disconnects = {};
         room.match.drawOffer = null;
       }
@@ -846,6 +873,7 @@ export function createGameServer(options = {}) {
     const nameOf = (playerId) => participantFor(room, playerId)?.name ?? '';
     return {
       id: match.id,
+      creatorId: match.creatorId,
       roomCode: room.code,
       roomName: room.name,
       players: {
@@ -939,7 +967,8 @@ export function createGameServer(options = {}) {
     if (!match || match.status !== MATCH_STATUS.PAUSED) return;
     const deadlines = Object.values(match.disconnects ?? {});
     if (deadlines.length === 0) return;
-    const nextDeadline = Math.min(...deadlines);
+    const future = deadlines.filter((deadline) => deadline > Date.now());
+    const nextDeadline = future.length ? Math.min(...future) : Math.max(...deadlines);
     room.pauseTimer = setTimeout(() => {
       enqueueAction(() => checkReconnects(room)).catch((error) => {
         console.error('Could not resolve the reconnect window:', error);
@@ -961,6 +990,12 @@ export function createGameServer(options = {}) {
     const stillConnected = playerIds(match)
       .filter((playerId) => room.connections.has(playerId) && !expired.includes(playerId));
     if (stillConnected.length === 0) {
+      // Each disconnected player retains their own full window, even if the
+      // other player's earlier window has already elapsed.
+      if (Object.values(match.disconnects).some((deadline) => deadline > now)) {
+        scheduleReconnectCheck(room);
+        return;
+      }
       await finishMatch(room, { reason: MATCH_REASON.SYSTEM_ERROR, voided: true });
       await persistAndBroadcast(room);
       return;
@@ -976,7 +1011,6 @@ export function createGameServer(options = {}) {
         socket.playerId = null;
       }
       removeParticipant(room, playerId);
-      room.blocked.push(playerId);
     }
     await persistAndBroadcast(room);
   }
@@ -1280,7 +1314,8 @@ export function createGameServer(options = {}) {
     }
     if (socket.computerMatchId) detachComputerSocket(socket);
     if (!validIdentity(message) || typeof message.roomName !== 'string'
-        || !message.roomName.trim() || message.roomName.trim().length > 100) {
+        || !message.roomName.trim() || message.roomName.trim().length > 100
+        || (message.visibility !== undefined && !['public', 'private'].includes(message.visibility))) {
       sendError(socket, 'Vui lòng nhập tên người chơi và tên Room hợp lệ.');
       return;
     }
@@ -1326,7 +1361,8 @@ export function createGameServer(options = {}) {
     }
     let participant = participantFor(room, message.playerId);
     if (!participant) {
-      const seatOpen = !room.opponent && !isActiveMatch(room.match);
+      const seatOpen = !room.opponent && !room.spectators.length
+        && (!room.match || room.match.status === MATCH_STATUS.FINISHED);
       if (seatOpen) {
         room.opponent = { id: message.playerId, name: message.displayName.trim(), ready: false };
         participant = room.opponent;
@@ -1342,9 +1378,11 @@ export function createGameServer(options = {}) {
       participant.name = message.displayName.trim();
     }
     setConnection(socket, room, participant);
+    if (room.match?.status === MATCH_STATUS.PAUSED) await checkReconnects(room);
     await resumeMatchIfReady(room);
     await persistAndBroadcast(room);
     sendChatHistory(room);
+    return true;
   }
 
   async function setReady(socket, message) {
@@ -1384,14 +1422,18 @@ export function createGameServer(options = {}) {
       sendError(socket, 'Cả hai người chơi phải đang kết nối để bắt đầu trận.');
       return;
     }
-    // The room owner keeps the Red seat across rematches; a replacement opponent is Black.
-    const redPlayerId = room.host.id;
-    const blackPlayerId = room.opponent.id;
+    // Draw once per new match, then persist both identities across reconnects.
+    const players = [room.host.id, room.opponent.id];
+    const redIndex = chooseRedPlayerIndex();
+    if (redIndex !== 0 && redIndex !== 1) throw new Error('Invalid side draw.');
+    const redPlayerId = players[redIndex];
+    const blackPlayerId = players[1 - redIndex];
     const initialPieces = createInitialPieces();
     room.host.ready = false;
     room.opponent.ready = false;
     room.match = {
       id: randomUUID(),
+      creatorId: room.host.id,
       status: MATCH_STATUS.SYNCING,
       redPlayerId,
       blackPlayerId,
@@ -1694,6 +1736,7 @@ export function createGameServer(options = {}) {
     rooms.delete(room.code);
     chatHistoryByRoom.delete(room.code);
     await persistRooms();
+    notifyRoomList();
   }
 
   async function changeSeat(socket, message) {
@@ -1904,6 +1947,16 @@ export function createGameServer(options = {}) {
     },
     address() {
       return httpServer.address();
+    },
+    diagnostics() {
+      return {
+        sockets: wss.clients.size,
+        socketListeners: [...wss.clients].reduce((sum, s) => sum + s.eventNames().reduce((n, event) => n + s.listenerCount(event), 0), 0),
+        peers: peers.size, calls: calls.size,
+        memberships: [...rooms.values()].reduce((sum, r) => sum + r.connections.size, 0),
+        roomTimers: [...rooms.values()].filter((r) => r.timer || r.pauseTimer || r.ackTimer).length,
+        computerSockets: computerSockets.size,
+      };
     },
     rooms,
     history,

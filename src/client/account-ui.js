@@ -22,12 +22,26 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
     <section><h3>Bạn bè</h3><form id="friend-search-form"><label for="friend-query">Tìm theo tên đăng nhập hoặc tên hiển thị</label><input id="friend-query" class="text-input" minlength="2" maxlength="50" required><button class="button button-secondary">Tìm kiếm</button></form><div id="friend-search-results"></div><div id="friend-list"></div><h3>Lời mời kết bạn</h3><div id="friend-requests"></div></section>
     <section><h3>Lời mời vào phòng</h3><div id="room-invites"></div><h3>Thông báo</h3><div id="notification-list"></div></section></div>`;
   document.querySelector('main').insertBefore(dashboard, document.querySelector('#lobby'));
+  dashboard.querySelector('#friend-list').insertAdjacentHTML('beforebegin', '<label for="friend-filter">Lọc danh sách bạn bè</label><input id="friend-filter" class="text-input" type="search" maxlength="50" placeholder="Tên hoặc tên đăng nhập">');
+  function filterFriends() {
+    const query = document.querySelector('#friend-filter').value.trim().toLocaleLowerCase();
+    for (const item of document.querySelectorAll('#friend-list .account-row')) item.hidden = !item.firstElementChild.textContent.toLocaleLowerCase().includes(query);
+  }
+  document.querySelector('#friend-filter').addEventListener('input', filterFriends);
   const publicSection = document.createElement('section');
   publicSection.className = 'public-rooms';
   publicSection.innerHTML = '<div class="panel-heading"><h2>Phòng công khai</h2><button class="button button-quiet" id="refresh-public">Làm mới</button></div><div id="public-room-list"></div>';
   document.querySelector('#lobby').append(publicSection);
   let user = null;
   let mode = 'login';
+  const refreshTimers = new Map();
+  function scheduleRefresh(kind) {
+    if (refreshTimers.has(kind)) return;
+    refreshTimers.set(kind, setTimeout(() => {
+      refreshTimers.delete(kind);
+      (kind === 'rooms' ? refreshPublic() : refreshSocial()).catch((e) => notify(e.message));
+    }, 150));
+  }
   const resetToken = new URLSearchParams(location.search).get('reset');
   function setMode(next) {
     mode = next;
@@ -37,6 +51,12 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
       field.querySelector('input').required = !field.hidden;
     }
     document.querySelector('#auth-password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+    const password = document.querySelector('#auth-password');
+    password.minLength = ['register', 'reset'].includes(mode) ? 8 : 0;
+    if (['register', 'reset'].includes(mode)) password.setAttribute('pattern', '(?=.*\\p{L})(?=.*[0-9]).{8,128}');
+    else password.removeAttribute('pattern');
+    password.setCustomValidity('');
+    document.querySelector('#auth-confirmPassword').setCustomValidity('');
     document.querySelector('#password-hint').hidden = !['register', 'reset'].includes(mode);
     document.querySelector('#auth-submit').textContent = { login: 'Đăng nhập', register: 'Tạo tài khoản', forgot: 'Gửi hướng dẫn đặt lại', reset: 'Đặt lại mật khẩu' }[mode];
     document.querySelector('#auth-message').textContent = '';
@@ -72,33 +92,53 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
       item.append(button);
     }
     container.append(item);
+    return item;
   }
   async function refreshPublic() {
     if (!user) return;
     const { rooms } = await request('/api/rooms/public');
     const list = document.querySelector('#public-room-list'); list.replaceChildren();
     if (!rooms.length) row(list, 'Chưa có phòng công khai. Bạn có thể tạo phòng mới.');
-    for (const r of rooms) row(list, `${r.name} · ${r.code} · ${r.opponent ? 'Đủ hai người' : 'Chờ đối thủ'} · ${r.spectators.length} khán giả`, [['Tham gia', () => joinRoom(r.code)]]);
+    for (const r of rooms) row(list, `${r.name} · ${r.host.name} · ${r.code} · ${r.status === 'finished' ? 'Chờ trận mới' : ['syncing','countdown','playing','paused'].includes(r.status) ? 'Đang diễn ra' : r.opponent ? 'Đủ hai người' : 'Chờ đối thủ'} · ${r.spectators.length} khán giả`, [['Tham gia', () => joinRoom(r.code)]]);
   }
   async function refreshSocial() {
     if (!user || dashboard.hidden) return;
     const social = await request('/api/friends');
     for (const id of ['friend-list', 'friend-requests', 'room-invites', 'notification-list', 'session-list']) document.getElementById(id).replaceChildren();
     for (const f of social.friends) {
-      const actions = [['Hủy kết bạn', () => request(`/api/friends/${f.id}`, { method: 'DELETE' })]];
-      if (f.online && currentRoom()?.host?.id === user.id && !currentRoom()?.opponent) actions.unshift(['Mời vào phòng', () => request(`/api/rooms/${currentRoom().code}/invites`, { method: 'POST', body: { userId: f.id } })]);
+      const actions = [['Hủy kết bạn', () => { if (window.confirm(`Hủy kết bạn với ${f.displayName}?`)) return request(`/api/friends/${f.id}`, { method: 'DELETE' }); }]];
+      if (f.online && currentRoom()?.host?.id === user.id) actions.unshift(['Mời vào phòng', () => request(`/api/rooms/${currentRoom().code}/invites`, { method: 'POST', body: { userId: f.id } })]);
       row(document.querySelector('#friend-list'), `${f.displayName} (@${f.username}) · ${f.online ? 'Online' : 'Offline'}`, actions);
     }
+    filterFriends();
     for (const r of social.requests) {
       const incoming = r.to === user.id;
       const actions = incoming ? ['accept', 'reject'] : ['cancel'];
       row(document.querySelector('#friend-requests'), `${incoming ? r.sender.displayName : r.recipient.displayName} · ${incoming ? 'Đã gửi lời mời' : 'Đang chờ'}`, actions.map((a) => [{ accept: 'Chấp nhận', reject: 'Từ chối', cancel: 'Hủy' }[a], () => request(`/api/friends/requests/${r.id}/${a}`, { method: 'POST' })]));
     }
-    for (const i of social.invites) row(document.querySelector('#room-invites'), `Phòng ${i.roomCode} · hết hạn ${new Date(i.expiresAt).toLocaleTimeString('vi-VN')}`, (i.to === user.id ? ['accept', 'decline'] : ['cancel']).map((action) => [{ accept: 'Vào phòng', decline: 'Từ chối', cancel: 'Hủy' }[action], async () => { const result = await request(`/api/rooms/invites/${i.id}/${action}`, { method: 'POST' }); if (action === 'accept') { joinRoom(result.roomCode); dashboard.hidden = true; } }]));
+    for (const i of social.invites) {
+      const item = row(document.querySelector('#room-invites'), `Phòng ${i.roomCode}`, (i.to === user.id ? ['accept', 'decline'] : ['cancel']).map((action) => [{ accept: 'Vào phòng', decline: 'Từ chối', cancel: 'Hủy' }[action], async () => { const result = await request(`/api/rooms/invites/${i.id}/${action}`, { method: 'POST' }); if (action === 'accept') { joinRoom(result.roomCode); dashboard.hidden = true; } }]));
+      item.dataset.expiresAt = i.expiresAt;
+      item.dataset.inviteLabel = `${i.fromName ?? 'Bạn bè'} · ${i.roomName || 'Phòng'} (${i.roomCode}) · Đang chờ phản hồi`;
+    }
+    updateInviteCountdowns();
     for (const n of social.notifications) row(document.querySelector('#notification-list'), `${n.read ? '' : '● '}${n.text}`, n.read ? [] : [['Đã đọc', () => request(`/api/notifications/${n.id}/read`, { method: 'POST' })]]);
     const { sessions } = await request('/api/auth/sessions');
     for (const s of sessions) row(document.querySelector('#session-list'), `${s.current ? 'Phiên hiện tại' : 'Phiên khác'} · hết hạn ${new Date(s.expiresAt).toLocaleDateString('vi-VN')}`, s.current ? [] : [['Thu hồi', () => request(`/api/auth/sessions/${s.id}`, { method: 'DELETE' })]]);
   }
+  function updateInviteCountdowns() {
+    let expired = false;
+    for (const item of document.querySelectorAll('#room-invites [data-expires-at]')) {
+      const seconds = Math.max(0, Math.ceil((Number(item.dataset.expiresAt) - Date.now()) / 1000));
+      item.querySelector('span').textContent = `${item.dataset.inviteLabel} · ${seconds}s`;
+      if (!seconds) { item.remove(); expired = true; }
+    }
+    if (expired) scheduleRefresh('social');
+  }
+  for (const id of ['auth-password', 'auth-confirmPassword']) document.getElementById(id).addEventListener('input', () => {
+    const confirmation = document.querySelector('#auth-confirmPassword');
+    confirmation.setCustomValidity(['register','reset'].includes(mode) && confirmation.value !== document.querySelector('#auth-password').value ? 'Mật khẩu xác nhận không khớp.' : '');
+  });
   authView.querySelectorAll('[data-mode]').forEach((b) => { b.onclick = () => setMode(b.dataset.mode); });
   document.querySelector('#account-form').onsubmit = async (event) => {
     event.preventDefault(); const button = document.querySelector('#auth-submit'); button.disabled = true;
@@ -134,11 +174,16 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
     catch (error) { notify(error.message); }
   };
   setInterval(() => refreshSocial().catch(() => {}), 15000);
+  setInterval(updateInviteCountdowns, 1000);
   return {
-    request, expire,
+    request, expire, refresh: scheduleRefresh,
     async init() {
       document.querySelector('#lobby').hidden = true;
-      if (resetToken) { setMode('reset'); return; }
+      if (resetToken) {
+        try { await request('/api/auth/reset-token', { method: 'POST', body: { token: resetToken } }); setMode('reset'); }
+        catch (error) { setMode('login'); document.querySelector('#auth-message').textContent = error.message; }
+        return;
+      }
       try { const result = await request('/api/me'); await loggedIn(result.user); }
       catch (error) { setMode('login'); if (!error.message.includes('đăng nhập')) document.querySelector('#auth-message').textContent = error.message; }
     },
