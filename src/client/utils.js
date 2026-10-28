@@ -8,6 +8,13 @@ export function getApiBase(webSocketUrl) {
   return webSocketUrl.replace(/^ws/, 'http').replace(/\/ws$/, '');
 }
 
+// Browser HTTP and WebSocket share one origin (Vite proxy or the Node host).
+export function getAppEndpoints(location, override) {
+  const scheme = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const webSocketUrl = override || `${scheme}//${location.host}/ws`;
+  return { webSocketUrl, apiBase: getApiBase(webSocketUrl) };
+}
+
 export function createClientId(cryptoApi = globalThis.crypto) {
   if (typeof cryptoApi?.randomUUID === 'function') return cryptoApi.randomUUID();
 

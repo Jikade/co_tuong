@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createSqlConnection, sqlValue as v, sqlDate as dt } from './sql-connection.js';
+import { readSqlConfig } from '../config.js';
 
 const uid = (id) => `(SELECT user_id FROM dbo.integration_user_map WHERE external_id=${v(id)})`;
 const side = (s) => s === 'red' ? 'Red' : 'Black';
@@ -82,6 +83,7 @@ function projectRoom(room, i) {
 }
 
 export function createIntegrationSqlPersistence({ env = process.env } = {}) {
+  const config = readSqlConfig(env);
   const db = createSqlConnection(env);
   let queue = Promise.resolve();
   let version = 0;
@@ -93,7 +95,7 @@ export function createIntegrationSqlPersistence({ env = process.env } = {}) {
   return {
     kind: 'sqlserver',
     async init() {
-      if (env.DB_AUTO_MIGRATE === 'true') await db.execute(await readFile(new URL('../../../database/03_integration.sql', import.meta.url), 'utf8'));
+      if (config.autoMigrate) await db.execute(await readFile(new URL('../../../database/03_integration.sql', import.meta.url), 'utf8'));
       await db.execute("IF NOT EXISTS(SELECT 1 FROM dbo.integration_account_state WHERE singleton=1) INSERT dbo.integration_account_state(singleton,payload) VALUES(1,N'{}');");
     },
     accounts: {

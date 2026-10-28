@@ -1,12 +1,10 @@
+import { ApiError } from '../errors.js';
 import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 
 const scrypt = promisify(scryptCallback);
 export const tokenHash = (token) => createHash('sha256').update(token).digest('hex');
 export const accountInfo = ({ id, username, displayName, email, createdAt }) => ({ id, username, displayName, email, createdAt });
-export class ApiError extends Error {
-  constructor(status, message) { super(message); this.status = status; }
-}
 export function validatePassword(password) {
   if (typeof password !== 'string' || password.length < 8 || password.length > 128
       || !/\p{L}/u.test(password) || !/\d/.test(password)) {

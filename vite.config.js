@@ -1,11 +1,8 @@
 import { defineConfig } from 'vite';
-import { readFileSync } from 'node:fs';
+import { readServerConfig, readTlsOptions } from './src/server/config.js';
 
-const tlsCertFile = process.env.TLS_CERT_FILE;
-const tlsKeyFile = process.env.TLS_KEY_FILE;
-if (Boolean(tlsCertFile) !== Boolean(tlsKeyFile)) {
-  throw new Error('Set both TLS_CERT_FILE and TLS_KEY_FILE to enable HTTPS.');
-}
+const config = readServerConfig();
+const https = readTlsOptions(config);
 
 export default defineConfig({
   base: './',
@@ -13,16 +10,11 @@ export default defineConfig({
     port: 5173,
     host: true,
     proxy: {
-      '/api': { target: `${tlsCertFile ? 'https' : 'http'}://localhost:${process.env.PORT || 3001}`, secure: false },
-      '/ws': { target: `${tlsCertFile ? 'wss' : 'ws'}://localhost:${process.env.PORT || 3001}`, ws: true, secure: false },
-      '/health': { target: `${tlsCertFile ? 'https' : 'http'}://localhost:${process.env.PORT || 3001}`, secure: false },
+      '/api': { target: `${https ? 'https' : 'http'}://localhost:${config.port}`, secure: false },
+      '/ws': { target: `${https ? 'wss' : 'ws'}://localhost:${config.port}`, ws: true, secure: false },
+      '/health': { target: `${https ? 'https' : 'http'}://localhost:${config.port}`, secure: false },
     },
-    ...(tlsCertFile && {
-      https: {
-        cert: readFileSync(tlsCertFile),
-        key: readFileSync(tlsKeyFile),
-      },
-    }),
+    ...(https && { https }),
   },
   build: {
     outDir: 'dist',

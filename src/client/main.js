@@ -3,11 +3,12 @@ import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constan
 import { createAccountUi } from './account-ui.js';
 import {
   createClientId,
-  getApiBase,
-  getWebSocketUrl,
+  getAppEndpoints,
   mediaErrorMessage,
   webRtcErrorMessage,
 } from './utils.js';
+
+const endpoints = getAppEndpoints(location, import.meta.env.VITE_WS_URL);
 
 const CELL = 49;
 const PAD = 20;
@@ -237,12 +238,7 @@ function renderPlayerPresentation(match, replay = false) {
 }
 
 function apiBase() {
-  const configured = import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`;
-  return getApiBase(getWebSocketUrl({
-    override: configured,
-    protocol: location.protocol,
-    hostname: location.hostname,
-  }));
+  return endpoints.apiBase;
 }
 
 function fitScene() {
@@ -386,11 +382,7 @@ function showNotice(message) {
 
 function sendAction(action, details = {}) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    const endpoint = getWebSocketUrl({
-      override: import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`,
-      protocol: location.protocol,
-      hostname: location.hostname,
-    });
+    const endpoint = endpoints.webSocketUrl;
     showNotice(`Chưa kết nối được máy chủ (${endpoint}). Hãy kiểm tra máy chủ và thử lại; thông tin đã nhập vẫn được giữ.`);
     return false;
   }
@@ -401,11 +393,7 @@ function sendAction(action, details = {}) {
 function connect() {
   if (!authenticated) return;
   clearTimeout(reconnectTimer);
-  const url = getWebSocketUrl({
-    override: import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`,
-    protocol: location.protocol,
-    hostname: location.hostname,
-  });
+  const url = endpoints.webSocketUrl;
   socket = new WebSocket(url);
   socket.addEventListener('open', () => {
     reconnectDelay = 500;

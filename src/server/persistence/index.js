@@ -1,16 +1,14 @@
 import { createMemoryPersistence } from './memory-persistence.js';
 import { createFilePersistence } from './file-persistence.js';
 import { createIntegrationSqlPersistence } from './integration-sql-persistence.js';
+import { readPersistenceConfig } from '../config.js';
 
 export function createPersistenceFromEnv(env = process.env) {
-  const mode = (env.DB_MODE || 'file').trim().toLowerCase();
+  const { mode, dataFile } = readPersistenceConfig(env);
   if (mode === 'sqlserver' || mode === 'mssql') {
     return createIntegrationSqlPersistence({ env });
   }
-  if (mode === 'file') return createFilePersistence(env.DATA_FILE);
-  if (mode !== 'memory') {
-    throw new Error(`DB_MODE không hỗ trợ: ${mode}`);
-  }
+  if (mode === 'file') return createFilePersistence(dataFile);
   return createMemoryPersistence();
 }
 

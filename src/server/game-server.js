@@ -1,11 +1,8 @@
 import { createServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
 import { randomInt, randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-
-import { WebSocket, WebSocketServer } from 'ws';
 import {
   applyLegalMove,
   createInitialPieces,
@@ -16,10 +13,12 @@ import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constan
 import { createHistoryStore } from './services/history-store.js';
 import { createPersistenceFromEnv } from './persistence/index.js';
 import { createMemoryPersistence } from './persistence/memory-persistence.js';
-import { createAccounts, ApiError } from './services/accounts.js';
-import { createAccountHttp, sameOrigin, sessionToken } from './http/account-routes.js';
-
-const corsHeaders = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
+import { createAccounts } from './services/accounts.js';
+import { createAccountHttp } from './http/account-routes.js';
+import { createHttpHandler } from './http/handler.js';
+import { sendJson } from './http/responses.js';
+import { createWebSocketTransport, send, sendError, isAccountOnline, closeInvalidSessions } from './realtime/transport.js';
+import { readServerConfig, readTlsOptions } from './config.js';
 
 function publicParticipant(room, participant) {
   if (!participant) return null;
@@ -118,33 +117,33 @@ function isActiveMatch(match) {
     && (match.status === MATCH_STATUS.PLAYING || match.status === MATCH_STATUS.PAUSED);
 }
 
-export function createGameServer({
-  host = '0.0.0.0',
-  port = Number(process.env.PORT) || 3001,
-  persistence = createPersistenceFromEnv(),
-  requireAuth = true,
-  accountOptions = {},
-  staticDir = path.resolve('dist'),
-  countdownMs = 3000,
-  ackTimeoutMs = 15000,
-  turnSeconds = 60,
-  reconnectSeconds = 60,
-  warningSeconds = 10,
-  callTimeoutMs = 60_000,
-  roomTtlMs = 12 * 60 * 60 * 1000,
-  roomCleanupIntervalMs = 60_000,
-  computerMoveDelayMs = 180,
-  tlsCertFile = process.env.TLS_CERT_FILE,
-  tlsKeyFile = process.env.TLS_KEY_FILE,
-} = {}) {
-  if (Boolean(tlsCertFile) !== Boolean(tlsKeyFile)) {
-    throw new Error('Set both TLS_CERT_FILE and TLS_KEY_FILE to enable HTTPS.');
-  }
+export function createGameServer(options = {}) {
+  const config = readServerConfig();
+  const {
+    host = config.host,
+    port = config.port,
+    persistence = createPersistenceFromEnv(),
+    requireAuth = true,
+    accountOptions = {},
+    staticDir = config.staticDir,
+    countdownMs = 3000,
+    ackTimeoutMs = 15000,
+    turnSeconds = 60,
+    reconnectSeconds = 60,
+    warningSeconds = 10,
+    callTimeoutMs = 60_000,
+    roomTtlMs = 12 * 60 * 60 * 1000,
+    roomCleanupIntervalMs = 60_000,
+    computerMoveDelayMs = 180,
+    tlsCertFile = config.tlsCertFile,
+    tlsKeyFile = config.tlsKeyFile,
+  } = options;
+  const tlsOptions = readTlsOptions({ tlsCertFile, tlsKeyFile });
   const rooms = new Map();
   if (requireAuth && !persistence.accounts) throw new Error('Persistence cần accounts repository khi bật xác thực.');
   const accounts = createAccounts(persistence.accounts ?? createMemoryPersistence().accounts, {
     async deliverReset(delivery) {
-      const directory = path.resolve(process.env.MAIL_OUTBOX || 'data/outbox');
+      const directory = config.mailOutbox;
       await mkdir(directory, { recursive: true });
       await writeFile(path.join(directory, `${randomUUID()}.json`), JSON.stringify({ ...delivery, createdAt: Date.now() }), { mode: 0o600 });
     },
@@ -169,90 +168,25 @@ export function createGameServer({
     return operation;
   }
 
-  function sendJson(response, status, payload) {
-    response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', ...corsHeaders });
-    response.end(JSON.stringify(payload));
-  }
-
   const handleAccountHttp = createAccountHttp({
     accounts, sendJson,
     secure: Boolean(tlsCertFile),
     roomList: () => [...rooms.values()].filter((r) => r.visibility !== 'private').map((r) => publicRoom(r, warningSeconds)),
     roomForInvite: (code) => rooms.get(code),
-    isOnline: (id) => [...wss.clients].some((s) => s.accountId === id && s.readyState === WebSocket.OPEN),
-    revokeSockets: () => { for (const s of wss.clients) if (s.authToken && !accounts.authenticate(s.authToken)) s.close(4401, 'Session expired'); },
+    isOnline: (id) => isAccountOnline(wss, id),
+    revokeSockets: () => closeInvalidSessions(wss, accounts),
   });
 
-  async function handleHttp(request, response) {
-    const url = new URL(request.url, 'http://localhost');
-    if (request.method === 'OPTIONS') {
-      response.writeHead(204, corsHeaders);
-      response.end();
-      return;
-    }
-    if (url.pathname === '/health') {
-      const health = await persistence.health?.() ?? { ok: true };
-      sendJson(response, health.ok ? 200 : 503, { status: health.ok ? 'ok' : 'unavailable', database: { kind: persistence.kind, ok: health.ok } });
-      return;
-    }
-    if (await handleAccountHttp(request, response, url)) return;
-    const identity = accounts.authenticate(sessionToken(request));
-    if (requireAuth && url.pathname.startsWith('/api/') && !identity) throw new ApiError(401, 'Vui lòng đăng nhập.');
-    if (url.pathname === '/api/history') {
-      const playerId = requireAuth ? identity.user.id : url.searchParams.get('playerId');
-      if (!playerId) {
-        sendJson(response, 400, { error: 'Thieu tham so playerId.' });
-        return;
-      }
-      sendJson(response, 200, { matches: history.list(playerId) });
-      return;
-    }
-    const matchRoute = url.pathname.match(/^\/api\/matches\/([\w-]+)$/);
-    if (matchRoute) {
-      const record = history.find(matchRoute[1]);
-      if (!record) {
-        sendJson(response, 404, { error: 'Khong tim thay tran dau.' });
-        return;
-      }
-      if (requireAuth && ![record.players?.red?.id, record.players?.black?.id].includes(identity.user.id)) throw new ApiError(403, 'Bạn không có quyền xem lịch sử này.');
-      sendJson(response, 200, record);
-      return;
-    }
-    if (request.method === 'GET' && !url.pathname.startsWith('/api/')) {
-      const relative = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
-      const filename = path.resolve(staticDir, `.${relative}`);
-      if (!filename.startsWith(path.resolve(staticDir) + path.sep)) throw new ApiError(403, 'Đường dẫn không hợp lệ.');
-      try {
-        const content = await readFile(filename);
-        const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
-        response.writeHead(200, { 'content-type': types[path.extname(filename)] ?? 'application/octet-stream', 'x-content-type-options': 'nosniff' });
-        response.end(content);
-        return;
-      } catch (error) { if (error.code !== 'ENOENT') throw error; }
-    }
-    sendJson(response, 404, { error: 'Not found' });
-  }
+  const httpListener = createHttpHandler({ accounts, persistence, history, requireAuth, staticDir, handleAccountHttp });
 
-  function httpListener(request, response) {
-    handleHttp(request, response).catch((error) => {
-      if (!error.status) console.error('HTTP request failed:', error);
-      if (!response.headersSent) sendJson(response, error.status ?? 500, { error: error.status ? error.message : 'Không thể xử lý yêu cầu.' });
-      else response.end();
-    });
-  }
-
-  const httpServer = tlsCertFile
-    ? createHttpsServer({ cert: readFileSync(tlsCertFile), key: readFileSync(tlsKeyFile) }, httpListener)
+  const httpServer = tlsOptions
+    ? createHttpsServer(tlsOptions, httpListener)
     : createServer(httpListener);
-  const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
-
-  function send(socket, message) {
-    if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
-  }
-
-  function sendError(socket, message, requestId) {
-    send(socket, { type: 'error', message, ...(typeof requestId === 'string' ? { requestId } : {}) });
-  }
+  const wss = createWebSocketTransport({
+    httpServer, accounts, requireAuth,
+    onMessage: (socket, message) => enqueueAction(() => dispatch(socket, message)),
+    onDisconnect: handleSocketDisconnect,
+  });
 
   function connectedParticipants(room) {
     const all = [room.host, room.opponent, ...room.spectators].filter(Boolean);
@@ -1892,61 +1826,24 @@ export function createGameServer({
     }
   }
 
-  httpServer.on('upgrade', (request, socket, head) => {
-    const pathname = new URL(request.url, 'http://localhost').pathname;
-    if (pathname !== '/ws') {
-      socket.destroy();
-      return;
-    }
-    if (!sameOrigin(request)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
-    const identity = accounts.authenticate(sessionToken(request));
-    if (requireAuth && !identity) { socket.end('HTTP/1.1 401 Unauthorized\r\n\r\n'); return; }
-    wss.handleUpgrade(request, socket, head, (webSocket) => {
-      webSocket.authToken = sessionToken(request);
-      webSocket.accountId = identity?.user.id;
-      wss.emit('connection', webSocket, request);
-    });
-  });
-
-  wss.on('connection', (socket) => {
-    socket.on('message', (rawMessage) => {
-      let message;
-      try {
-        message = JSON.parse(rawMessage.toString());
-      } catch {
-        sendError(socket, 'Dữ liệu gửi lên không phải JSON hợp lệ.');
-        return;
-      }
-      const operation = enqueueAction(() => dispatch(socket, message));
-      operation.catch((error) => {
-        console.error('WebSocket action failed:', error);
-        if (error.code === 'PERSISTENCE_ERROR') {
-          sendError(socket, 'Không thể lưu trạng thái trận. Hãy thử lại.', message.requestId);
-          return;
-        }
-        sendError(socket, 'Không thể xử lý yêu cầu. Vui lòng thử lại.', message.requestId);
+  function handleSocketDisconnect(socket) {
+    if (socket.computerMatchId) detachComputerSocket(socket);
+    if (shuttingDown) return;
+    if (socket.playerId && peers.get(socket.playerId) === socket) peers.delete(socket.playerId);
+    const room = socket.roomCode && rooms.get(socket.roomCode);
+    if (!room || room.connections.get(socket.playerId) !== socket) return;
+    const playerId = socket.playerId;
+    room.connections.delete(playerId);
+    clearCall(room, { notify: playerId, type: 'call-ended' });
+    const isPlayer = Boolean(room.match && playerIds(room.match).includes(playerId));
+    if (isPlayer) {
+      enqueueAction(() => handleDisconnect(room, playerId)).catch((error) => {
+        console.error('Could not pause the match:', error);
       });
-    });
-
-    socket.on('close', () => {
-      if (socket.computerMatchId) detachComputerSocket(socket);
-      if (shuttingDown) return;
-      if (socket.playerId && peers.get(socket.playerId) === socket) peers.delete(socket.playerId);
-      const room = socket.roomCode && rooms.get(socket.roomCode);
-      if (!room || room.connections.get(socket.playerId) !== socket) return;
-      const playerId = socket.playerId;
-      room.connections.delete(playerId);
-      clearCall(room, { notify: playerId, type: 'call-ended' });
-      const isPlayer = Boolean(room.match && playerIds(room.match).includes(playerId));
-      if (isPlayer) {
-        enqueueAction(() => handleDisconnect(room, playerId)).catch((error) => {
-          console.error('Could not pause the match:', error);
-        });
-      } else {
-        broadcastRoom(room);
-      }
-    });
-  });
+    } else {
+      broadcastRoom(room);
+    }
+  }
 
   return {
     async listen() {
@@ -1965,7 +1862,7 @@ export function createGameServer({
       });
       started = true;
       cleanupTimer = setInterval(() => {
-        if (requireAuth) for (const s of wss.clients) if (!accounts.authenticate(s.authToken)) s.close(4401, 'Session expired');
+        if (requireAuth) closeInvalidSessions(wss, accounts);
         cleanupExpiredRooms().catch((error) => console.error('Could not clean expired rooms:', error));
       }, roomCleanupIntervalMs);
       cleanupTimer.unref?.();

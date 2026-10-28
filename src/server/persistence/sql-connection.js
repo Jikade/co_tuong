@@ -3,6 +3,7 @@ import { promisify } from 'node:util';
 import { mkdir, writeFile, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
+import { projectPath, readSqlConfig } from '../config.js';
 const run = promisify(execFile);
 const settings = 'SET NOCOUNT ON; SET XACT_ABORT ON; SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; SET ANSI_PADDING ON; SET ANSI_WARNINGS ON; SET ARITHABORT ON; SET CONCAT_NULL_YIELDS_NULL ON; SET NUMERIC_ROUNDABORT OFF;\n';
 
@@ -20,30 +21,26 @@ export const sqlDate = (value) => value == null ? 'NULL' : `CONVERT(datetime2(3)
 
 export function createSqlConnection(env = process.env) {
   let pool;
-  const driver = env.DB_DRIVER || 'mssql';
+  const config = readSqlConfig(env);
+  const { driver } = config;
   async function execute(text) {
-    if (!env.DB_SERVER || !env.DB_DATABASE) throw new Error('Cần DB_SERVER và DB_DATABASE.');
+    if (!config.connection.server || !config.connection.database) throw new Error('Cần DB_SERVER và DB_DATABASE.');
     if (driver === 'sqlcmd') {
-      const directory = path.resolve('data/sql-temp');
+      const directory = projectPath('data/sql-temp');
       await mkdir(directory, { recursive: true });
       const filename = path.join(directory, `${randomUUID()}.sql`);
       await writeFile(filename, '\ufeff' + settings + text, 'utf8');
       try {
-        const args = ['-S', env.DB_SERVER, '-d', env.DB_DATABASE, '-E', '-C', '-b', '-r', '1', '-y', '0', '-w', '65535', '-f', '65001', '-l', '10', '-i', filename];
-        const result = await run(env.SQLCMD_PATH || 'sqlcmd', args, { encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, timeout: 60000 });
+        const args = ['-S', config.connection.server, '-d', config.connection.database, '-E', '-C', '-b', '-r', '1', '-y', '0', '-w', '65535', '-f', '65001', '-l', '10', '-i', filename];
+        const result = await run(config.sqlcmdPath, args, { encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, timeout: 60000 });
         return result.stdout;
       } catch (error) {
         throw new Error(`SQL Server: ${(error.stderr || error.stdout || error.message).trim()}`);
       } finally { await unlink(filename); }
     }
-    if (driver !== 'mssql') throw new Error(`DB_DRIVER không hỗ trợ: ${driver}`);
     if (!pool) {
       const { default: sql } = await import('mssql');
-      const candidate = new sql.ConnectionPool({
-        server: env.DB_SERVER, database: env.DB_DATABASE, user: env.DB_USER, password: env.DB_PASSWORD,
-        port: Number(env.DB_PORT || 1433),
-        options: { encrypt: env.DB_ENCRYPT !== 'false', trustServerCertificate: env.DB_TRUST_SERVER_CERTIFICATE === 'true' },
-      });
+      const candidate = new sql.ConnectionPool(config.connection);
       candidate.on('error', (error) => console.error('SQL pool:', error.message));
       try { await candidate.connect(); pool = candidate; } catch (error) { await candidate.close(); throw error; }
     }
