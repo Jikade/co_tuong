@@ -1,0 +1,17 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      CS8981: entity scaffold tu DB dung ten bang (vi du `phong`) — duoc giu
+      nguyen de dong y voi schema hien co; khi cap nhat schema se canh lai.
+    -->
+    <NoWarn>$(NoWarn);CS1591;CS8981</NoWarn>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+@page "/account/login"
+@using CoTuong.Web.Components.Pages.Account
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Đăng nhập | Cờ Tướng</PageTitle>
+<section class="account-card">
+    <h1>Đăng nhập</h1>
+    @if (!string.IsNullOrEmpty(_notice)) { <p class="success-message">@_notice</p> }
+    @if (!string.IsNullOrEmpty(_error)) { <p class="error-message" role="alert">@_error</p> }
+    <EditForm Model="_form" OnValidSubmit="SubmitAsync">
+        <DataAnnotationsValidator />
+        <label for="username">Tên đăng nhập</label>
+        <InputText id="username" class="form-control" @bind-Value="_form.TenDangNhap" autocomplete="username" />
+        <ValidationMessage For="() => _form.TenDangNhap" />
+        <label for="password">Mật khẩu</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="_form.MatKhau" autocomplete="current-password" />
+        <ValidationMessage For="() => _form.MatKhau" />
+        <button class="btn btn-primary mt-3" disabled="@_busy">@(_busy ? "Đang đăng nhập…" : "Đăng nhập")</button>
+    </EditForm>
+    <nav class="account-links"><a href="/account/forgot-password">Quên mật khẩu?</a><a href="/account/register">Tạo tài khoản</a></nav>
+</section>
+
+@code {
+    private readonly LoginForm _form = new();
+    private string? _error;
+    private string? _notice;
+    private bool _busy;
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery(Name = "registered")] public bool Registered { get; set; }
+    [SupplyParameterFromQuery(Name = "reset")] public bool Reset { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Registered) _notice = "Đăng ký thành công. Hãy đăng nhập bằng tài khoản vừa tạo.";
+        else if (Reset) _notice = "Đặt lại mật khẩu thành công. Hãy đăng nhập bằng mật khẩu mới.";
+    }
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            var response = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.post", "/api/auth/login", _form);
+            if (!response.Ok)
+            {
+                _error = response.Data.TryGetProperty("message", out var message) ? message.GetString() : "Tên đăng nhập hoặc mật khẩu không đúng.";
+                return;
+            }
+            Navigation.NavigateTo(IsLocalReturnUrl(ReturnUrl) ? ReturnUrl! : "/", forceLoad: true);
+        }
+        catch (JSException) { _error = "Không thể kết nối máy chủ. Vui lòng thử lại."; }
+        finally { _busy = false; }
+    }
+
+    private static bool IsLocalReturnUrl(string? value) => !string.IsNullOrWhiteSpace(value)
+        && value.StartsWith('/') && !value.StartsWith("//", StringComparison.Ordinal) && !value.Contains('\\');
+}

@@ -1,0 +1,133 @@
+@page "/friends"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using CoTuong.Web.Components.Pages.Account
+@inject IJSRuntime JS
+
+<PageTitle>Bạn bè | Cờ Tướng</PageTitle>
+<h1>Bạn bè</h1>
+@if (!string.IsNullOrEmpty(_message)) { <p class="success-message" role="status">@_message</p> }
+@if (!string.IsNullOrEmpty(_error)) { <p class="error-message" role="alert">@_error</p> }
+
+<section class="panel">
+    <h2>Tìm người chơi</h2>
+    <div class="inline-form"><input class="form-control" @bind="_query" @bind:event="oninput" placeholder="Tên đăng nhập hoặc tên hiển thị" /><button class="btn btn-primary" @onclick="SearchAsync">Tìm kiếm</button></div>
+    @foreach (var result in _search)
+    {
+        var userId = Long(result, "maNguoiDung");
+        <article class="friend-row">
+            <div><strong>@Text(result, "tenHienThi")</strong><small>@@@Text(result, "tenDangNhap")</small></div>
+            @switch (Text(result, "trangThaiQuanHe"))
+            {
+                case "BanBe": <span>Đã là bạn bè</span>; break;
+                case "LoiMoiDangCho": <span>Đang có lời mời</span>; break;
+                default: <button class="btn btn-sm btn-outline-primary" @onclick="() => SendAsync(userId)">Kết bạn</button>; break;
+            }
+        </article>
+    }
+</section>
+
+<div class="dashboard-grid mt-4">
+    <section class="panel">
+        <h2>Danh sách bạn bè</h2>
+        @if (_friends.Count == 0) { <p>Chưa có bạn bè.</p> }
+        @foreach (var friend in _friends)
+        {
+            var friendId = Long(friend, "maBanBe");
+            <article class="friend-row"><div><strong>@Text(friend, "tenHienThi")</strong><small>@@@Text(friend, "tenDangNhap") · @(Bool(friend, "dangOnline") ? "Online" : "Offline")</small></div>
+                <button class="btn btn-sm btn-outline-danger" @onclick="() => UnfriendAsync(friendId)">Hủy kết bạn</button></article>
+        }
+    </section>
+    <section class="panel">
+        <h2>Lời mời đang chờ</h2>
+        @if (_requests.Count == 0) { <p>Không có lời mời mới.</p> }
+        @foreach (var request in _requests)
+        {
+            var id = Long(request, "maLoiMoi");
+            <article class="friend-row"><div><strong>@Text(request, "tenHienThiGui")</strong><small>@@@Text(request, "tenDangNhapGui") · @(Bool(request, "dangOnline") ? "Online" : "Offline")</small></div>
+                <button class="btn btn-sm btn-primary" @onclick="() => RespondAsync(id, true)">Chấp nhận</button>
+                <button class="btn btn-sm btn-outline-secondary" @onclick="() => RespondAsync(id, false)">Từ chối</button></article>
+        }
+    </section>
+    <section class="panel panel-wide">
+        <h2>Lời mời đã gửi</h2>
+        @if (_sent.Count == 0) { <p>Không có lời mời đang chờ phản hồi.</p> }
+        @foreach (var sent in _sent)
+        {
+            var requestId = Long(sent, "maLoiMoi");
+            <article class="friend-row"><div><strong>@Text(sent, "tenHienThiNhan")</strong><small>@@@Text(sent, "tenDangNhapNhan")</small></div>
+                <button class="btn btn-sm btn-outline-danger" @onclick="() => CancelAsync(requestId)">Hủy lời mời</button></article>
+        }
+    </section>
+</div>
+
+@code {
+    private List<System.Text.Json.JsonElement> _friends = [];
+    private List<System.Text.Json.JsonElement> _requests = [];
+    private List<System.Text.Json.JsonElement> _sent = [];
+    private List<System.Text.Json.JsonElement> _search = [];
+    private string _query = "";
+    private string? _error;
+    private string? _message;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _friends = await GetListAsync("/api/friends");
+        _requests = await GetListAsync("/api/friends/requests");
+        _sent = await GetListAsync("/api/friends/requests/sent");
+    }
+
+    private async Task SearchAsync()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_query)) { _search = []; return; }
+        var response = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.get", $"/api/friends/search?q={Uri.EscapeDataString(_query)}");
+        if (!response.Ok) { _error = Error(response); return; }
+        _search = response.Data.EnumerateArray().Select(x => x.Clone()).ToList();
+    }
+
+    private async Task SendAsync(long id)
+    {
+        await RunAsync("coTuongApi.post", "/api/friends/requests", new { userId = id }, "Đã gửi lời mời kết bạn.");
+        await SearchAsync(); await ReloadAsync();
+    }
+
+    private async Task RespondAsync(long id, bool accept)
+    {
+        await RunAsync("coTuongApi.post", $"/api/friends/requests/{id}/{(accept ? "accept" : "reject")}", new { }, accept ? "Đã chấp nhận lời mời." : "Đã từ chối lời mời.");
+        await ReloadAsync();
+    }
+
+    private async Task UnfriendAsync(long id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Bạn có chắc muốn hủy kết bạn?")) return;
+        var response = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.delete", $"/api/friends/{id}");
+        if (!response.Ok) _error = Error(response); else { _message = "Đã hủy kết bạn."; await ReloadAsync(); }
+    }
+
+    private async Task CancelAsync(long requestId)
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.delete", $"/api/friends/requests/{requestId}");
+        if (!result.Ok) _error = Error(result); else { _message = "Đã hủy lời mời kết bạn."; await ReloadAsync(); }
+    }
+
+    private async Task RunAsync(string method, string url, object body, string success)
+    {
+        _error = null; _message = null;
+        var result = await JS.InvokeAsync<BrowserApiResult>(method, url, body);
+        if (result.Ok) _message = success; else _error = Error(result);
+    }
+
+    private async Task<List<System.Text.Json.JsonElement>> GetListAsync(string url)
+    {
+        var result = await JS.InvokeAsync<BrowserApiResult>("coTuongApi.get", url);
+        return result.Ok && result.Data.ValueKind == System.Text.Json.JsonValueKind.Array
+            ? result.Data.EnumerateArray().Select(x => x.Clone()).ToList() : [];
+    }
+
+    private static long Long(System.Text.Json.JsonElement value, string name) => value.TryGetProperty(name, out var item) && item.TryGetInt64(out var n) ? n : 0;
+    private static string Text(System.Text.Json.JsonElement value, string name) => value.TryGetProperty(name, out var item) ? item.ToString() : "";
+    private static bool Bool(System.Text.Json.JsonElement value, string name) => value.TryGetProperty(name, out var item) && item.ValueKind == System.Text.Json.JsonValueKind.True;
+    private static string Error(BrowserApiResult result) => result.Data.TryGetProperty("message", out var value) ? value.GetString() ?? "Thao tác thất bại." : "Thao tác thất bại.";
+}
