@@ -6,7 +6,11 @@ import { createSqlConnection, sqlValue as v } from '../src/server/persistence/sq
 import { fixture, proof } from './helpers/qa.js';
 import {api,client} from './helpers/authenticated-game.js';
 const enabled={skip:process.env.RUN_SQL_TESTS!=='true'};
-const safe=()=>assert.equal(process.env.DB_DATABASE,'CoTuongIntegrationTest_QA_20261028','QA writes require the explicitly dedicated QA database.');
+const safe=()=>{
+  const expected=process.env.QA_SQL_TEST_DATABASE||'CoTuongIntegrationTest_QA_20261028';
+  assert.match(expected,/^CoTuongIntegrationTest_QA_[A-Za-z0-9_]+$/,'QA database override must retain the dedicated QA prefix.');
+  assert.equal(process.env.DB_DATABASE,expected,'QA writes require the explicitly dedicated QA database.');
+};
 test('QA SQL actual schema, foreign keys, unique/check enforcement and all view queries',enabled,async(t)=>{
   safe();assert.deepEqual(await setupDatabase(),{baseTables:24,views:5});const db=createSqlConnection();t.after(()=>db.close());
   const views=await db.json("SELECT name FROM sys.views WHERE name LIKE 'v[_]%'");assert.equal(views.length,5);

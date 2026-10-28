@@ -23,7 +23,7 @@
     "test:sql": "node --env-file-if-exists=.env --test test/sql-integration.test.js",
     "test:e2e": "playwright test",
     "test:qa:e2e": "playwright test --config playwright.qa.config.js",
-    "test:qa:sql": "node --env-file-if-exists=.env --test --test-concurrency=1 test/sql-integration.test.js test/qa-sql.test.js test/migration-sql.test.js",
+    "test:qa:sql": "node --env-file-if-exists=.env --test --test-concurrency=1 test/sql-integration.test.js test/qa-sql.test.js test/migration-sql.test.js test/sql-room-delta.test.js",
     "test:migration": "node --test test/password-migration.test.js test/mail.test.js",
     "qa:report": "node scripts/qa/report.js"
   },

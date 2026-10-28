@@ -82,13 +82,34 @@ function projectRoom(room, i) {
   return sql;
 }
 
-export function createIntegrationSqlPersistence({ env = process.env } = {}) {
+function roomKey(room) { return room.id || `legacy-${room.code}`; }
+function roomFingerprint(room) {
+  // This is only a runtime flush marker, reset by loadRooms() on every restart.
+  // It is not game/account state and must not dirty every restored Room.
+  const { lastPersistAt, ...state } = room;
+  return JSON.stringify(state);
+}
+
+export function createIntegrationSqlPersistence({ env = process.env, connection } = {}) {
   const config = readSqlConfig(env);
-  const db = createSqlConnection(env);
+  const db = connection ?? createSqlConnection(env);
   let queue = Promise.resolve();
   let version = 0;
+  let roomCache = null;
+  async function readRooms() {
+    const rooms = (await db.json('SELECT payload FROM dbo.integration_room_state WHERE active=1')).map((r) => JSON.parse(r.payload));
+    roomCache = new Map(rooms.map((r) => [roomKey(r), roomFingerprint(r)]));
+    return rooms;
+  }
   function write(sql) {
-    const operation = queue.then(() => db.execute(`BEGIN TRY BEGIN TRANSACTION; ${sql} COMMIT; END TRY BEGIN CATCH IF @@TRANCOUNT>0 ROLLBACK; THROW; END CATCH;`));
+    const operation = queue.then(async () => {
+      // Build deltas after earlier writes commit, never against a stale cache.
+      const plan = typeof sql === 'function' ? await sql() : { sql };
+      if (!plan.sql) return;
+      const result = await db.execute(`BEGIN TRY BEGIN TRANSACTION; ${plan.sql} COMMIT; END TRY BEGIN CATCH IF @@TRANCOUNT>0 ROLLBACK; THROW; END CATCH;`);
+      plan.committed?.();
+      return result;
+    });
     queue = operation.catch(() => {});
     return operation;
   }
@@ -150,13 +171,25 @@ export function createIntegrationSqlPersistence({ env = process.env } = {}) {
       },
     },
     rooms: {
-      async loadAll() { return (await db.json('SELECT payload FROM dbo.integration_room_state WHERE active=1')).map((r) => JSON.parse(r.payload)); },
+      async loadAll() { await queue; return readRooms(); },
       async saveAll(rooms) {
-        let sql = 'UPDATE dbo.integration_room_state SET active=0;';
-        rooms.forEach((r, i) => { sql += projectRoom(r, i); });
-        sql += `UPDATE p SET trang_thai='Closed',thoi_diem_dong=COALESCE(thoi_diem_dong,SYSUTCDATETIME()) FROM dbo.phong p JOIN dbo.integration_room_state s ON p.ma=s.room_id WHERE s.active=0;
-          UPDATE t SET thoi_diem_roi=SYSUTCDATETIME(),ly_do_roi='RoomClosed' FROM dbo.thanh_vien_phong t JOIN dbo.integration_room_state s ON t.ma_phong=s.room_id WHERE s.active=0 AND t.thoi_diem_roi IS NULL;`;
-        await write(sql);
+        const snapshot = structuredClone(rooms);
+        const next = new Map(snapshot.map((r) => [roomKey(r), roomFingerprint(r)]));
+        await write(async () => {
+          if (!roomCache) await readRooms();
+          const changed = snapshot.filter((r) => roomCache.get(roomKey(r)) !== next.get(roomKey(r)));
+          const removed = [...roomCache.keys()].filter((key) => !next.has(key));
+          if (!changed.length && !removed.length) return {};
+          let sql = changed.map(projectRoom).join('');
+          if (removed.length) {
+            const ids = removed.map(v).join(',');
+            sql += `UPDATE dbo.integration_room_state SET active=0 WHERE external_id IN (${ids});
+              UPDATE p SET trang_thai='Closed',thoi_diem_dong=COALESCE(thoi_diem_dong,SYSUTCDATETIME()) FROM dbo.phong p JOIN dbo.integration_room_state s ON p.ma=s.room_id WHERE s.external_id IN (${ids}) AND s.active=0;
+              UPDATE t SET thoi_diem_roi=SYSUTCDATETIME(),ly_do_roi='RoomClosed' FROM dbo.thanh_vien_phong t JOIN dbo.integration_room_state s ON t.ma_phong=s.room_id WHERE s.external_id IN (${ids}) AND s.active=0 AND t.thoi_diem_roi IS NULL;`;
+          }
+          // Preserve commit-before-broadcast and retryability after rollback.
+          return { sql, committed: () => { roomCache = next; } };
+        });
       },
     },
     matches: {

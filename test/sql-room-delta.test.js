@@ -1,0 +1,42 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { createIntegrationSqlPersistence } from '../src/server/persistence/integration-sql-persistence.js';
+import { createSqlConnection, sqlValue as v } from '../src/server/persistence/sql-connection.js';
+import { createAccounts } from '../src/server/services/accounts.js';
+import { createInitialPieces } from '../src/shared/game/xiangqi.js';
+import { setupDatabase } from '../scripts/setup-db.js';
+
+test('SQL room deltas preserve unrelated archived game versions and retry rolled-back snapshots after restart', { skip: process.env.RUN_SQL_TESTS !== 'true' }, async (t) => {
+  const expected = process.env.QA_SQL_TEST_DATABASE || 'CoTuongIntegrationTest_QA_20261028';
+  assert.match(expected, /^CoTuongIntegrationTest_QA_[A-Za-z0-9_]+$/); assert.equal(process.env.DB_DATABASE, expected);
+  await setupDatabase(); const persistence = createIntegrationSqlPersistence(); await persistence.init(); t.after(() => persistence.close());
+  const db = createSqlConnection(); t.after(() => db.close()); const accounts = createAccounts(persistence.accounts); await accounts.init();
+  const nonce = randomUUID().slice(0, 8), users = [];
+  for (let i = 0; i < 3; i++) users.push(await accounts.register({ username: `delta${i}_${nonce}`, displayName: 'Delta QA', email: `delta${i}_${nonce}@example.test`, password: 'DeltaPass123', confirmPassword: 'DeltaPass123' }));
+  const original = await persistence.rooms.loadAll(), now = Date.now();
+  async function code() { for (;;) { const c = String(100000 + Math.floor(Math.random() * 900000)); if (!(await db.json(`SELECT ma FROM dbo.phong WHERE ma_so_phong=${v(c)}`)).length) return c; } }
+  const person = (u) => ({ id: u.id, name: u.displayName, ready: false });
+  const make = async (user) => ({ id: randomUUID(), code: await code(), name: 'SQL delta QA', visibility: 'public', host: person(user), opponent: null, spectators: [], blocked: [], match: null, lastActivityAt: now, lastPersistAt: now, chatHistory: [] });
+  const left = await make(users[0]), right = await make(users[1]); right.opponent = person(users[2]);
+  right.match = { id: randomUUID(), creatorId: users[1].id, status: 'finished', redPlayerId: users[1].id, blackPlayerId: users[2].id, currentSide: 'red', pieces: createInitialPieces(), initialPieces: createInitialPieces(), capturedPieces: [], history: [], startedAt: now - 1000, endedAt: now, result: { outcome: 'red-win', reason: 'surrender', endedAt: now }, timeRemaining: 0, inCheck: false };
+  const all = [...original, left, right]; await persistence.rooms.saveAll(all);
+  const version = async () => (await db.json(`SELECT t.phien_ban_trang_thai AS version FROM dbo.tran_dau t JOIN dbo.integration_match_state m ON m.match_id=t.ma WHERE m.external_id=${v(right.match.id)}`))[0].version;
+  const before = await version(); left.host.ready = true; left.lastActivityAt++;
+  await persistence.rooms.saveAll(all); assert.equal(await version(), before, 'ready in another Room must not UPDATE an unrelated game');
+  const unrelatedPayload = (await db.json(`SELECT payload FROM dbo.integration_room_state WHERE external_id=${v(right.id)}`))[0].payload;
+  const repeated = structuredClone(all); for (const r of repeated) r.lastPersistAt = Date.now();
+  await persistence.rooms.saveAll(repeated); assert.equal(await version(), before);
+  left.name = 'After rollback'; const invalid = { ...left, id: randomUUID(), code: await code(), host: { ...left.host, id: 'nonexistent-rollback-user' } };
+  await assert.rejects(persistence.rooms.saveAll([...all, invalid]), /SQL Server/);
+  assert.equal(JSON.parse((await db.json(`SELECT payload FROM dbo.integration_room_state WHERE external_id=${v(left.id)}`))[0].payload).name, 'SQL delta QA');
+  await persistence.rooms.saveAll(all); assert.equal(JSON.parse((await db.json(`SELECT payload FROM dbo.integration_room_state WHERE external_id=${v(left.id)}`))[0].payload).name, 'After rollback');
+  assert.equal((await db.json(`SELECT payload FROM dbo.integration_room_state WHERE external_id=${v(right.id)}`))[0].payload, unrelatedPayload);
+  assert.equal(await version(), before);
+  await persistence.rooms.saveAll([...original, right]);
+  const [closed] = await db.json(`SELECT p.trang_thai,s.active FROM dbo.phong p JOIN dbo.integration_room_state s ON s.room_id=p.ma WHERE s.external_id=${v(left.id)}`);
+  assert.equal(closed.active, false); assert.equal(closed.trang_thai, 'Closed'); assert.equal(await version(), before);
+  const restored = createIntegrationSqlPersistence(); await restored.init(); t.after(() => restored.close());
+  const rows = await restored.rooms.loadAll(); assert.ok(!rows.some((r) => r.id === left.id)); assert.ok(rows.some((r) => r.id === right.id));
+  await restored.rooms.saveAll(rows); assert.equal(await version(), before, 'loading/re-saving after restart must also be a no-op');
+});
