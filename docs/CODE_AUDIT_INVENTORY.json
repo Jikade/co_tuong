@@ -1,0 +1,4350 @@
+{
+  "base": "d92474d20a155904274dd93ff87975a325a74580",
+  "scope": "All 238 tracked files at the pinned QA commit; generated audit files excluded from these counts.",
+  "counts": {
+    "A": 28,
+    "B": 137,
+    "C": 65,
+    "D": 2,
+    "E": 6
+  },
+  "deleted": [
+    "reference/phase1/src/CoTuong.Web/Components/Pages/Counter.razor",
+    "reference/phase1/src/CoTuong.Web/Components/Pages/Weather.razor"
+  ],
+  "keptOriginalFiles": 236,
+  "files": [
+    {
+      "file": ".env.example",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1105,
+      "sha256AtBase": "8ef67a07470907f40f7585944957f15f016fb12d08d8a3678400c4ec90f271ec",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": ".gitignore",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 446,
+      "sha256AtBase": "c93251308e1abcbb38adc57ddbe25ce5c651ec4d677ab1da7e0848f1a7bec048",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "README.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 12295,
+      "sha256AtBase": "5d34cd38d746234f62d45679dfb457c18d87ea04171e3e7081aa144edf6f3483",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "database/01_schema_phase1.sql",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 55269,
+      "sha256AtBase": "6b5bb21b0d077e23e68c601ab76bd3d7430473e192a08480f6f54b2726950b7a",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/setup-db.js",
+          "to": "database/01_schema_phase1.sql",
+          "kind": "filesystem-url",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "database/02_seed_du_lieu.sql",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4852,
+      "sha256AtBase": "0bdf97e67bff5c367691248d73fc4eaa41ae6088135a104d19396b1113212ca3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "database/03_integration.sql",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 2151,
+      "sha256AtBase": "a92d24f2023847b386f4e7205503f3f33a275b9264e516f2931bac4e6f5140a5",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/setup-db.js",
+          "to": "database/03_integration.sql",
+          "kind": "filesystem-url",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/integration-sql-persistence.js",
+          "to": "database/03_integration.sql",
+          "kind": "filesystem-url",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 3555,
+      "sha256AtBase": "fab79d3020fdf74e10b8ee1aef398dd8bb5ac1a05405ed44d4735ac1993861f3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/INTEGRATION.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 8514,
+      "sha256AtBase": "14d51650f4dcced9d25c890afa134c9e33ba0c55407f032789b20499a4768f78",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/KICH_BAN_CHUC_NANG.docx",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1028235,
+      "sha256AtBase": "2c5b95ba2c6b1c0c966ec572aa95919db825eca58cce5893878c7c3fccef32cd",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/LAYOUT_REFERENCE.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5293,
+      "sha256AtBase": "9763d08d0aef912993e976a1ccd13d1913868f7f810f0c8e8ae8e5b8ffe02b40",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/NORMALIZATION.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6114,
+      "sha256AtBase": "622cc8c7de0e10c4a767b2c11c52e369cb9004f98d4e1780965ea0c090d48e96",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/ORIGINAL_REQUIREMENTS.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 70629,
+      "sha256AtBase": "d6e77c300ca3e95c5cad2f1623ee3b4ee274d71f416b87539a8328194f7b1a14",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/QA_BUG_REPORT.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 8532,
+      "sha256AtBase": "d07bfdfeb0f027d9aede0c2c95a40b150d913e097f079da378559f562ff0cf95",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/QA_FINAL_REPORT.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 12885,
+      "sha256AtBase": "e1d3a75fda53102a23aa8c61e228c305898ef5a052bb2d62b238a25219e401d8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/QA_MANUAL_CHECKLIST.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5671,
+      "sha256AtBase": "611a160a631f198bd08c5ea37cd1c505fe18192f221c98a94e115b909972e65b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/QA_REQUIREMENTS.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 83033,
+      "sha256AtBase": "d14fb711b0abaf4249bff952e3483516cf96c79d79365bc231b8fd1ed71c20c1",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/QA_TEST_MATRIX.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 512633,
+      "sha256AtBase": "c02480f99e6b84d32c39e04d57c514d16cde9819da21e44a5c825d93b0690fcc",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/SOURCE_AUDIT.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5686,
+      "sha256AtBase": "ee109971767173be698a4a17f68a67dd39761f5a0cb636bc5195afb543be68ab",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/VALIDATION.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4216,
+      "sha256AtBase": "aacedb3451fb525bd4deaefc279fd9e6bc381b0a71a735b666e23ca5c2deb3aa",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/qa-cases.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 133410,
+      "sha256AtBase": "82f91c611e2cd18976ea1d5cdaf3e0940712a34ab05a81c139e8cde1801f02c9",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/qa-results.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 176521,
+      "sha256AtBase": "dd69110b5bba0285d669c3d3eebc1f2f8d194b3ded6a625e72ee8dec0923f993",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/screenshots/qa-desktop.png",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1331309,
+      "sha256AtBase": "93771868dce07ce2241cc7302094fa0da27dc4903c817a87f8275786720e2e0f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/screenshots/qa-mobile-computer.png",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 344655,
+      "sha256AtBase": "f02687aa29a213fdfada868d3768b67a97a8a70ff646667dbb5c907603918e77",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/screenshots/qa-mobile.png",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 344664,
+      "sha256AtBase": "8adf40574d3b2930dba37b536b068bda5cb01a82ab051ca2eddabdec93597394",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/screenshots/room-desktop.png",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1275721,
+      "sha256AtBase": "aaafc1b86d90e3605dd32ea3f9e03a370683ca5a003d7079f9a2217d931d3a4b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "docs/screenshots/room-mobile.png",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 371609,
+      "sha256AtBase": "4ae4b42e669a7a35760b283bb45646fb975cbee3229bf1c5b09fe6bd65a5ed20",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/game.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6632,
+      "sha256AtBase": "287a5a068a23ac118b232eb822836f7789b683326a2b3c81f8ca52ac5c27fb83",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/layout.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 8143,
+      "sha256AtBase": "84d69b3ee60357696a3d145d9e3ed36e2830f93924b3f1dfcae7ad2954b36638",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/qa/acceptance.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 15435,
+      "sha256AtBase": "033fe032a24e4e5067693d5c4813c0de9dbc204002f6d201bdc5c240b6074916",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/qa/account-computer.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6750,
+      "sha256AtBase": "9a72fabd3a9ae85bbf7ced5903a5312b273c86cd37758b4b6586f7b7f0b2338b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/qa/completeness.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 12766,
+      "sha256AtBase": "e92b5f4385da27108b25db9d9c9cb242d00bbaffc1d3ae8448ace190ed22949e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/qa/navigation.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6609,
+      "sha256AtBase": "fa136e00aaed73c843435ae5507eabe30a1ecc1621b8e70159dd38baab4602fa",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "e2e/qa/rooms.spec.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4805,
+      "sha256AtBase": "631adb251381363e2ec1119aa66e1eb36537c3405c30ee1345f4bff732ec3151",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "index.html",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 18076,
+      "sha256AtBase": "d39a2d812584c440e98b302aaa808b2a3a5ce6db4f5dfe94d7f0c5e79ed9258f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "package-lock.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 77022,
+      "sha256AtBase": "acd3cc7bd2f901a12df1c8288dde3baa33979458bd3d2d4e3b3ebe35d23dc0ec",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "package.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1433,
+      "sha256AtBase": "0ab8532dce7ff6e620c2dbc2bc0048232d6f1281b9c4da80a3835928ec826200",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "playwright.config.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 608,
+      "sha256AtBase": "eb2e3dd417c2084469725762fe0476221fd361e2dabb687bfd16f3ea42bbd441",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "playwright.qa.config.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 677,
+      "sha256AtBase": "3430e381f844b83ba6a0360c4748587f01e078d895542dad9647fef93cd6c863",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/database/README.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 450,
+      "sha256AtBase": "d26c247f183625f0b4a1ca1ea8a4789ba9ac2a9a5e2459bcdef4de95c3443d77",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/database/co_tuong_online_SQL_da_chinh_sua_va_ghi_chu_backend.sql",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 53063,
+      "sha256AtBase": "6e20b8408491abd312a67981084a7aa70417d28f2a925a1af63bd907c17335a2",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/CoTuong.slnx",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 319,
+      "sha256AtBase": "a69caa375902146aecc32df7451f69990aa70c4a4d181f73bb6c60c795f4d886",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/Directory.Build.props",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 564,
+      "sha256AtBase": "27c377426d413d48ce4d9bf4b107ff2706eadfc8c75f547711c7f02c633042ec",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/Directory.Packages.props",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2991,
+      "sha256AtBase": "653efc2dfc8b160a27c2dae058b2bc38ef595e425e22b31d2bc1fdf7cff8b96a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/PHASE1_ACCEPTANCE.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 3895,
+      "sha256AtBase": "4fb4f69ecbb65b6c195203028ffc783afc03b801302b73207956d69fb0421890",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/PHASE1_PLAN.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 40753,
+      "sha256AtBase": "a1a6f17d0dba296c625abeef89655db35714dc4c62524b81f1e3ef65be786a42",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/README.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 783,
+      "sha256AtBase": "6f5b045ee44b6681e2bd3fbfb6433310222a42841aedb07a6e303a10b5a3001a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/database/99_drop_all.sql",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2233,
+      "sha256AtBase": "939c5e8f78b95dde9a4bbf51abee7305d3e6e137d94396ef3ef38be721510b69",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/database/scaffold-entities.ps1",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2256,
+      "sha256AtBase": "a7258d0673186e5835d090e7cd0c14eca6ccd1c0cf0a51701ebb75d2b7cd09f3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IClock.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 521,
+      "sha256AtBase": "944d1e93b2584109363d992f777bf6de1c14e95977ea4120a1221bd616b1a3bd",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IEmailSender.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "SMTP message contract: actual mail delivery has not been ported/tested.",
+      "bytesAtBase": 688,
+      "sha256AtBase": "e2a66a177271417150f7fb49aff164aecff58996940c9486c797fc35dfa09114",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IIdempotencyStore.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1856,
+      "sha256AtBase": "f2dbb0ef8079cb8446aca6c19a8ff2c6c9912ccc69f69fa956bde1fa8de2f354",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IPasswordHasher.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 517,
+      "sha256AtBase": "b9b0776ebd0cdd8ca058d21203454d6ae68a0b421ba5cba5b6185d0fc8eac7ec",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IRealtimeNotifier.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2120,
+      "sha256AtBase": "a62dbf7aaf7b051158f6c95170a8dbfacb02308d6c7030034e273c0415d83f68",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Abstractions/IRoomLockProvider.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 766,
+      "sha256AtBase": "6d341333d94122db46acffc835c0b119705406384ceb69a1dac863580780342b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 418,
+      "sha256AtBase": "97e4f380693c3244e536eae9e8bb206c6dcb801abef6989e03ca00fedd541940",
+      "incomingLiteralEdges": [
+        {
+          "from": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+          "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+          "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+          "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Dtos/AuthDtos.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1163,
+      "sha256AtBase": "03715e283b0a7c0af74262e403024a8a6c049ea651ca66a25f454a9189904e87",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Dtos/FriendAndRoomDtos.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1559,
+      "sha256AtBase": "f46d15f8e1ae82a6eef28b0364ef75356cd80462f7b2baf5979875c3bea9230b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Dtos/NotificationDtos.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 323,
+      "sha256AtBase": "4c578443fdf5488ca0195668dd8c923d2d374be2c1addf6bd82246166f781f64",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Dtos/RoomDtos.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2342,
+      "sha256AtBase": "abcd1f565e1bf5f71fed57d334a146d69d8ce07394af27f62ca6205b065f321b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/CheDoHienThi.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 236,
+      "sha256AtBase": "83e49a617f64d5713c3a567b4804af612f6fbe94da3efbf6b55bc293e8ef5ffe",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/LoaiSuKienThanhVien.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 634,
+      "sha256AtBase": "7fc0aa67a6c9e870aa78aed470ab4348c3f5966baa63493842ca35c7d2dbe551",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/LoaiYeuCauChongLap.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 724,
+      "sha256AtBase": "f0cb6156b92ed59320c52cbffeb9731d7b8593c637ae5900e35e2f84ab76db5a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/TrangThaiLoiMoiKetBan.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 354,
+      "sha256AtBase": "d987ca2a4df83ead87d7d3e01c6dde67e2f58f06d9e2ba922df3469b82862ac9",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/TrangThaiLoiMoiVaoPhong.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 834,
+      "sha256AtBase": "a456a4e7de68cd092ef33a5f61628db37bf17170041d4ef212726fcce06530bc",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/TrangThaiPhong.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1055,
+      "sha256AtBase": "192e53cf4f44d42dcf9fb9127f488d5cb12ad78c1758972775b7e32fe38a7506",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/TrangThaiThongBao.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1460,
+      "sha256AtBase": "59927938e4b65889a2684b57056431bf8624c40b72979391996404e0e87ff15e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/TrangThaiTokenDatLai.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 347,
+      "sha256AtBase": "8d1d34e8bea3d7b293a2925d72940473068d82e05aa15d9d9435f1919f9c15bc",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Enums/VaiTro.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 370,
+      "sha256AtBase": "4fc905800ce35535cd63a556ed582acd35b1970017e179e4df891561b65eb6b4",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Errors/BusinessErrorCode.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 3386,
+      "sha256AtBase": "80c95df7e864ac7e52b0e08be2fb8e52376102e34ab4dd671b22ceaf27654070",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Errors/BusinessErrorMessages.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 5421,
+      "sha256AtBase": "976b0c8b40ac9d29f8578d801b7d32eae93f42e131ea50ce1729d89f90cf8463",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Errors/BusinessException.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 716,
+      "sha256AtBase": "72ccd2f48c6f26a3517aef2484cff5853334bc9e51248b14a28a7704af7cb516",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Validation/PasswordPolicy.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1712,
+      "sha256AtBase": "37d8d160b0d65c00ffc98203e6fcb58bfa650d2a528a801738739404d739570a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Validation/TokenGenerator.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 913,
+      "sha256AtBase": "56a0847fc35f5c0c4440ddae07874a1fe6ea606605f0c5912d5c7062ca0deb88",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Core/Validation/Validators.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 4702,
+      "sha256AtBase": "cd5ec6aa5b707f9a65492320dfe6459dc49d8087eb7c14becb7212e7340544a8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1302,
+      "sha256AtBase": "ce5525df3df0ea7749595b0d9d0ae55e4126d5e6d4ac89d6c00266970efe6137",
+      "incomingLiteralEdges": [
+        {
+          "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+          "to": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+          "to": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/ban_be.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 560,
+      "sha256AtBase": "1d580b44f0e4be8176d158d3382ff842863ec8b676f8328fa301e5cd774a60bc",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/cai_dat_nguoi_dung.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 488,
+      "sha256AtBase": "d5451dce6d9339b467108caccfaa4fbe60fc1a5266cb9a853710568bc7c0bed0",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/cam_vao_phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 572,
+      "sha256AtBase": "e0f1ab7df85d7d07439a2a50869bbfd83354aef7ff3d3092c5fb401882cad2f4",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/cuoc_goi_video.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 991,
+      "sha256AtBase": "b5195308ebb98a19e7b03f770fdb76a0ac929a93e71f1c558a96ccdbbdd083d9",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/de_nghi_hoa.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 564,
+      "sha256AtBase": "56bc6061615aa7f789c3bca486936f288ab20dea5012cc480b44e366fdb2f416",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/giao_dien_ban_co.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 530,
+      "sha256AtBase": "2aa03723cf57e88ae431c5aff5e6fc05187aeb2d1373bc2cf09ec3a0304a095b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/ket_noi_nguoi_dung.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 510,
+      "sha256AtBase": "2775bccc1800cbbe3e93c54b4b726d5960037c9c6b9b52a494a9b22283960a99",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/loi_moi_ket_ban.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 841,
+      "sha256AtBase": "f4e5f6056d0f54d2359a5f01b40f67f58b2dbbf9632b1637d0882f4c6ad27eba",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/loi_moi_vao_phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 835,
+      "sha256AtBase": "1f476ebdac7305b0d7733055ef87bd566c9639da37e11faae4c8883b36115b7e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/mat_ket_noi_tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 635,
+      "sha256AtBase": "b95a3f453d146969eabb4cde2226718a2ca04d77d78e137567f9b8fc0e4a0eb4",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/nguoi_dung.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 4634,
+      "sha256AtBase": "d881c3705f0b9afc245069df2e4c1c3e73be3edf331bcc68cfb2d0c8d0f0247e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/nguoi_tham_gia_cuoc_goi.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 533,
+      "sha256AtBase": "2961887f5f00c8dac5713adfe51659c84226c435121a17da1526b9705f22ab13",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/nuoc_di_tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1105,
+      "sha256AtBase": "7b3b93bbee507c32c84b92c599f01b47134d6a191753e4e89db39e677e1bdb57",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/phien_dang_nhap.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 645,
+      "sha256AtBase": "d7078e16190692e8e941be3fe4d4e3b4bf1a00776b46e276427025e2a2b7ee10",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1568,
+      "sha256AtBase": "bbe9cacbe9af76d5c166dbf03aeea1a3017f40a9b64ab0627f1d97c655d37440",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/quan_co_tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 917,
+      "sha256AtBase": "33ce9729cfec9171a71884ce04177e4f0c9dd02641ca2a91079fe7d75b6890eb",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/su_kien_thanh_vien_phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 726,
+      "sha256AtBase": "b94643602c731612718b4764d7bc3f7c9cd865e7ae2348ded976aeb98ae93f8a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/su_kien_tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 556,
+      "sha256AtBase": "66fa372e7c51235496ea8a876ce14b8691690bbc7878a492bc42a1c29eac1ab5",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/thanh_vien_phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 797,
+      "sha256AtBase": "ca543805fb8f458a7cceadb8c2a2eb6b96a373377f6433f1a213e10a9dbf2331",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/thong_bao.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1007,
+      "sha256AtBase": "ce996bc03087ca740b0884798c6616fdb7e0d235efa5209c3dcd580e964fe4d0",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/tin_nhan_phong.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 744,
+      "sha256AtBase": "7996e183bd6b13bbefd43bdf895f1e706f453efb8ac5d3a6a4d5c70757fc1cae",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/token_dat_lai_mat_khau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 655,
+      "sha256AtBase": "5eb384058836b453a527dc7c7b17f87807e834078d4b4125c204c4a45c5149c7",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2079,
+      "sha256AtBase": "50cc3799bfb53aa01fa3069a47c1a5a30670074125c3c7273bbf01ba2fae270e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/v_danh_sach_ban_be.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 269,
+      "sha256AtBase": "3d0683cc589569b08abecf969a1dd5c5d3ea86711f858b1761b2dfcd847dcd2b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/v_lich_su_tran_dau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 707,
+      "sha256AtBase": "f414ad504b927563f077b3ed023580ed09bbe7f8ee64801388b90756a6a2d9b0",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/v_nguoi_dung_online.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 340,
+      "sha256AtBase": "551d472526157ce21dad8821ac086bca12f76e83d54f6df877823be9ee2e6ec2",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/v_phong_cong_khai.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 576,
+      "sha256AtBase": "7cac47150b5265ff37797f95c49bc3d575ee2ab9d6f4c79deafb019469778867",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/v_thong_ke_nguoi_dung.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 363,
+      "sha256AtBase": "8bc41989009319d2b2325cc95fd972da0f38faf17f3c126c6dbbe5ad1d2bc372",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/yeu_cau_chong_lap.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1312,
+      "sha256AtBase": "39dea5bea8160b29486c513a5eb9a81535cca57733c20675f0e9e0f81cc419b7",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Entities/yeu_cau_dat_lai_mat_khau.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 441,
+      "sha256AtBase": "ef6933597b108f9e251b977c88eaba279b94c0031f62f353c3856078dbb5d175",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/CoTuongDbContext.YeuCauChongLap.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 3256,
+      "sha256AtBase": "cc8959ef04d859f3b63c5bb3ea0b5229dff038f3d0dbe6b392ef49bc5c1bfa57",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/CoTuongDbContext.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 42036,
+      "sha256AtBase": "ea66942d26827ad08232bd01e9579044f82318c4b2f5347f832d3023e37b3147",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/CoTuongDbContextFactory.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2775,
+      "sha256AtBase": "e0380f363da8496df5d50115bb28a9e1ccc42f7b7be7ebed614121508b0e7e90",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261025001646_Baseline.Designer.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 87269,
+      "sha256AtBase": "fed90394ed290ae8a06cecbe67e25bdffdd41c7ecb661e7ee30e02e6371b032e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261025001646_Baseline.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 558,
+      "sha256AtBase": "1ef053b72c73a73e49c665ef297091145c619011a6c0d4b7e504a427d18c466c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261025052503_AddYeuCauChongLap.Designer.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 89511,
+      "sha256AtBase": "782b15914b230b3a48eab7582e1e2fa5ff8b2a7affc9f8afdff6b31679d3fb67",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261025052503_AddYeuCauChongLap.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1829,
+      "sha256AtBase": "fbf77f7353c6181b6c4daedb6b007385da3f7ce1e4a79a0979375b7479550c7c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261026194652_CorrectPhase1RelationshipCardinality.Designer.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 89354,
+      "sha256AtBase": "357fab99f5e2d06655b6cca60b7f85b6217d25c427fc6a19ab9df06000b2426d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261026194652_CorrectPhase1RelationshipCardinality.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 479,
+      "sha256AtBase": "3e4a44b13c248d4dafb3e2b77c364454f5ef1c257cc11605c80f564b617fd169",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261026200144_RegisterIdempotencyIndex.Designer.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 89537,
+      "sha256AtBase": "1a023b7f6d68c9bd9af88b033041e61af054c236f5cdce82d86bb55f211e3d3e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/20261026200144_RegisterIdempotencyIndex.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1115,
+      "sha256AtBase": "b0192d3066b1fbb1968daa16e8bdec9290d8481424a28456d6618c4fe3be3782",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Persistence/Migrations/CoTuongDbContextModelSnapshot.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 89418,
+      "sha256AtBase": "af931a01b75cbac9236d5b5f94b86ce05b8577dab3b67bd275500f768ca50dc0",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/AspNetPasswordHasher.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "ASP.NET password hash differs from Node scrypt; old account import not verified.",
+      "bytesAtBase": 1117,
+      "sha256AtBase": "6daadf3067e826676cafcf703dafd3899dc82d4b8840a8d19c5dde52774613e1",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/AuthOptions.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 437,
+      "sha256AtBase": "0e4bb089efa951c29b73b2b842f410eabdd21e74284cad7e3c00a7eba446e0fe",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/AuthService.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "JWT/refresh and legacy account compatibility are not equivalent to opaque Node sessions.",
+      "bytesAtBase": 18377,
+      "sha256AtBase": "746b19b3abb06cc340f4aa27fe77a6dfe4308e76a0ebf7dc60c32b4c26a486be",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/DatabaseIdempotencyStore.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2735,
+      "sha256AtBase": "8acfc88b5e49150d9fa4b30e538fc5dc7bc47602fdd3dc7df6a19f4ac976268f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/DatabaseRoomLockProvider.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "Database/distributed lock has no proven multi-worker Node equivalent.",
+      "bytesAtBase": 2242,
+      "sha256AtBase": "dc9eca4e23be7395415adfe387ab1a5beb2e116954240dce88e08f257c7e6adf",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/FileEmailSender.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1487,
+      "sha256AtBase": "d82feaf47e31e8e3262e7c530f3937e449d5f45be9785f50053e5a1155f5b4c6",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/FriendService.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 13587,
+      "sha256AtBase": "c5d7e5e9be1cffd3090cf915592131914aa7d95a05b09e5bcfecf2c94c52f7c2",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/NotificationService.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2524,
+      "sha256AtBase": "08fa71d31f430d1cfbfa20c85759282052fc9752e5d1a189ca02670cb68b0216",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/RoomInvitationService.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "Legacy invitation-token/API semantics differ from the integrated room-code contract.",
+      "bytesAtBase": 12101,
+      "sha256AtBase": "169f06e1e552d8a22dc5492e2eef6e40c7d238551788a1f61a1864412cf2e35f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/RoomService.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 32268,
+      "sha256AtBase": "892493a50a2bb17768da67c2fbf46642c84a15b8188bb842ff511780c3249cfe",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/SmtpEmailSender.cs",
+      "group": "E",
+      "decision": "KEEP",
+      "reason": "No Node SMTP adapter; retain implementation for future work.",
+      "bytesAtBase": 1278,
+      "sha256AtBase": "f579c1b6934a5ac15b29f34f471d865c5d78276521d3c0ef0919676bc258ada1",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Infrastructure/Services/SystemClock.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 170,
+      "sha256AtBase": "e5fc0ea9462bffb6294eb2dc93e2836e598594d0064cfce642b487984b6fd381",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 809,
+      "sha256AtBase": "3d39231dce757c43fb698d197b4ebbff0defa4f7375d238f1fb5961ceaf1307e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Core/Errors/BusinessErrorTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2268,
+      "sha256AtBase": "1318b8565ccf7a02ffaebacff1d7feb0784cc1f4de31b0d81a7a1bc90bd089b8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Core/Validation/PasswordPolicyTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 1560,
+      "sha256AtBase": "bebb1850ae5149ae07b2467ac58fc1fdb8550fcbd3d32d328e9850c61ad18536",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Core/Validation/ValidatorsTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 2930,
+      "sha256AtBase": "2619950dec09b95720f0b7ce639517479caa7edc60a36bb2c1963b0c872258c8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Integration/AuthIntegrationTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 4870,
+      "sha256AtBase": "d4eff313ebcd671da6eeb45df34d734d6d6e678ffebe8f843196cd79f4b8b7fc",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Integration/FriendAndInviteIntegrationTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 6229,
+      "sha256AtBase": "d9206a1fb730e48ddd2ea6c08d5312a911b1eef591615f6c89e0610dc8b9207b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Integration/RoomIntegrationTests.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 6782,
+      "sha256AtBase": "86ba549609900ce0f3b92913e7d9ddf9e7899f1e1b7603472d3a926afd136f0c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Tests/Integration/TestHarness.cs",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 7713,
+      "sha256AtBase": "793d31c717b0978070e538d02c1658a5710e0b688e429070a6c09398f8c8ea8a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 631,
+      "sha256AtBase": "def2d47d29f3ad6fadeb0c7d7c6e68abd69294a591503c69c9b822b4ee6aed73",
+      "incomingLiteralEdges": [
+        {
+          "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+          "to": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+          "kind": "legacy-project",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/App.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 858,
+      "sha256AtBase": "59ed17a8517cf565b1c50701609442bcfe81c8cb18a9a0446d1891fc00dd8b4d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/MainLayout.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1940,
+      "sha256AtBase": "bdbea507846912f291a70f5b8657cb8987c5b82a1602581a02f03191ecf22197",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/MainLayout.razor.css",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2196,
+      "sha256AtBase": "22960afec72f386e4a4c106252a618238fcf56c4a5b1e86b36fd27cd8dd79366",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/NavMenu.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2383,
+      "sha256AtBase": "a5a56fc73ebc3d243b7e2a6f520c5bdf013a87d13c2e7dfa35d8f2e8c3be14c8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/NavMenu.razor.css",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 3207,
+      "sha256AtBase": "bc52aa5e0e33b3719a272d50763a81d6a7b501fe066f9e909cad8162304cb1cf",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/ReconnectModal.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1331,
+      "sha256AtBase": "06987994d4625c5c48cdd15373c05e3a2d81a3f92af790fcaabc7bbf80dbca5a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/ReconnectModal.razor.css",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 3716,
+      "sha256AtBase": "3f672eea19a76f24518b6a02d2014d5c5f6fd4e4bd2f97eac9e431b4dd0973fd",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Layout/ReconnectModal.razor.js",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2385,
+      "sha256AtBase": "bc924313acad6186b22e5331a52fe18a4e3186a5082185e40f2e89620932814e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/NotificationBadge.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 890,
+      "sha256AtBase": "51b6a8168ad218fe0d40f7e30fd8f3355abe93461f756b07ffe4157944e2db7a",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Account/AccountFormModels.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2349,
+      "sha256AtBase": "ec31d92a04d1b33428fc71600e8b7fbb7f140c5041ad6592519158d62be2888c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Account/ForgotPassword.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1830,
+      "sha256AtBase": "6df774034df267cefb3a65d019c820c70623cab4f48ed0c18f5b4e0d2edf6ec3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Account/Login.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2901,
+      "sha256AtBase": "76b22510bb3ec433799c29dd50a475683eb0757bd8b2fb82229ed994d783055f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Account/Register.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2731,
+      "sha256AtBase": "773f6d2dcfe3d89d0a77996ed769eca38b8badadd3f56050482ac4f2ab55d3d6",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Account/ResetPassword.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 2049,
+      "sha256AtBase": "d71429e0231be0b63c46725efaf3372f039ffea1cfc3132ccba7114a03e7ea68",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Counter.razor",
+      "group": "D",
+      "decision": "DELETE",
+      "reason": "Blazor SDK counter/weather demo, no chess requirement/caller; remove only these two demo routes.",
+      "bytesAtBase": 344,
+      "sha256AtBase": "2e9947e887fb207a0cecb5a18cb1e48eb820e8c040f4346d171f2dbe1434e30e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/DashboardForms.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 631,
+      "sha256AtBase": "e6a5220c58d4c110f6d8dca6bcdf703c68f8878d58dc773b9ff7da93a733a4c5",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Error.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1179,
+      "sha256AtBase": "5fc97b404692b11255d0c2b53e61304f2a7670dc9ff5fdcc2edae513b3ea283d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Friends.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 6939,
+      "sha256AtBase": "316111854e7da53e4790ffd8d05c2d200675d7cb82ebe6c53d1f42c5224bd22d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Home.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 6554,
+      "sha256AtBase": "2eac585d93c755e9b7492e366bb94f1da865ceddef9bdf2ca0f6b0bb9c7270d2",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/JoinRoomByToken.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 951,
+      "sha256AtBase": "672668276122da0c26d354fcc96c75a350e6bdfffd71bd781145cbb0207f6aba",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/NotFound.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 122,
+      "sha256AtBase": "9190005a944ca590bb17f58563d0e524ae419b448ee81a555f376195e4856071",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Notifications.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 6007,
+      "sha256AtBase": "24e4fb3b29f0a6a59a5f61f300bdddc127ec65d62ecc808b7458d8281e0dcce2",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/RoomPage.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 15368,
+      "sha256AtBase": "89622b505f0d37981838170e1de5e3355c8193d360c35416a217f04bf9ab00f6",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Pages/Weather.razor",
+      "group": "D",
+      "decision": "DELETE",
+      "reason": "Blazor SDK counter/weather demo, no chess requirement/caller; remove only these two demo routes.",
+      "bytesAtBase": 1858,
+      "sha256AtBase": "0bbbc2406ebac9cf954ea43505d3720a8a31dbfa741efe9ca0fd833f1e0490d7",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/RedirectToLogin.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 325,
+      "sha256AtBase": "b8ba560f40acbd3876d123bfdf1c8807f181ef0472f9295c84df63e80b52f46c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/Routes.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 643,
+      "sha256AtBase": "c89b92d6625e9dd506c42e75b9442438b08856d05f3df232a15d98f4cbbb7a5b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Components/_Imports.razor",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 474,
+      "sha256AtBase": "e26c82c67b3e23d67d11ef75731d4f2f079f6f9301ac878fabc6cc386b8e05ce",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Program.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 20510,
+      "sha256AtBase": "2c928ccda571b1e5ba59336a31edd714d2315404eb947a0e77133e7d286ab5e3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Properties/launchSettings.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 658,
+      "sha256AtBase": "21852c6acbc7fe1a5194b763e5f4726cd29248c3776911fa4d0a78a78bece2d9",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Realtime/ConnectionLeaseCleanupService.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1970,
+      "sha256AtBase": "e367181909a14a17c1538ab2b0ecfe239f041b258cac410093fec1e90c2d470b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Realtime/RoomHub.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 3138,
+      "sha256AtBase": "cf99fc707debf23ca3221519cee3ad45563ab6c72e570ec82bc8db0e42597b7b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Realtime/RoomInvitationExpiryService.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1065,
+      "sha256AtBase": "cfa4a1b4b772a9c82e4c24cfa1c1223ac92585f4bd3e918a4b48c2beda86c15f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/Realtime/SignalRRealtimeNotifier.cs",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 853,
+      "sha256AtBase": "656c73e2066308c8f37725449dadfc052356664b6e9f304cd61465dbfda6b472",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/appsettings.Development.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 743,
+      "sha256AtBase": "029bfbe1d012bbb23ac749a245b1a7107e3150f8f2b924beb77c74d7a3a29d12",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/appsettings.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep legacy handover, EF schema/migrations, tests, configuration and their dependency chain. Not in Node runtime.",
+      "bytesAtBase": 691,
+      "sha256AtBase": "ef5ca7c91697d211f6d4845c59e63e3b47f1cf86710d187b73973e8a8bf4cca4",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/wwwroot/app.css",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 6583,
+      "sha256AtBase": "5ba33979b1cc263a3bb698c803570821d848ba5b73afc6044739ba6896e0a22e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/wwwroot/favicon.png",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1148,
+      "sha256AtBase": "e265ac0f2dda1e5dfa65b1adf330722bb3ef7789115283604d8cd19f098f1f08",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/wwwroot/js/co-tuong-api.js",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 1045,
+      "sha256AtBase": "0d5644ffbda57beeef3556148d5e5f8b05ff6fec4411ef6bc7a740d452a83661",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase1/src/CoTuong.Web/wwwroot/js/co-tuong-realtime.js",
+      "group": "C",
+      "decision": "KEEP",
+      "reason": "Integrated business/UI path replaced by Node; retain original reference/dependency chain because exact legacy contracts are not all proven equivalent.",
+      "bytesAtBase": 3142,
+      "sha256AtBase": "8286ab46516e7e57c9adc907f7d9f2d46098d414fa9edbfd13a76f06716ab79e",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase4/README.md",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 585,
+      "sha256AtBase": "bceed6c95bb53f079755c5ab9aa8e613415fd45fa5eec626d8d109d90a1a4fd5",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase4/phase4_runtime_bridge.sql",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1245,
+      "sha256AtBase": "15de7489db9cbb50d02c152ec2487698bd244ea9b40bd99b0af48f2d8b89acdf",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "reference/phase4/sql-server-persistence.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 7249,
+      "sha256AtBase": "6debf89a8d200764df51d7b050885fe201cbfde97c27320645c999e42b01311e",
+      "incomingLiteralEdges": [
+        {
+          "from": "test/persistence.test.js",
+          "to": "reference/phase4/sql-server-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "scripts/check-architecture.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5010,
+      "sha256AtBase": "a6b3db4c03c071ae33df104fbf4027a336b943911940385df67405278ebfdf64",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/dev.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 356,
+      "sha256AtBase": "6e31eaa5d249ed4aa03e1fbc4c6742f639664448eaff3a407caf22869572a0aa",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/e2e-server.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 421,
+      "sha256AtBase": "1a7bf1ba845c527c00175f9389f376998bcb3b77b23ae9cf845391b057b50d84",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/qa/assessment.json",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 2069,
+      "sha256AtBase": "52518a6b7302ff1d11903e40bf345de9e436e8d1dd10607ca5ea8222474bb407",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/qa/browser-server.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 454,
+      "sha256AtBase": "bc7e42ab01f109b7b8e750e6f2e29114a640e96b19d9423e347fe66367485040",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/qa/collect.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4489,
+      "sha256AtBase": "cad027f9d4a2bb0d50ce71728f319233dd989ae928a119509a92564095055d01",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/qa/extract-requirements.py",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4879,
+      "sha256AtBase": "0bb53a893be60b5683fadeabee59f0d0cf01e64e4cd7e2596efd333e0ef4091f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/qa/report.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6615,
+      "sha256AtBase": "7368669fa5912b5639bbf321ddc26a7161af118fec1864d4b1b55e9b39bfd227",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "scripts/setup-db.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1913,
+      "sha256AtBase": "f08dedd41b09ea2004634a98a2e68855e9f93f7c6186d81563e9874744438e93",
+      "incomingLiteralEdges": [
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "scripts/setup-db.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/sql-integration.test.js",
+          "to": "scripts/setup-db.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 689,
+      "sha256AtBase": "3a58731fe61aded3444244a89f26a3d9778b2a0de0c169fc313d68ea1502dfbc",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/e2e-server.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "scripts/qa/browser-server.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-file-ai.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-results.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/computer.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/helpers/authenticated-game.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/helpers/qa.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/integration.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/phase3.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/realtime.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/server.test.js",
+          "to": "server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/client/account-ui.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 16421,
+      "sha256AtBase": "6ae6467d2e878aee7be096b5ab20e7937bc981d17db2ee4b39124d189a6c18d2",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/client/main.js",
+          "to": "src/client/account-ui.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/client/main.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 74732,
+      "sha256AtBase": "196f8683fce44b3440398cc729b835f23e664e654cd118a5d2479c7034f5161c",
+      "incomingLiteralEdges": [
+        {
+          "from": "index.html",
+          "to": "src/client/main.js",
+          "kind": "html-entry",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/client/styles/arena.css",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 20635,
+      "sha256AtBase": "bbcf704a34974316ba0b8c48ffb52cd26eb9c6d9c1598cd3e0652714ea31e4f6",
+      "incomingLiteralEdges": [
+        {
+          "from": "index.html",
+          "to": "src/client/styles/arena.css",
+          "kind": "html-entry",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/client/styles/main.css",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 22670,
+      "sha256AtBase": "81837406515ce1651caf9f2a2b4335a75d0fb1a538738389b00a294386a7bb08",
+      "incomingLiteralEdges": [
+        {
+          "from": "index.html",
+          "to": "src/client/styles/main.css",
+          "kind": "html-entry",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/client/utils.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 2449,
+      "sha256AtBase": "9c6055f254e2fa7e2834ee96da1036c63db545079668858d224d2409c3d6998d",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/client/main.js",
+          "to": "src/client/utils.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/client-utils.test.js",
+          "to": "src/client/utils.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "src/client/utils.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/config.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 3187,
+      "sha256AtBase": "5736c33cefb5d192b2535e2baaa568c42fff4a2a270f8915e8d043d61d08a605",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/check-architecture.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/integration-sql-persistence.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/sql-connection.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "vite.config.js",
+          "to": "src/server/config.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/errors.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 850,
+      "sha256AtBase": "a550487d58a8d4dd0cfb42b310f8ae85ba53af10a93f47a038d090ea80a7c28a",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/http/account-routes.js",
+          "to": "src/server/errors.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/http/handler.js",
+          "to": "src/server/errors.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/http/request.js",
+          "to": "src/server/errors.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/realtime/transport.js",
+          "to": "src/server/errors.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/services/accounts.js",
+          "to": "src/server/errors.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/game-server.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 76659,
+      "sha256AtBase": "36e244e657856d6707d5a2a20144b796001d85adb22d0eb1a673e52a0375e380",
+      "incomingLiteralEdges": [
+        {
+          "from": "server.js",
+          "to": "src/server/game-server.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/http/account-routes.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 6569,
+      "sha256AtBase": "1ed184912411b237953921c26bb96d21504607c5c0bb7d418368d200c2430182",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/http/account-routes.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/http/handler.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 3264,
+      "sha256AtBase": "34c915dc9f842bb50d166e5d50ae4c7a2b516a427917236e9ad43c676d750de6",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/http/handler.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/http/request.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 1055,
+      "sha256AtBase": "24bff6292d546b15e1c0fdafa2f32026387b719ade3bb4f401859dbfb9e098db",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/http/account-routes.js",
+          "to": "src/server/http/request.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/http/handler.js",
+          "to": "src/server/http/request.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/realtime/transport.js",
+          "to": "src/server/http/request.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/http/responses.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 303,
+      "sha256AtBase": "fad923d850ad176669a25dda888d6ccb48e618b607b28648e5121ef9467074db",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/http/responses.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/http/handler.js",
+          "to": "src/server/http/responses.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/file-persistence.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 1730,
+      "sha256AtBase": "4f20070cd47d11a5731348d0cdd94e5c0ad9bb9a754055d9744d1dfe3bdeddd4",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/persistence/file-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-file-ai.test.js",
+          "to": "src/server/persistence/file-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/integration.test.js",
+          "to": "src/server/persistence/file-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/index.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 748,
+      "sha256AtBase": "b9e2b4829350a11739eceedc440e70132b3aca8b77f98f09812c1a0f4bbe3736",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/persistence/index.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/computer.test.js",
+          "to": "src/server/persistence/index.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/phase3.test.js",
+          "to": "src/server/persistence/index.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/realtime.test.js",
+          "to": "src/server/persistence/index.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/server.test.js",
+          "to": "src/server/persistence/index.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/integration-sql-persistence.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 14567,
+      "sha256AtBase": "b02db5bb1f5484863837af7e29acd58db754b6ba1e55cb4f5a67017715ad4c6b",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/persistence/integration-sql-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/persistence/integration-sql-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "src/server/persistence/integration-sql-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/sql-integration.test.js",
+          "to": "src/server/persistence/integration-sql-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/memory-persistence.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 1391,
+      "sha256AtBase": "1f3f49eaa8dcca66b9fdf8701f9aca4bad6f10093ab8d648c7461d93c3123ed7",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/e2e-server.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "scripts/qa/browser-server.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/index.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-results.test.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance.test.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/helpers/qa.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/integration.test.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "src/server/persistence/memory-persistence.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/persistence-port.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 481,
+      "sha256AtBase": "0c7d32bf2025276070607fc83ead83e155229a7eec0614ece3d7cc35b5ea3a18",
+      "incomingLiteralEdges": [
+        {
+          "from": "reference/phase4/sql-server-persistence.js",
+          "to": "src/server/persistence/persistence-port.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/memory-persistence.js",
+          "to": "src/server/persistence/persistence-port.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/persistence/sql-connection.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 3236,
+      "sha256AtBase": "660e4dd4f34c1104e75a69c6cd331a77374ace30d97711636a7857fb903513c7",
+      "incomingLiteralEdges": [
+        {
+          "from": "scripts/setup-db.js",
+          "to": "src/server/persistence/sql-connection.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/persistence/integration-sql-persistence.js",
+          "to": "src/server/persistence/sql-connection.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "src/server/persistence/sql-connection.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/sql-integration.test.js",
+          "to": "src/server/persistence/sql-connection.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/realtime/transport.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 3050,
+      "sha256AtBase": "fb7a0018915c08ce188540b6ce8d846c6f6091f2a4763751885e567eac81226e",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/realtime/transport.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/services/accounts.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 12832,
+      "sha256AtBase": "d3f1dab84efb3a075d4701c5c814e35d675ba0654a9b2f8bc862811c93e106dc",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/services/accounts.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/http/account-routes.js",
+          "to": "src/server/services/accounts.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance.test.js",
+          "to": "src/server/services/accounts.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "src/server/services/accounts.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/sql-integration.test.js",
+          "to": "src/server/services/accounts.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/services/history-store.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 3012,
+      "sha256AtBase": "1a3ea47d25b9be9fa7bf525997a91d654822b1fdeeed62239ebd34e92d08c8e3",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/services/history-store.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/server/services/snapshot.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 1298,
+      "sha256AtBase": "e23c3361d4057bd9d6b9c920a3ef2aec541b2174073e746da0b4bd6f2e669f45",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/server/services/snapshot.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/shared/game/constants.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 543,
+      "sha256AtBase": "e53020729958328e1477ebf60f59e6d093ea5e59b633e4ce68ec9c5d84d16d34",
+      "incomingLiteralEdges": [
+        {
+          "from": "src/client/main.js",
+          "to": "src/shared/game/constants.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/shared/game/constants.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/services/history-store.js",
+          "to": "src/shared/game/constants.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/computer.test.js",
+          "to": "src/shared/game/constants.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "src/shared/game/xiangqi.js",
+      "group": "A",
+      "decision": "KEEP",
+      "reason": "Current frontend/backend/engine/persistence or database bootstrap; keep.",
+      "bytesAtBase": 5505,
+      "sha256AtBase": "4c2f66874a298c6b9a6f3e50ff1996dd8ab88b7fd4c1ebc5d3439d015d000a9f",
+      "incomingLiteralEdges": [
+        {
+          "from": "e2e/qa/account-computer.spec.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "e2e/qa/completeness.spec.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/client/main.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "src/server/game-server.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-completeness.test.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-rules.test.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/computer.test.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/xiangqi.test.js",
+          "to": "src/shared/game/xiangqi.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "test/acceptance-completeness.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 10213,
+      "sha256AtBase": "8d1adcd4a84215d84a034200abbf5d5151126550019d415af0a36b985aa5a3d8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-file-ai.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 2012,
+      "sha256AtBase": "b017153f216703763b5dde459011a938152e4ea55bbe971243db92cf3868742f",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-invites.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 2111,
+      "sha256AtBase": "f9ee5d9fd6923755a98d3516aeb5d01c2e2abdf60acc8fee315260985369348c",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-lifecycle.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4351,
+      "sha256AtBase": "83d62caf9cdc36df8ce8880858af881825971d684e973a7287d2d2a94ca355c6",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-results.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 7617,
+      "sha256AtBase": "f9be139e5ea58fc99c4b44a391598b6f1df1e3aa8c3d402b9e2f6764c3f5ccc3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-rules.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5200,
+      "sha256AtBase": "54fc3dc20a55a3952f4425c527db738ecaa3c8f173090d250e8fbbc9c2e478d3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-security.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 10437,
+      "sha256AtBase": "2af2fa325290d8330c5809018fac0e839f8df686fa62a49fbf415c9d50165dfb",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-time.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 3571,
+      "sha256AtBase": "749b2f3c50f9c30f82c644dc0290f03df462a124bd407d59b8d8207ca899afe1",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance-validation.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 2344,
+      "sha256AtBase": "7ac0fdb5fdd638229f0e220944b0d334e99b49ce854236fdc1c62f7efbe228c8",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/acceptance.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 14519,
+      "sha256AtBase": "090cd07df1772248a8920690513e8e8fa5e3cb579f756d53fb74ca4f25e67e89",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/client-utils.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 1746,
+      "sha256AtBase": "838f07c0efeb38dc168cad435d89d4d6219a9297e193d56088f0aa7176b8c651",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/computer.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 24248,
+      "sha256AtBase": "c93d91298874971eb92e2ff7603de37fdcd85978be35c72a36102b1fa171a969",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/helpers/authenticated-game.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 7175,
+      "sha256AtBase": "84bc1350cd1a7f3a4bbca9aee9e71cf4795da9a9dd02071a0c514427c9e59757",
+      "incomingLiteralEdges": [
+        {
+          "from": "test/acceptance.test.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/helpers/qa.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/integration.test.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/normalization.test.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/sql-integration.test.js",
+          "to": "test/helpers/authenticated-game.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "test/helpers/qa.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 4197,
+      "sha256AtBase": "bea7fd5bcc2c5488ec001423af46455c1234ef4c6d9736097063174138297fa6",
+      "incomingLiteralEdges": [
+        {
+          "from": "test/acceptance-completeness.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-file-ai.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-invites.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-lifecycle.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-results.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-rules.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-security.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-time.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance-validation.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/acceptance.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        },
+        {
+          "from": "test/qa-sql.test.js",
+          "to": "test/helpers/qa.js",
+          "kind": "esm-reference",
+          "existsAtBase": true,
+          "directoryAtBase": false
+        }
+      ]
+    },
+    {
+      "file": "test/integration.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 7653,
+      "sha256AtBase": "9df518b697818dd482575636c8e39f9dcbf4ff07a26cbf3053de79f53cad39d9",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/normalization.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 7961,
+      "sha256AtBase": "973afc7b2a1b7c1cb6724aeeac7e903e2275d4ef55977d297d80063cadef26a6",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/persistence.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 2934,
+      "sha256AtBase": "dadc74eb7f3cda38bd0cfe16ef013e532ecbac76a4e1554ec13cf09177dcd0f3",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/phase3.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 18930,
+      "sha256AtBase": "b0d616a10fa3942a82d9c0dd1f6bad6deaad7db9cf63aeff572307b685495fd7",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/qa-sql.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6573,
+      "sha256AtBase": "8fdb3fdc216293fa646e0ae4d69ce7aa37c46225fab8c040adeb4a3801824c8b",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/realtime.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 25684,
+      "sha256AtBase": "2f8f25234b0eceb3e5e8e308a34d06442c33489c85119c6221c3105d339b5c6d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/server.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 6231,
+      "sha256AtBase": "1bb8947f6eb9f382a8b54944c2614e90c189c0a7ffa3216dfa48e10c7bebb37d",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/sql-integration.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5247,
+      "sha256AtBase": "b2a9f0599091c1fcc135d95224d4c970b7595e5d95bb170dc1f37d5dcadc2ceb",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "test/xiangqi.test.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 5259,
+      "sha256AtBase": "f69de206c40e70999500d4a7137674da9248f10e2f452f9ef78a112bf1daa7ea",
+      "incomingLiteralEdges": []
+    },
+    {
+      "file": "vite.config.js",
+      "group": "B",
+      "decision": "KEEP",
+      "reason": "Keep build/test/tooling/configuration, lockfile, SQL seed, documentation, QA evidence or tested reference adapter.",
+      "bytesAtBase": 699,
+      "sha256AtBase": "579a50081a6816b86bbd749dab65730bb91e3d354ee81fcbe2331f41b127b394",
+      "incomingLiteralEdges": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "e2e/qa/account-computer.spec.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "e2e/qa/completeness.spec.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "index.html",
+      "to": "src/client/styles/main.css",
+      "kind": "html-entry",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "index.html",
+      "to": "src/client/styles/arena.css",
+      "kind": "html-entry",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "index.html",
+      "to": "src/client/main.js",
+      "kind": "html-entry",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+      "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+      "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+      "to": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Tests/CoTuong.Tests.csproj",
+      "to": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+      "to": "reference/phase1/src/CoTuong.Core/CoTuong.Core.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase1/src/CoTuong.Web/CoTuong.Web.csproj",
+      "to": "reference/phase1/src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj",
+      "kind": "legacy-project",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "reference/phase4/sql-server-persistence.js",
+      "to": "src/server/persistence/persistence-port.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/e2e-server.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/e2e-server.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/qa/browser-server.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/qa/browser-server.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/setup-db.js",
+      "to": "src/server/persistence/sql-connection.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/setup-db.js",
+      "to": "database/01_schema_phase1.sql",
+      "kind": "filesystem-url",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "scripts/setup-db.js",
+      "to": "database/03_integration.sql",
+      "kind": "filesystem-url",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "server.js",
+      "to": "src/server/game-server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/client/main.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/client/main.js",
+      "to": "src/shared/game/constants.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/client/main.js",
+      "to": "src/client/account-ui.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/client/main.js",
+      "to": "src/client/utils.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/config.js",
+      "to": "./",
+      "kind": "filesystem-url",
+      "existsAtBase": false,
+      "directoryAtBase": true
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/shared/game/constants.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/services/history-store.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/persistence/index.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/services/accounts.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/services/snapshot.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/http/account-routes.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/http/handler.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/http/responses.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/realtime/transport.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/game-server.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/account-routes.js",
+      "to": "src/server/services/accounts.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/account-routes.js",
+      "to": "src/server/errors.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/account-routes.js",
+      "to": "src/server/http/request.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/handler.js",
+      "to": "src/server/errors.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/handler.js",
+      "to": "src/server/http/request.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/handler.js",
+      "to": "src/server/http/responses.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/http/request.js",
+      "to": "src/server/errors.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/persistence/file-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/persistence/integration-sql-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/index.js",
+      "to": "src/server/persistence/integration-sql-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/integration-sql-persistence.js",
+      "to": "src/server/persistence/sql-connection.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/integration-sql-persistence.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/integration-sql-persistence.js",
+      "to": "database/03_integration.sql",
+      "kind": "filesystem-url",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/memory-persistence.js",
+      "to": "src/server/persistence/persistence-port.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/realtime/transport.js",
+      "to": "src/server/http/request.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/realtime/transport.js",
+      "to": "src/server/errors.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/services/accounts.js",
+      "to": "src/server/errors.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "src/server/services/history-store.js",
+      "to": "src/shared/game/constants.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-completeness.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-completeness.test.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "to": "src/server/persistence/file-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-invites.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-lifecycle.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-rules.test.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-rules.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-security.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-time.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance-validation.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "to": "src/server/services/accounts.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/client-utils.test.js",
+      "to": "src/client/utils.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/computer.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/computer.test.js",
+      "to": "src/server/persistence/index.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/computer.test.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/computer.test.js",
+      "to": "src/shared/game/constants.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/helpers/authenticated-game.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/integration.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/integration.test.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/integration.test.js",
+      "to": "src/server/persistence/file-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/integration.test.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "src/server/persistence/memory-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "src/client/utils.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "src/server/services/accounts.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/normalization.test.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/persistence.test.js",
+      "to": "reference/phase4/sql-server-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/phase3.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/phase3.test.js",
+      "to": "src/server/persistence/index.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "scripts/setup-db.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "src/server/persistence/integration-sql-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "src/server/persistence/sql-connection.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "test/helpers/qa.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/realtime.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/realtime.test.js",
+      "to": "src/server/persistence/index.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/server.test.js",
+      "to": "server.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/server.test.js",
+      "to": "src/server/persistence/index.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "to": "scripts/setup-db.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "to": "src/server/persistence/integration-sql-persistence.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "to": "src/server/persistence/sql-connection.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "to": "test/helpers/authenticated-game.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "to": "src/server/services/accounts.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "test/xiangqi.test.js",
+      "to": "src/shared/game/xiangqi.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    },
+    {
+      "from": "vite.config.js",
+      "to": "src/server/config.js",
+      "kind": "esm-reference",
+      "existsAtBase": true,
+      "directoryAtBase": false
+    }
+  ],
+  "packages": [
+    {
+      "from": "e2e/game.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/layout.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/layout.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/layout.spec.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "e2e/qa/acceptance.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/qa/acceptance.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/qa/acceptance.spec.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "e2e/qa/account-computer.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/qa/account-computer.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/qa/account-computer.spec.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "e2e/qa/completeness.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/qa/completeness.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/qa/completeness.spec.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "e2e/qa/navigation.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/qa/navigation.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/qa/navigation.spec.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "e2e/qa/rooms.spec.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "e2e/qa/rooms.spec.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "e2e/qa/rooms.spec.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "playwright.config.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "playwright.qa.config.js",
+      "specifier": "@playwright/test"
+    },
+    {
+      "from": "reference/phase4/sql-server-persistence.js",
+      "specifier": "mssql"
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "specifier": "node:url"
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "specifier": "node:module"
+    },
+    {
+      "from": "scripts/check-architecture.js",
+      "specifier": "node:child_process"
+    },
+    {
+      "from": "scripts/dev.js",
+      "specifier": "concurrently"
+    },
+    {
+      "from": "scripts/qa/collect.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "scripts/qa/report.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "scripts/setup-db.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "server.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "server.js",
+      "specifier": "node:url"
+    },
+    {
+      "from": "src/server/config.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "src/server/config.js",
+      "specifier": "node:url"
+    },
+    {
+      "from": "src/server/config.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "src/server/game-server.js",
+      "specifier": "node:http"
+    },
+    {
+      "from": "src/server/game-server.js",
+      "specifier": "node:https"
+    },
+    {
+      "from": "src/server/game-server.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "src/server/game-server.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "src/server/game-server.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "src/server/http/handler.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "src/server/http/handler.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "src/server/persistence/file-persistence.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "src/server/persistence/file-persistence.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "src/server/persistence/integration-sql-persistence.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "node:child_process"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "node:util"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "src/server/persistence/sql-connection.js",
+      "specifier": "mssql"
+    },
+    {
+      "from": "src/server/realtime/transport.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "src/server/services/accounts.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "src/server/services/accounts.js",
+      "specifier": "node:util"
+    },
+    {
+      "from": "test/acceptance-completeness.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-completeness.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-completeness.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-file-ai.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/acceptance-invites.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-invites.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-lifecycle.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-lifecycle.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-results.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/acceptance-rules.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-rules.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-security.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-security.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-security.test.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/acceptance-security.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/acceptance-time.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-time.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-validation.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/acceptance-validation.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance-validation.test.js",
+      "specifier": "node:events"
+    },
+    {
+      "from": "test/acceptance-validation.test.js",
+      "specifier": "node:util"
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/acceptance.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/client-utils.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/client-utils.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/computer.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/computer.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/computer.test.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/helpers/authenticated-game.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/helpers/authenticated-game.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/helpers/authenticated-game.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/helpers/qa.js",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:fs/promises"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:os"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "test/integration.test.js",
+      "specifier": "node:events"
+    },
+    {
+      "from": "test/normalization.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/normalization.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/normalization.test.js",
+      "specifier": "node:path"
+    },
+    {
+      "from": "test/persistence.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/persistence.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/phase3.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/phase3.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/phase3.test.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/qa-sql.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/realtime.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/realtime.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/realtime.test.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/server.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/server.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/server.test.js",
+      "specifier": "ws"
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "test/sql-integration.test.js",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "test/xiangqi.test.js",
+      "specifier": "node:test"
+    },
+    {
+      "from": "test/xiangqi.test.js",
+      "specifier": "node:assert/strict"
+    },
+    {
+      "from": "vite.config.js",
+      "specifier": "vite"
+    }
+  ],
+  "npmScripts": {
+    "dev": "node --env-file-if-exists=.env scripts/dev.js",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "node --env-file-if-exists=.env scripts/check-architecture.js --server",
+    "build:client": "node --env-file-if-exists=.env node_modules/vite/bin/vite.js build",
+    "check:architecture": "node scripts/check-architecture.js",
+    "preview": "node --env-file-if-exists=.env server.js",
+    "server": "node --env-file-if-exists=.env server.js",
+    "start": "node --env-file-if-exists=.env server.js",
+    "db:setup": "node --env-file-if-exists=.env scripts/setup-db.js",
+    "test": "node --test \"test/*.test.js\"",
+    "test:sql": "node --env-file-if-exists=.env --test test/sql-integration.test.js",
+    "test:e2e": "playwright test",
+    "test:qa:e2e": "playwright test --config playwright.qa.config.js",
+    "test:qa:sql": "node --env-file-if-exists=.env --test --test-concurrency=1 test/sql-integration.test.js test/qa-sql.test.js",
+    "qa:report": "node scripts/qa/report.js"
+  },
+  "byteIdenticalGroups": [],
+  "limitations": [
+    "Literal edges are discovery aids, not an unused-file proof.",
+    "C# compiler-generated routing/dependencies reviewed separately.",
+    "Ignored dependency/cache/data/artifact contents are not source-deletion candidates."
+  ]
+}

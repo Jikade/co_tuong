@@ -6,6 +6,8 @@ Nghiệm thu theo Word trên nhánh QA: [báo cáo cuối](docs/QA_FINAL_REPORT.
 
 Theo kịch bản đã đối chiếu: mỗi Match phân ngẫu nhiên Đỏ/Đen một lần; chọn quân chỉ highlight, không gợi ý ô đi; Chia Room mở URL và nút Sao chép link trong ứng dụng. Các chức năng này đã sửa trên nhánh QA, chưa merge vào `integration`.
 
+Kiểm toán/dọn bảo thủ trên `refactor/safe-cleanup`: [CODE_AUDIT_REPORT.md](docs/CODE_AUDIT_REPORT.md), [quyết định từng file](docs/UNUSED_FILES_REPORT.md), [kiểm thử trước/sau và cài sạch](docs/CLEANUP_VALIDATION.md). Chỉ bỏ hai trang demo Blazor và hai rule CSS marker cũ; giữ mã nghiệp vụ C#, migrations, SMTP tham khảo và toàn bộ tests. Không coi việc dọn source là hoàn tất các mục nghiệm thu còn thiếu.
+
 ## Cấu trúc JavaScript
 
 ```text
