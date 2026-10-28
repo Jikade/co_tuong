@@ -2,6 +2,30 @@
 
 Ứng dụng thống nhất từ 5 phase: tài khoản → trang chủ → tạo/vào phòng → thi đấu realtime → kết quả → lịch sử/replay. Runtime là Node.js + Vite + WebSocket; không cần chạy backend .NET riêng.
 
+## Cấu trúc JavaScript
+
+```text
+server.js                  # CLI + export createGameServer tương thích
+src/
+  client/                  # Frontend Vite, tài khoản/UI, WebRTC, styles
+  shared/game/             # Engine cờ và constants dùng chung browser/server
+  server/
+    game-server.js         # Chủ sở hữu phòng/trận/đồng hồ/PvE
+    config.js              # Cấu hình môi trường chung cho Node và Vite
+    errors.js              # Lỗi HTTP/WS, giữ nguyên shape response
+    http/                  # Routes, request/cookie, response, static hosting
+    realtime/              # WebSocket upgrade/auth/JSON, quản lý socket
+    services/              # Tài khoản/xã hội và lịch sử
+    persistence/           # File, memory và SQL Server
+database/                  # Schema/migration T-SQL đang sử dụng
+scripts/                   # Dev, kiểm tra build/kiến trúc, setup database
+test/                      # Unit/integration Node (JavaScript)
+e2e/                       # Playwright desktop/mobile (JavaScript)
+reference/                 # Source C# và adapter/schema cũ, không deploy runtime
+```
+
+Tất cả module ứng dụng dùng JavaScript ESM. HTML/CSS/T-SQL được giữ đúng vai trò. `reference/phase1` chứa source C#/Blazor/EF để đối chiếu; không có import runtime hay lệnh gọi .NET. Bảng kiểm kê/đối chiếu Phase 1: [SOURCE_AUDIT.md](docs/SOURCE_AUDIT.md). Kết quả trước/sau và các commit chuẩn hóa: [NORMALIZATION.md](docs/NORMALIZATION.md).
+
 ## Chạy nhanh trên Windows
 
 Yêu cầu **Node.js 24 trở lên**. Trong PowerShell tại thư mục `cotuong`:
@@ -27,9 +51,13 @@ npm.cmd run build
 npm.cmd start
 ```
 
-Mở **http://localhost:3001**. Node phục vụ `dist/`, API và `/ws` cùng origin. Không dùng `vite preview` làm máy chủ ứng dụng. Khi dùng reverse proxy, chuyển tiếp cả HTTP và WebSocket, giữ nguyên Host/Origin và ưu tiên TLS trực tiếp hoặc cấu hình TLS tới Node; cookie trên HTTPS cần Secure. Không chạy nhiều game server trên cùng database.
+Mở **http://localhost:3001**. Node phục vụ `dist/`, API và `/ws` cùng origin. `npm.cmd run preview` cũng chạy Node như `start`, để đăng nhập/WebSocket hoạt động; không gọi `vite preview` trực tiếp. Khi dùng reverse proxy, chuyển tiếp cả HTTP và WebSocket, giữ nguyên Host/Origin và ưu tiên TLS trực tiếp hoặc cấu hình TLS tới Node; cookie trên HTTPS cần Secure. Không chạy nhiều game server trên cùng database.
+
+`build` gồm `build:server` (kiểm tra cú pháp JavaScript, resolve/link module và ranh giới runtime) và `build:client` (Vite tạo `dist/`). Backend chạy ESM trực tiếp bằng Node, không cần transpile hoặc .NET SDK. Khi deploy, cần `server.js`, `src/server/`, `src/shared/`, `dist/`, package.json/lockfile và dependencies; không cần thư mục `reference/`.
 
 Vite dev proxy `/api`, `/health`, `/ws` tới Node nên cookie xác thực dùng cùng origin trên cổng 5173. Không đặt `VITE_WS_URL` sang một origin khác; server kiểm tra Origin và cookie. Biến `PORT` đổi cổng backend, được dev proxy đọc cùng lúc khởi động.
+
+`src/server/config.js` đọc và kiểm tra `PORT`, cặp TLS, lựa chọn persistence và cấu hình SQL. `DATA_FILE`, `STATIC_DIR`, `MAIL_OUTBOX`, đường dẫn chứng chỉ tương đối được tính từ thư mục dự án. Boolean dùng `true`/`false`; cấu hình sai bị từ chối ngay. `APP_HOST` mặc định `0.0.0.0`; `DB_POOL_*` được dùng bởi driver mssql. Các lệnh dev/start/build/db:setup nạp `.env` bằng Node; biến môi trường terminal có ưu tiên cao hơn file.
 
 ## SQL Server Express với tài khoản Windows
 
@@ -89,10 +117,13 @@ Chỉ đặt một biến sẽ bị từ chối khởi động. Không chia sẻ
 ## Kiểm thử
 
 ```powershell
+npm.cmd run check:architecture
 npm.cmd test
 npm.cmd run build
 npm.cmd run test:e2e
 ```
+
+`check:architecture` kiểm tra import/cú pháp, chặn frontend nhập backend, shared nhập Node API và runtime nhập archive/.NET. Các test gốc vẫn giữ assertion; thêm test cho cấu hình, envelope lỗi HTTP/WS và các thao tác Phase 1.
 
 E2E dùng Microsoft Edge headless đã cài sẵn; có thể đặt `BROWSER_PATH` tới Chromium tương thích. Hai browser context độc lập kiểm tra đăng ký, chơi, chat, WebRTC giả lập, reconnect, replay và đăng xuất; một bài kiểm tra viewport mobile. Ảnh nằm trong `test-results/integration-desktop.png` và `integration-mobile.png` sau khi chạy.
 

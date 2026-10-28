@@ -1,5 +1,7 @@
 # Bàn giao integration
 
+Tài liệu này ghi quyết định tích hợp 5 phase. Sau chuẩn hóa JavaScript, đường dẫn nội bộ được chuyển sang client/server/shared; xem [NORMALIZATION.md](NORMALIZATION.md) và [SOURCE_AUDIT.md](SOURCE_AUDIT.md). Schema, API contracts và shape dữ liệu integration giữ nguyên.
+
 ## Nguồn và chức năng
 
 | Nhánh | Commit nguồn | Phần dùng trong runtime |

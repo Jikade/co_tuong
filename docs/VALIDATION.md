@@ -1,5 +1,7 @@
 # Kết quả xác minh — 28/10/2026
 
+Các kết quả dưới đây là mốc tích hợp `6da0a47`. Kết quả chạy lại trước/sau đợt chuẩn hóa JavaScript (68 Node + 3 SQL + 2 Edge) được ghi riêng trong [NORMALIZATION.md](NORMALIZATION.md).
+
 Môi trường: Windows, Node.js v24.15.0, npm 11.12.1; SQL Server Express `.\SQLEXPRESS` với Windows Authentication qua sqlcmd; Microsoft Edge headless qua Playwright 1.64.1.
 
 | Bước | Kết quả thực tế |
