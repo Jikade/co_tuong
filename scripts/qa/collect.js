@@ -1,11 +1,13 @@
 // These mappings reference assertions that actually ran, not source inspection.
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
+const logRoot=(process.env.QA_LOG_DIR||'artifacts/qa').replaceAll('\\','/').replace(/\/$/,'');
+const aliases=process.env.QA_LOG_DIR?{'final-node.log':'node.log','regression-edge.log':'edge.log','browser.log':'edge-qa.log'}:{};
 const readLog=(name)=>{
-  const b=readFileSync(`artifacts/qa/${name}`);
+  const b=readFileSync(`${logRoot}/${aliases[name]||name}`);
   return b.toString(b[0]===0xff&&b[1]===0xfe?'utf16le':'utf8').replace(/^\uFEFF/,'');
 };
 const node=readLog('final-node.log'),sql=readLog('sql.log'),edge=readLog('regression-edge.log'),browser=readLog('browser.log'),build=readLog('build.log');
-if(!/pass 177\b/.test(node)||!/fail 0\b/.test(node)||!/pass 7\b/.test(sql)||!/fail 0\b/.test(sql)||!/4 passed/.test(edge)||!/12 passed/.test(browser)||!/built in/.test(build)) throw new Error('Required final logs are missing or not green. Do not publish coverage.');
+if(!/pass 196\b/.test(node)||!/fail 0\b/.test(node)||!/pass 9\b/.test(sql)||!/fail 0\b/.test(sql)||!/4 passed/.test(edge)||!/12 passed/.test(browser)||!/built in/.test(build)) throw new Error('Required final logs are missing or not green. Do not publish coverage.');
 const record=(ids,actual,evidence)=>appendFileSync('artifacts/qa/evidence.jsonl',JSON.stringify({ids,status:'PASS',actual,evidence,at:new Date().toISOString()})+'\n');
 const range=(p,a,b)=>Array.from({length:b-a+1},(_,i)=>`${p}-${String(a+i).padStart(3,'0')}`);
 record([...range('P2',43,78),'P2-081'],'77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.', 'test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/qa/final-node.log');
@@ -17,6 +19,6 @@ record(['DB-004','DB-005'],'SQL Server thật: state/phiên/board/capture/histor
 record(['P1-013','P1-080'],'Edge UI đã chạy: logout/back/reload không trở lại màn bảo vệ; lọc đúng danh sách bạn.', 'e2e/qa/acceptance.spec.js; artifacts/qa/browser.log');
 record(['P1-194','P1-155','P1-164'],'Actor bị demote vẫn ở Room và chủ động lấy ghế lại unready; các nhánh ghế trống/có spectator và đủ hai người đã chạy. Gửi tám start khi Syncing và tám khi Countdown chỉ có một UUID, không có nước trước Playing.', 'test/acceptance-completeness.test.js; test/acceptance.test.js; artifacts/qa/final-node.log');
 record(['P1-181'],'Host cũ rời phòng: GET social loại pending cũ, không chặn host tạo lời mời mới; quyền chủ được chuyển cho đối thủ.', 'test/acceptance.test.js; artifacts/qa/final-node.log');
-const stats={date:'2026-10-28',node:{pass:177,skip:7,fail:0},sql:{pass:7,skip:0,fail:0},edgeRegression:{pass:4,fail:0},edgeAcceptance:{pass:12,fail:0},build:'PASS'};
-writeFileSync('artifacts/qa/run-stats.json',JSON.stringify(stats,null,2)+'\n');
+const stats={date:'2026-10-28',node:{pass:196,skip:9,fail:0},sql:{pass:9,skip:0,fail:0},edgeRegression:{pass:4,fail:0},edgeAcceptance:{pass:12,fail:0},build:'PASS'};
+writeFileSync(`${logRoot}/run-stats.json`,JSON.stringify(stats,null,2)+'\n');
 console.log(JSON.stringify(stats));

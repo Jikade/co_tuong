@@ -63,7 +63,8 @@ export async function importPhase1Accounts({ env = process.env, apply = false, s
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
+    if (process.argv.slice(2).some((a) => a !== '--apply' && a !== '--server-stopped' && !a.startsWith('--user-id='))) throw new Error('Unsupported import arguments.');
     console.log(await importPhase1Accounts({ apply: process.argv.includes('--apply'), serverStopped: process.argv.includes('--server-stopped'),
       onlyUserIds: process.argv.filter((a) => a.startsWith('--user-id=')).map((a) => a.slice('--user-id='.length)) }));
-  } catch { console.error('Legacy import failed. No import transaction was committed. Check schema/conflicts and stop the application before applying.'); process.exitCode = 1; }
+  } catch { console.error('Legacy import did not complete cleanly. Check arguments/schema/conflicts and verify mappings before retrying with the server stopped.'); process.exitCode = 1; }
 }

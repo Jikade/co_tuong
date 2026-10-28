@@ -1,15 +1,15 @@
 {
   "ENV-001": {
-    "status": "NOT IMPLEMENTED",
-    "actual": "Runtime chỉ ghi JSON vào MAIL_OUTBOX; chưa có adapter SMTP/gửi URL đến hộp thư thật. Outbox đã kiểm thử thực tế, không thay thế email delivery.",
-    "evidence": "src/server/game-server.js deliverReset; e2e/qa/account-computer.spec.js; artifacts/qa/browser.log",
-    "bug": "QA-018"
+    "status": "BLOCKED",
+    "actual": "SMTP Node đã triển khai và PASS qua SMTP test server với STARTTLS/implicit TLS, auth, retry và reset HTTP. Chưa có cấu hình/credentials/người nhận để xác minh delivery đến hộp thư thật; không đồng nhất SMTP acceptance với inbox delivery.",
+    "evidence": "test/mail.test.js; src/server/services/reset-mailer.js; artifacts/migration/final/node.log",
+    "bug": "QA-018 (SMTP implemented; external delivery BLOCKED)"
   },
   "P1-021": {
-    "status": "NOT IMPLEMENTED",
-    "actual": "Token và outbox có thời hạn hoạt động; phần gửi đường link tới email thật chưa triển khai.",
-    "evidence": "e2e/qa/account-computer.spec.js; src/server/game-server.js deliverReset",
-    "bug": "QA-018"
+    "status": "BLOCKED",
+    "actual": "Luồng Quên mật khẩu đã gọi SMTP JavaScript, token một lần/15 phút/rate limit giữ nguyên, log được redaction và token gửi lỗi bị vô hiệu. Delivery tới hộp thư thật chưa xác minh vì thiếu cấu hình/credentials thực tế.",
+    "evidence": "test/mail.test.js; test/password-migration.test.js; artifacts/migration/final/node.log",
+    "bug": "QA-018 (external delivery BLOCKED)"
   },
   "ENV-002": {
     "status": "BLOCKED",

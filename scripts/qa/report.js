@@ -23,6 +23,11 @@ for (const c of results) {
   if (!c.bug) c.bug = Object.entries(bugCases).filter(([,ids])=>ids.includes(c.id)).map(([id])=>id+' (FIXED)').join(', ');
   if (c.status === 'PASS' && c.evidence?.startsWith('test/') && !c.evidence.includes('artifacts/qa/final-node.log')) c.evidence += '; artifacts/qa/final-node.log';
   if (c.status === 'PASS' && c.evidence?.includes('e2e/qa/')) c.evidence = c.evidence.replace(/artifacts\/qa\/[a-z-]+\.log/g, 'artifacts/qa/browser.log') + '; artifacts/qa/browser-results.json';
+  if (process.env.QA_LOG_DIR && c.evidence) {
+    const root = process.env.QA_LOG_DIR.replaceAll('\\', '/').replace(/\/$/, '');
+    for (const [old, current] of Object.entries({'final-node.log':'node.log','sql.log':'sql.log','browser.log':'edge-qa.log','regression-edge.log':'edge.log','wall-clock.log':'node.log'})) c.evidence = c.evidence.replaceAll(`artifacts/qa/${old}`, `${root}/${current}`);
+    c.evidence = c.evidence.replaceAll('artifacts/qa/browser-results.json', `${root}/browser-results.json`);
+  }
 }
 const summaries = Object.entries(phases).map(([phase, name]) => {
   const rows = results.filter((c) => c.phase === phase);
