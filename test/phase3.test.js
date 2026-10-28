@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
+import { createMemoryPersistence } from '../src/persistence/index.js';
 
 const HOST_ID = 'player-host-0001';
 const OPPONENT_ID = 'player-opponent-01';
@@ -89,12 +87,11 @@ async function waitFor(check, timeoutMs = 3000) {
 }
 
 async function startServer(t, overrides = {}) {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'xiangqi-phase3-'));
-  const dataFile = path.join(directory, 'rooms.json');
+  const persistence = createMemoryPersistence();
   const server = createGameServer({
     host: '127.0.0.1',
     port: 0,
-    dataFile,
+    persistence,
     countdownMs: 20,
     ackTimeoutMs: 800,
     turnSeconds: 30,
@@ -112,9 +109,8 @@ async function startServer(t, overrides = {}) {
   t.after(async () => {
     for (const client of clients) await client.close();
     await server.close();
-    await rm(directory, { recursive: true, force: true });
   });
-  return { server, url, port: server.address().port, dataFile, directory, open };
+  return { server, persistence, url, port: server.address().port, open };
 }
 
 async function startMatch(context, options = {}) {
@@ -161,11 +157,13 @@ test('awards the match on the turn clock when a player runs out of time', async 
   assert.equal(result.outcome, `${result.winnerSide}-win`);
 
   const stored = await waitFor(async () => {
-    const records = await readFile(path.join(path.dirname(context.dataFile), 'matches.json'), 'utf8')
-      .then((contents) => JSON.parse(contents));
+    const records = await context.persistence.matches.loadAll();
     return records.find((record) => record.id === game.match.id);
   });
+  assert.equal(stored.id, game.match.id);
   assert.equal(stored.result.reason, 'timeout');
+  assert.equal(stored.result.outcome, `${result.winnerSide}-win`);
+  assert.ok(Number.isFinite(stored.result.endedAt));
   assert.equal(stored.moves.length, 0);
 });
 
@@ -313,14 +311,13 @@ test('voids the match when both players disconnect', async (t) => {
   await game.opponent.close();
   await game.host.close();
   const record = await waitFor(async () => {
-    const contents = await readFile(path.join(path.dirname(context.dataFile), 'matches.json'), 'utf8')
-      .catch(() => null);
-    if (!contents) return null;
-    const records = JSON.parse(contents);
-    return records.find((entry) => entry.players.red.id === HOST_ID
-      || entry.players.black.id === HOST_ID) ?? null;
+    const records = await context.persistence.matches.loadAll();
+    return records.find((entry) => entry.id === game.match.id) ?? null;
   });
   const summary = context.server.history.list(HOST_ID)[0];
+  assert.equal(record.id, game.match.id);
+  assert.equal(record.result.reason, 'system-error');
+  assert.ok(Number.isFinite(record.result.endedAt));
   assert.equal(record.result.outcome, 'voided');
   assert.equal(summary.outcome, 'voided');
   assert.equal(summary.reason, 'system-error');

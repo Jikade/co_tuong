@@ -4,9 +4,21 @@ import {
   applyLegalMove,
   createInitialPieces,
   getLegalMoves,
+  getLegalDestinations,
   getTurnStatus,
   isInCheck,
+  toDisplayCoordinate,
+  toLogicCoordinate,
 } from '../src/xiangqi.js';
+
+test('rotates black perspective coordinates and maps displayed clicks back to logic', () => {
+  const redKing = { x: 4, y: 9 };
+  assert.deepEqual(toDisplayCoordinate(redKing, false), redKing);
+  assert.deepEqual(toDisplayCoordinate(redKing, true), { x: 4, y: 0 });
+  assert.deepEqual(toLogicCoordinate({ x: 4, y: 0 }, true), redKing);
+  const logicalMove = { x: 1, y: 2 };
+  assert.deepEqual(toLogicCoordinate(toDisplayCoordinate(logicalMove, true), true), logicalMove);
+});
 
 test('creates the standard 32-piece starting position', () => {
   const pieces = createInitialPieces();
@@ -14,6 +26,17 @@ test('creates the standard 32-piece starting position', () => {
   assert.equal(pieces.filter((piece) => piece.color === 'red').length, 16);
   assert.equal(pieces.filter((piece) => piece.color === 'black').length, 16);
   assert.ok(pieces.some((piece) => piece.id === 'red-pawn-0' && piece.x === 0 && piece.y === 6));
+});
+
+test('legal move generation returns only moves accepted by the shared rules engine', () => {
+  const pieces = createInitialPieces();
+  const moves = getLegalMoves(pieces, 'red');
+  assert.ok(moves.length > 0);
+  for (const move of moves) {
+    assert.equal(pieces.find((piece) => piece.id === move.pieceId)?.color, 'red');
+    assert.ok(applyLegalMove(pieces, move.pieceId, move.to));
+  }
+  assert.equal(getLegalMoves(pieces, 'green').length, 0);
 });
 
 test('enforces rook paths, horse legs, elephant eyes, river and palace rules', () => {
@@ -40,9 +63,9 @@ test('enforces rook paths, horse legs, elephant eyes, river and palace rules', (
 
 test('lists every legal destination for a selected piece', () => {
   const pieces = createInitialPieces();
-  assert.deepEqual(getLegalMoves(pieces, 'red-horse-1'), [{ x: 0, y: 7 }, { x: 2, y: 7 }]);
-  assert.deepEqual(getLegalMoves(pieces, 'red-pawn-0'), [{ x: 0, y: 5 }]);
-  assert.deepEqual(getLegalMoves(pieces, 'missing-piece'), []);
+  assert.deepEqual(getLegalDestinations(pieces, 'red-horse-1'), [{ x: 0, y: 7 }, { x: 2, y: 7 }]);
+  assert.deepEqual(getLegalDestinations(pieces, 'red-pawn-0'), [{ x: 0, y: 5 }]);
+  assert.deepEqual(getLegalDestinations(pieces, 'missing-piece'), []);
 });
 
 test('allows cannon captures only across one screen', () => {

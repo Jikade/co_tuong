@@ -3,6 +3,7 @@ node_modules/
 dist/
 coverage/
 /data/
+/certs/
 
 # Nhật ký
 *.log
@@ -16,3 +17,14 @@ coverage/
 Thumbs.db
 
 .npm-cache/
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local diagnostics
+realtime-error.txt
+test-result.txt
+
+# Local HTTPS development certificates
+/certs/

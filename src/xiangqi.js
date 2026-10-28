@@ -1,5 +1,15 @@
 const backRank = ['rook', 'horse', 'elephant', 'advisor', 'king', 'advisor', 'elephant', 'horse', 'rook'];
 
+export function toDisplayCoordinate(coordinate, rotated = false) {
+  if (!rotated) return { x: coordinate.x, y: coordinate.y };
+  return { x: 8 - coordinate.x, y: 9 - coordinate.y };
+}
+
+export function toLogicCoordinate(coordinate, rotated = false) {
+  // A 180-degree board rotation is its own inverse.
+  return toDisplayCoordinate(coordinate, rotated);
+}
+
 export function createInitialPieces() {
   const pieces = [];
   for (const color of ['black', 'red']) {
@@ -116,7 +126,7 @@ export function applyLegalMove(pieces, pieceId, to) {
   return { pieces: next, capturedPiece: target ? { ...target } : null };
 }
 
-export function getLegalMoves(pieces, pieceId) {
+export function getLegalDestinations(pieces, pieceId) {
   const moves = [];
   for (let y = 0; y <= 9; y++) {
     for (let x = 0; x <= 8; x++) {
@@ -126,16 +136,24 @@ export function getLegalMoves(pieces, pieceId) {
   return moves;
 }
 
-export function hasLegalMove(pieces, color) {
+export function getLegalMoves(pieces, color) {
+  const moves = [];
+
   for (const piece of pieces) {
     if (piece.color !== color) continue;
-    for (let y = 0; y <= 9; y++) {
-      for (let x = 0; x <= 8; x++) {
-        if (applyLegalMove(pieces, piece.id, { x, y })) return true;
+    for (let y = 0; y <= 9; y += 1) {
+      for (let x = 0; x <= 8; x += 1) {
+        const to = { x, y };
+        const result = applyLegalMove(pieces, piece.id, to);
+        if (result) moves.push({ pieceId: piece.id, from: { x: piece.x, y: piece.y }, to, capturedPiece: result.capturedPiece });
       }
     }
   }
-  return false;
+  return moves;
+}
+
+export function hasLegalMove(pieces, color) {
+  return getLegalMoves(pieces, color).length > 0;
 }
 
 export function getTurnStatus(pieces, color) {

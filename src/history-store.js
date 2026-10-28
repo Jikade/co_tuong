@@ -1,6 +1,3 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { randomUUID } from 'node:crypto';
 import { MATCH_RESULT } from './constants.js';
 
 function sideOf(record, playerId) {
@@ -25,6 +22,7 @@ function summarize(record, playerId) {
     id: record.id,
     roomCode: record.roomCode,
     roomName: record.roomName,
+    mode: record.mode ?? 'online',
     side,
     opponentName: opponent?.name ?? '',
     outcome: outcomeFor(record, playerId),
@@ -36,47 +34,53 @@ function summarize(record, playerId) {
   };
 }
 
-export function createHistoryStore(filePath) {
+export function createHistoryStore(matchRepository) {
+  if (!matchRepository || typeof matchRepository.loadAll !== 'function'
+      || typeof matchRepository.upsert !== 'function') {
+    throw new TypeError('History store cần match repository loadAll/upsert.');
+  }
+
   let records = [];
   let queue = Promise.resolve();
 
-  function persist() {
-    const contents = JSON.stringify(records);
-    queue = queue.then(async () => {
-      await mkdir(path.dirname(filePath), { recursive: true });
-      const temporaryFile = `${filePath}.${randomUUID()}.tmp`;
-      await writeFile(temporaryFile, contents, 'utf8');
-      await rename(temporaryFile, filePath);
+  function append(record) {
+    const operation = queue.then(async () => {
+      await matchRepository.upsert(record);
+      const next = records.slice();
+      const index = next.findIndex((item) => item.id === record.id);
+      if (index >= 0) next[index] = record;
+      else next.push(record);
+      records = next;
+      return record;
     });
-    return queue.catch((error) => {
-      console.error('Could not persist match history:', error);
-    });
+    queue = operation.catch(() => {});
+    return operation;
   }
 
   return {
     async load() {
-      try {
-        const contents = await readFile(filePath, 'utf8');
-        const parsed = JSON.parse(contents);
-        records = Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        if (error.code !== 'ENOENT') throw error;
-        records = [];
-      }
+      await queue;
+      const loaded = await matchRepository.loadAll();
+      records = Array.isArray(loaded) ? loaded : [];
       return records.length;
     },
-    async append(record) {
-      const existing = records.findIndex((candidate) => candidate.id === record.id);
-      if (existing >= 0) records[existing] = record;
-      else records.push(record);
-      await persist();
-      return record;
-    },
+    append,
+    save: append,
     list(playerId) {
       return records
-        .filter((record) => sideOf(record, playerId) !== null)
+        .filter((record) => record.result && Number.isFinite(record.endedAt)
+          && sideOf(record, playerId) !== null)
         .map((record) => summarize(record, playerId))
-        .sort((first, second) => (second.endedAt ?? 0) - (first.endedAt ?? 0));
+        .sort((a, b) => (b.endedAt ?? 0) - (a.endedAt ?? 0));
+    },
+    findActiveComputerMatch(playerId) {
+      return records
+        .filter((record) => record.mode === 'computer' && record.status === 'playing'
+          && record.humanPlayerId === playerId)
+        .sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0))[0] ?? null;
+    },
+    activeComputerMatches() {
+      return records.filter((record) => record.mode === 'computer' && record.status === 'playing');
     },
     find(id) {
       return records.find((record) => record.id === id) ?? null;
