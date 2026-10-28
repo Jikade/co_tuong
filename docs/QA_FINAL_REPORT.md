@@ -109,4 +109,6 @@ npm.cmd run qa:report
 
 Chạy ứng dụng để test tay: `npm.cmd run dev`, mở `http://localhost:5173`; backend `3001`. Mặc định file persistence giữ `data/integration.json`. SQL runtime có hướng dẫn tại [README](../README.md); không trỏ lượt kiểm thử vào DB sử dụng thực tế.
 
+Đã khởi động lại bản QA bằng `npm.cmd run dev` sau khi xác nhận không có trận đang chơi. Kiểm tra HTTP frontend 200, `/health` 200 (file/ok), `/api/me` chưa đăng nhập 401, endpoint kiểm tra reset token mới từ chối token giả 400; frontend có Share Room mới. Hash dữ liệu tài khoản và lịch sử trước/sau giữ nguyên (3 tài khoản, 2 Room, 1 lịch sử). Bằng chứng local: `artifacts/qa/live-check.json`; kiểm tra kiến trúc cũng PASS. Trạng thái này chỉ phản ánh thời điểm bàn giao, không phải cam kết tiến trình luôn chạy sau khi đóng máy.
+
 **CHƯA ĐẠT NGHIỆM THU** cho đến khi QA-018/019/020 được đóng bằng bằng chứng môi trường phù hợp, rồi chạy lại regression liên quan.
