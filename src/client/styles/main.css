@@ -647,27 +647,6 @@ body::before {
   pointer-events: none;
 }
 
-.legal-move {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(37, 76, 35, .9);
-  border-radius: 50%;
-  background: rgba(91, 151, 68, .68);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .45);
-  pointer-events: none;
-  z-index: 4;
-}
-
-.legal-move.capture {
-  width: 54px;
-  height: 54px;
-  border: 3px solid rgba(154, 39, 27, .9);
-  background: rgba(184, 61, 43, .14);
-  box-shadow: 0 0 0 2px rgba(255, 232, 179, .8);
-  z-index: 11;
-}
-
 .frame-corner {
   position: absolute;
   width: 17px;
