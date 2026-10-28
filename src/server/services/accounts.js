@@ -1,8 +1,7 @@
 import { ApiError } from '../errors.js';
-import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual, createHash } from 'node:crypto';
-import { promisify } from 'node:util';
+import { randomBytes, randomUUID, createHash } from 'node:crypto';
+import { hashPassword, verifyPassword, passwordFormat } from './passwords.js';
 
-const scrypt = promisify(scryptCallback);
 export const tokenHash = (token) => createHash('sha256').update(token).digest('hex');
 export const accountInfo = ({ id, username, displayName, email, createdAt }) => ({ id, username, displayName, email, createdAt });
 export function validatePassword(password) {
@@ -10,17 +9,6 @@ export function validatePassword(password) {
       || !/\p{L}/u.test(password) || !/\d/.test(password)) {
     throw new ApiError(400, 'Mật khẩu phải từ 8–128 ký tự, có cả chữ và số.');
   }
-}
-async function hashPassword(password) {
-  const salt = randomBytes(16).toString('hex');
-  return `scrypt$${salt}$${(await scrypt(password, salt, 64)).toString('hex')}`;
-}
-async function verifyPassword(password, stored) {
-  const [algorithm, salt, hex] = stored.split('$');
-  if (algorithm !== 'scrypt' || !salt || !hex) return false;
-  const actual = await scrypt(password, salt, 64);
-  const expected = Buffer.from(hex, 'hex');
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 // One writer per process; commit the repository before exposing changes to readers.
@@ -50,7 +38,7 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
       if (typeof rawToken !== 'string') return null;
       const session = state.sessions.find((s) => s.hash === tokenHash(rawToken) && !s.revokedAt && s.expiresAt > now());
       const user = session && userFor(session.userId);
-      return user ? { user, session } : null;
+      return user && user.active !== false ? { user, session } : null;
     },
     async register(body) {
       const username = String(body.username ?? '').trim();
@@ -74,11 +62,13 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
       if (typeof password !== 'string' || password.length > 128) throw new ApiError(401, 'Thông tin đăng nhập không đúng.');
       const user = state.users.find((u) => u.username.toLowerCase() === String(username ?? '').trim().toLowerCase());
       // Always run a KDF to reduce username timing disclosure.
-      const valid = await verifyPassword(password, user?.passwordHash ?? 'scrypt$dummy$' + '00'.repeat(64));
-      if (!user || !valid) throw new ApiError(401, 'Thông tin đăng nhập không đúng.');
+      const valid = await verifyPassword(password, user?.passwordHash ?? `scrypt$${'00'.repeat(16)}$${'00'.repeat(64)}`);
+      if (!user || user.active === false || !valid) throw new ApiError(401, 'Thông tin đăng nhập không đúng.');
+      const upgrade = passwordFormat(user.passwordHash) !== 'scrypt' ? await hashPassword(password) : null;
       return mutate((draft) => {
         const current = draft.users.find((u) => u.id === user.id);
-        if (current.passwordHash !== user.passwordHash) throw new ApiError(401, 'Vui lòng đăng nhập lại.');
+        if (current.active === false || current.passwordHash !== user.passwordHash) throw new ApiError(401, 'Vui lòng đăng nhập lại.');
+        if (upgrade) current.passwordHash = upgrade;
         const token = randomBytes(32).toString('base64url');
         const session = { id: randomUUID(), userId: user.id, hash: tokenHash(token), createdAt: now(), expiresAt: now() + sessionDays * 86400000, revokedAt: null };
         draft.sessions.push(session);
@@ -99,14 +89,25 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
         const recent = d.resetRequests.filter((r) => r.at > now() - 3600000);
         d.resetRequests = recent;
         d.resetRequests.push({ email, ip, at: now() });
-        const user = d.users.find((u) => u.email === email);
+        const user = d.users.find((u) => u.email === email && u.active !== false);
         if (!user || recent.filter((r) => r.email === email).length > 3 || recent.filter((r) => r.ip === ip).length > 10) return null;
         for (const reset of d.resets.filter((r) => r.userId === user.id && !r.usedAt)) reset.usedAt = now();
         const token = randomBytes(32).toString('base64url');
         d.resets.push({ userId: user.id, hash: tokenHash(token), createdAt: now(), expiresAt: now() + 900000, usedAt: null });
         return { email, token };
       });
-      if (delivery) await deliverReset(delivery);
+      if (delivery) {
+        try { await deliverReset(delivery); }
+        catch {
+          // Never log transport errors, addresses, raw tokens or credentials. Keep
+          // the public response identical to an unknown/rate-limited address.
+          console.error('Password reset delivery failed.');
+          await mutate((d) => {
+            const failed = d.resets.find((r) => r.hash === tokenHash(delivery.token));
+            if (failed && !failed.usedAt) failed.usedAt = now();
+          });
+        }
+      }
     },
     async reset({ token, password, confirmPassword }) {
       validatePassword(password);
@@ -114,14 +115,15 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
       const passwordHash = await hashPassword(password);
       return mutate((d) => {
         const reset = d.resets.find((r) => r.hash === tokenHash(String(token)) && !r.usedAt && r.expiresAt > now());
-        if (!reset) throw new ApiError(400, 'Liên kết đặt lại mật khẩu không còn hiệu lực.');
+        const user = reset && d.users.find((u) => u.id === reset.userId);
+        if (!reset || !user || user.active === false) throw new ApiError(400, 'Liên kết đặt lại mật khẩu không còn hiệu lực.');
         reset.usedAt = now();
-        d.users.find((u) => u.id === reset.userId).passwordHash = passwordHash;
+        user.passwordHash = passwordHash;
         for (const s of d.sessions.filter((s) => s.userId === reset.userId)) s.revokedAt = now();
       });
     },
     validResetToken(token) {
-      return typeof token === 'string' && state.resets.some((r) => r.hash === tokenHash(token) && !r.usedAt && r.expiresAt > now());
+      return typeof token === 'string' && state.resets.some((r) => r.hash === tokenHash(token) && !r.usedAt && r.expiresAt > now() && userFor(r.userId) && userFor(r.userId).active !== false);
     },
     search(userId, query) {
       query = String(query ?? '').trim().toLowerCase();

@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "description": "Chơi cờ tướng trực tuyến với đồng bộ WebSocket",
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "node --env-file-if-exists=.env scripts/dev.js",
     "build": "npm run build:server && npm run build:client",
@@ -15,20 +17,25 @@
     "server": "node --env-file-if-exists=.env server.js",
     "start": "node --env-file-if-exists=.env server.js",
     "db:setup": "node --env-file-if-exists=.env scripts/setup-db.js",
+    "db:import-phase1": "node --env-file-if-exists=.env scripts/import-phase1-accounts.js",
+    "mail:verify": "node --env-file-if-exists=.env scripts/verify-mail.js",
     "test": "node --test \"test/*.test.js\"",
     "test:sql": "node --env-file-if-exists=.env --test test/sql-integration.test.js",
     "test:e2e": "playwright test",
     "test:qa:e2e": "playwright test --config playwright.qa.config.js",
-    "test:qa:sql": "node --env-file-if-exists=.env --test --test-concurrency=1 test/sql-integration.test.js test/qa-sql.test.js",
+    "test:qa:sql": "node --env-file-if-exists=.env --test --test-concurrency=1 test/sql-integration.test.js test/qa-sql.test.js test/migration-sql.test.js",
+    "test:migration": "node --test test/password-migration.test.js test/mail.test.js",
     "qa:report": "node scripts/qa/report.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "concurrently": "^10.0.6",
+    "smtp-server": "3.21.1",
     "vite": "^5.4.11"
   },
   "dependencies": {
     "mssql": "^12.7.11",
+    "nodemailer": "10.2.1",
     "ws": "^8.22.0"
   }
 }

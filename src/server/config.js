@@ -52,6 +52,30 @@ export function readPersistenceConfig(env = process.env) {
   return { mode, dataFile: projectPath(env.DATA_FILE || 'data/integration.json') };
 }
 
+export function readMailConfig(env = process.env) {
+  const provider = (env.MAIL_PROVIDER || 'file').trim().toLowerCase();
+  if (!['file', 'smtp'].includes(provider)) throw new Error('MAIL_PROVIDER phải là file hoặc smtp.');
+  const publicUrl = new URL(env.APP_PUBLIC_URL || 'http://localhost:5173');
+  if (!['http:', 'https:'].includes(publicUrl.protocol) || publicUrl.username || publicUrl.password || publicUrl.search || publicUrl.hash) throw new Error('APP_PUBLIC_URL không hợp lệ.');
+  const config = { provider, publicUrl: publicUrl.href, outbox: projectPath(env.MAIL_OUTBOX || 'data/outbox') };
+  if (provider === 'file') return config;
+  const host = (env.SMTP_HOST || '').trim();
+  const from = (env.MAIL_FROM || '').trim();
+  if (!host || /[\r\n]/.test(host) || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(from)) throw new Error('SMTP_HOST và MAIL_FROM hợp lệ là bắt buộc.');
+  const secure = boolean(env.SMTP_SECURE, false, 'SMTP_SECURE');
+  const requireTLS = boolean(env.SMTP_REQUIRE_TLS, true, 'SMTP_REQUIRE_TLS');
+  if (!secure && !requireTLS && !['127.0.0.1', '::1', 'localhost'].includes(host)) throw new Error('Chỉ cho phép SMTP không TLS trên loopback để kiểm thử.');
+  if (Boolean(env.SMTP_USER) !== Boolean(env.SMTP_PASSWORD)) throw new Error('Cần đủ SMTP_USER và SMTP_PASSWORD hoặc để trống cả hai.');
+  return { ...config, host, from, secure, requireTLS,
+    port: integer(env.SMTP_PORT, secure ? 465 : 587, 'SMTP_PORT', 1, 65535),
+    auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASSWORD } : undefined,
+    caFile: env.SMTP_TLS_CA_FILE ? projectPath(env.SMTP_TLS_CA_FILE) : undefined,
+    attempts: integer(env.SMTP_MAX_ATTEMPTS, 3, 'SMTP_MAX_ATTEMPTS', 1, 5),
+    retryMs: integer(env.SMTP_RETRY_MS, 500, 'SMTP_RETRY_MS', 0, 10000),
+    timeoutMs: integer(env.SMTP_TIMEOUT_MS, 10000, 'SMTP_TIMEOUT_MS', 100, 30000),
+  };
+}
+
 export function readSqlConfig(env = process.env) {
   const driver = env.DB_DRIVER || 'mssql';
   if (!['sqlcmd', 'mssql'].includes(driver)) throw new Error(`DB_DRIVER không hỗ trợ: ${driver}`);

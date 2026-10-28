@@ -16,6 +16,7 @@ export async function setupDatabase(env = process.env) {
     } else if (count !== 3) throw new Error('Schema gốc chưa đầy đủ; cần kiểm tra thủ công.');
     const migration = await readFile(new URL('../database/03_integration.sql', import.meta.url), 'utf8');
     await db.execute(migration);
+    await db.execute(await readFile(new URL('../database/04_phase1_compat.sql', import.meta.url), 'utf8'));
     const [counts] = await db.json("SELECT (SELECT COUNT(*) FROM sys.tables WHERE name NOT LIKE 'integration[_]%' AND name <> 'yeu_cau_chong_lap') AS baseTables, (SELECT COUNT(*) FROM sys.views WHERE name LIKE 'v[_]%') AS views");
     if (counts.baseTables !== 24 || counts.views !== 5) throw new Error(`Schema không đúng kỳ vọng: ${JSON.stringify(counts)}`);
     return counts;

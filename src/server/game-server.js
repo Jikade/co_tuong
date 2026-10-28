@@ -1,8 +1,6 @@
 import { createServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
 import { randomInt, randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import {
   applyLegalMove,
   createInitialPieces,
@@ -19,7 +17,8 @@ import { createAccountHttp } from './http/account-routes.js';
 import { createHttpHandler } from './http/handler.js';
 import { sendJson } from './http/responses.js';
 import { createWebSocketTransport, send, sendError, isAccountOnline, closeInvalidSessions } from './realtime/transport.js';
-import { readServerConfig, readTlsOptions } from './config.js';
+import { readServerConfig, readTlsOptions, readMailConfig } from './config.js';
+import { createResetMailer } from './services/reset-mailer.js';
 
 function publicParticipant(room, participant) {
   if (!participant) return null;
@@ -126,6 +125,7 @@ export function createGameServer(options = {}) {
     persistence = createPersistenceFromEnv(),
     requireAuth = true,
     accountOptions = {},
+    mailConfig = readMailConfig(),
     staticDir = config.staticDir,
     countdownMs = 3000,
     ackTimeoutMs = 15000,
@@ -144,11 +144,7 @@ export function createGameServer(options = {}) {
   const rooms = new Map();
   if (requireAuth && !persistence.accounts) throw new Error('Persistence cần accounts repository khi bật xác thực.');
   const accounts = createAccounts(persistence.accounts ?? createMemoryPersistence().accounts, {
-    async deliverReset(delivery) {
-      const directory = config.mailOutbox;
-      await mkdir(directory, { recursive: true });
-      await writeFile(path.join(directory, `${randomUUID()}.json`), JSON.stringify({ ...delivery, createdAt: Date.now() }), { mode: 0o600 });
-    },
+    deliverReset: createResetMailer(mailConfig).deliverReset,
     ...accountOptions,
   });
   const peers = new Map();
