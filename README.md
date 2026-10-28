@@ -1,54 +1,113 @@
+# Cờ Tướng Online — integration
 
-Ứng dụng cờ tướng trực tuyến với máy chủ giữ trạng thái trận, đồng bộ WebSocket, khán giả chỉ xem, tự lưu nước đi và kiểm tra luật cờ tướng.
+Ứng dụng thống nhất từ 5 phase: tài khoản → trang chủ → tạo/vào phòng → thi đấu realtime → kết quả → lịch sử/replay. Runtime là Node.js + Vite + WebSocket; không cần chạy backend .NET riêng.
 
-## Chạy trong môi trường phát triển
+## Chạy nhanh trên Windows
 
-Cần Node.js 20 trở lên. Cài các gói phụ thuộc và chạy cả giao diện Vite lẫn máy chủ WebSocket:
+Yêu cầu **Node.js 24 trở lên**. Trong PowerShell tại thư mục `cotuong`:
 
 ```powershell
-npm.cmd install
+npm.cmd ci
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 npm.cmd run dev
 ```
 
-Mở địa chỉ Vite hiển thị trong terminal (mặc định `http://localhost:5173`). Máy chủ game chạy ở cổng `3001`.
+Mở **http://localhost:5173**. Đăng ký hai tài khoản bằng hai profile trình duyệt (hoặc một cửa sổ thường, một cửa sổ InPrivate). Hai tab cùng profile dùng chung cookie đăng nhập.
 
-Nhập tên hiển thị để tạo Room hoặc tham gia bằng mã 6 chữ số. Chủ Room và Đối thủ cần cùng chọn **Sẵn sàng**; Chủ Room chọn **Bắt đầu**. Sau khi hai đấu thủ nhận trạng thái bàn cờ ban đầu, hệ thống đếm ngược 3 giây rồi bắt đầu với bên Đỏ đi trước. Người thứ ba trở đi chỉ có thể xem trận.
+Mặc định `DB_MODE=file`: tự tạo `data/integration.json`, lưu tài khoản, phiên, phòng, trận và lịch sử qua lần khởi động lại. `DB_MODE=memory` chỉ dành cho test, dữ liệu mất khi dừng tiến trình. Không commit `.env`, `data/` hoặc chứng chỉ.
 
-Trạng thái Room và Match được tự động lưu trong `data/rooms.json`. Nước đi chỉ được lưu sau khi máy chủ xác nhận hợp lệ. Tải lại trang hoặc kết nối lại bằng cùng trình duyệt sẽ khôi phục Room gần nhất. Lịch sử, quân bị ăn, lượt, trạng thái chiếu và đồng hồ được đồng bộ cho cả hai đấu thủ và khán giả.
+Tạo phòng hoặc vào bằng mã 6 chữ số/link `/?room=123456`. Hai đấu thủ chọn **Sẵn sàng**, chủ phòng chọn **Bắt đầu**. Bên Đỏ đi trước, mỗi lượt 60 giây. Server kiểm tra toàn bộ nước đi. Người thứ ba là khán giả (tối đa 10); khán giả không nhận chat/video của hai đấu thủ.
 
-## Kiểm tra
+Trong phòng chờ, khán giả có thể nhận ghế đối thủ trống; chủ phòng có thể chuyển đối thủ xuống khán giả hoặc mời khán giả rời phòng. Khi chủ phòng rời, quyền chủ chuyển cho đối thủ/khán giả còn lại. Trong trận, rời trận hoặc đầu hàng tính thua; mất kết nối tạm dừng đồng hồ và có cửa sổ quay lại 60 giây. Nút tài khoản/bạn bè vẫn dùng được trong phòng.
+
+## Build và chạy bản production tại máy
+
+```powershell
+npm.cmd run build
+npm.cmd start
+```
+
+Mở **http://localhost:3001**. Node phục vụ `dist/`, API và `/ws` cùng origin. Không dùng `vite preview` làm máy chủ ứng dụng. Khi dùng reverse proxy, chuyển tiếp cả HTTP và WebSocket, giữ nguyên Host/Origin và ưu tiên TLS trực tiếp hoặc cấu hình TLS tới Node; cookie trên HTTPS cần Secure. Không chạy nhiều game server trên cùng database.
+
+Vite dev proxy `/api`, `/health`, `/ws` tới Node nên cookie xác thực dùng cùng origin trên cổng 5173. Không đặt `VITE_WS_URL` sang một origin khác; server kiểm tra Origin và cookie. Biến `PORT` đổi cổng backend, được dev proxy đọc cùng lúc khởi động.
+
+## SQL Server Express với tài khoản Windows
+
+Ứng dụng không tự tạo/xóa database. Tạo một database riêng khi chưa tồn tại:
+
+```powershell
+sqlcmd -S '.\SQLEXPRESS' -E -C -b -Q "IF DB_ID(N'CoTuongIntegration') IS NULL CREATE DATABASE CoTuongIntegration COLLATE Vietnamese_100_CI_AS;"
+```
+
+Sửa `.env`:
+
+```dotenv
+DB_MODE=sqlserver
+DB_DRIVER=sqlcmd
+DB_SERVER=localhost\SQLEXPRESS
+DB_DATABASE=CoTuongIntegration
+DB_AUTO_MIGRATE=false
+```
+
+Sau đó:
+
+```powershell
+npm.cmd run db:setup
+npm.cmd run dev
+```
+
+Cần `sqlcmd` và ODBC Driver cho SQL Server trên PATH. `sqlcmd` dùng Windows Authentication, không cần DB_PASSWORD. Có thể đặt `SQLCMD_PATH` nếu chương trình không nằm trên PATH.
+
+Máy khác có thể dùng `DB_DRIVER=mssql`, `DB_SERVER`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` với SQL Authentication và TCP/IP được bật. Driver này chưa được kiểm thử kết nối thật trong phiên tích hợp; Windows/sqlcmd đã kiểm thử thật. Tài liệu tham số sqlcmd: [Microsoft Learn](https://learn.microsoft.com/en-us/sql/tools/sqlcmd-utility).
+
+`db:setup` chỉ cài schema gốc khi database trống, chạy các batch trong transaction, và từ chối database có schema một phần/không phù hợp. Với schema nền đầy đủ, nó chỉ thêm các bảng integration còn thiếu; chạy lại không xóa dữ liệu. Schema nền có **24 bảng, 5 view**, Phase 1 thêm bảng idempotency, integration thêm mapping/snapshot. `DB_AUTO_MIGRATE=true` chỉ thêm bảng integration, không tự cài lại schema nền. Không chạy `reference/phase1/database/99_drop_all.sql`.
+
+Tài khoản đã có từ backend .NET và hai bảng bridge Phase 4 không được tự chuyển đổi. Dùng database integration riêng; nhập tài khoản/phiên cũ cần migration được kiểm tra riêng. Chi tiết bảng đang dùng: [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
+## Tài khoản, bạn bè và khôi phục mật khẩu
+
+Mật khẩu băm scrypt với salt riêng; cookie phiên HttpOnly/SameSite=Strict; token phiên và token đặt lại chỉ lưu hash. Phiên có hạn 7 ngày; đăng xuất/thu hồi/đổi mật khẩu vô hiệu phiên tương ứng cả trên WebSocket.
+
+Mở **Tài khoản & bạn bè** để sửa tên, thu hồi phiên khác, tìm người chơi, kết bạn, xem thông báo và mời bạn đang online vào phòng còn ghế trống. Dữ liệu xã hội làm mới mỗi 15 giây hoặc khi có thao tác.
+
+Luồng Quên mật khẩu hoạt động ở chế độ **hộp thư phát triển**: bản tin `{email, token}` nằm trong `data/outbox/*.json` (hoặc `MAIL_OUTBOX`), không trả token qua HTTP. Mở `http://localhost:5173/?reset=TOKEN` để đặt mật khẩu mới; token hết hạn sau 15 phút, dùng một lần và vô hiệu các phiên cũ. Chưa có adapter gửi email SMTP; cần cấu hình/triển khai adapter `deliverReset` trước khi cung cấp khôi phục mật khẩu cho người dùng ngoài máy phát triển.
+
+## Video và kiểm thử hai thiết bị
+
+Thanh icon bên phải mở/đóng Chat, Video, Nước đi, Lịch sử và Khán giả. Video dùng WebRTC, có chấp nhận/từ chối, hết hạn lời gọi 60 giây, kết thúc cuộc gọi và bật/tắt camera/micro.
+
+Camera/micro chạy trên `localhost` hoặc HTTPS có chứng chỉ được tin cậy. Trên LAN, tạo chứng chỉ cho địa chỉ máy bằng mkcert, tin cậy CA trên hai thiết bị và đặt cả hai biến:
+
+```powershell
+$env:TLS_CERT_FILE = (Resolve-Path certs/lan.pem).Path
+$env:TLS_KEY_FILE = (Resolve-Path certs/lan-key.pem).Path
+npm.cmd run dev
+```
+
+Chỉ đặt một biến sẽ bị từ chối khởi động. Không chia sẻ private key. Cuộc gọi đã kiểm thử trên hai browser context Edge với camera/micro giả lập; chưa kiểm thử camera vật lý hoặc mạng Internet có NAT. Chưa có TURN; cần bổ sung TURN trước khi cam kết video trên mọi mạng.
+
+## Kiểm thử
 
 ```powershell
 npm.cmd test
 npm.cmd run build
+npm.cmd run test:e2e
 ```
 
-## Triển khai
+E2E dùng Microsoft Edge headless đã cài sẵn; có thể đặt `BROWSER_PATH` tới Chromium tương thích. Hai browser context độc lập kiểm tra đăng ký, chơi, chat, WebRTC giả lập, reconnect, replay và đăng xuất; một bài kiểm tra viewport mobile. Ảnh nằm trong `test-results/integration-desktop.png` và `integration-mobile.png` sau khi chạy.
 
-Build giao diện bằng `npm.cmd run build`; chạy giao diện build bằng `npm.cmd run preview` và máy chủ bằng `npm.cmd run server`. Khi giao diện và máy chủ không cùng host/cổng, đặt `VITE_WS_URL` thành địa chỉ WebSocket công khai (ví dụ `wss://game.example.com/ws`) trước khi build, đồng thời cấu hình reverse proxy TLS tới cổng `3001`.
+SQL integration chỉ chạy khi bật rõ ràng và tên database bắt đầu bằng `CoTuongIntegrationTest_`:
 
-Phiên bản này dùng tên hiển thị khách và mã Room; đăng ký/đăng nhập, danh sách Room công khai và mời bạn bè thuộc phạm vi Phase 1 chưa được triển khai.
+```powershell
+sqlcmd -S '.\SQLEXPRESS' -E -C -b -Q "IF DB_ID(N'CoTuongIntegrationTest_local') IS NULL CREATE DATABASE CoTuongIntegrationTest_local COLLATE Vietnamese_100_CI_AS;"
+$env:DB_DRIVER = 'sqlcmd'
+$env:DB_SERVER = '.\SQLEXPRESS'
+$env:DB_DATABASE = 'CoTuongIntegrationTest_local'
+$env:RUN_SQL_TESTS = 'true'
+npm.cmd run test:sql
+Remove-Item Env:RUN_SQL_TESTS,Env:DB_SERVER,Env:DB_DATABASE,Env:DB_DRIVER
+```
 
-Yêu cầu chức năng gốc: [docs/ORIGINAL_REQUIREMENTS.md](docs/ORIGINAL_REQUIREMENTS.md).
+Test SQL tự kiểm tra/tạo schema trong database test trống và thêm tài khoản/trận test mới, không tự dọn/xóa database. Đừng trỏ test tới database đang dùng.
 
-## HTTPS development on an iPhone over the LAN
-
-Camera and microphone access requires a secure browser context. For local development, use `mkcert` to create a certificate trusted by your development PC and install its root certificate on the iPhone. Do not proceed through a browser certificate warning.
-
-1. Install `mkcert` from [its official project](https://github.com/FiloSottile/mkcert) and connect the PC and iPhone to the same trusted Wi-Fi network. Allow inbound connections to ports 5173 and 3001 in the PC firewall.
-2. In PowerShell at the project root, create a certificate for the PC's current LAN IP (replace `192.168.1.10` if the IP changes):
-
-   ```powershell
-   New-Item -ItemType Directory -Force certs
-   mkcert -install
-   mkcert -cert-file certs/lan.pem -key-file certs/lan-key.pem 192.168.1.10 localhost 127.0.0.1 ::1
-   $env:TLS_CERT_FILE = (Resolve-Path certs/lan.pem).Path
-   $env:TLS_KEY_FILE = (Resolve-Path certs/lan-key.pem).Path
-   npm.cmd run dev
-   ```
-
-   Vite serves HTTPS on port 5173 and the Node API/WebSocket server serves HTTPS/WSS on port 3001 using the same certificate. The `certs/` folder is git-ignored. If only one TLS environment variable is set, startup fails with a clear error. Without these variables, the existing HTTP development mode remains available.
-3. On the iPhone, transfer **only** `rootCA.pem` from the folder printed by `mkcert -CAROOT` (AirDrop is supported). Never transfer `rootCA-key.pem`. Open the CA certificate on the iPhone, install its downloaded configuration profile in Settings, then go to **Settings > General > About > Certificate Trust Settings** and enable full trust for that root certificate. iOS does not automatically trust a manually installed root certificate; follow [Apple's certificate trust steps](https://support.apple.com/en-us/102390).
-4. Open `https://192.168.1.10:5173/` on iPhone Safari and `https://localhost:5173/` on the development PC. The app derives `wss://<current-hostname>:3001/ws` (and HTTPS API URLs) from the page hostname. If `VITE_WS_URL` is set, it still overrides the default; for an HTTPS page, configure it with a `wss://` URL.
-
-If camera or microphone access fails, the app now distinguishes an insecure page, unsupported media API, denied permission, unavailable/busy device, and WebRTC negotiation/connection failure. A successful local HTTPS setup does not verify that camera permissions or peer connectivity work on a particular iPhone; test a call with two actual devices.
+Kết quả và phạm vi xác minh thực tế: [docs/VALIDATION.md](docs/VALIDATION.md). Bảng phase, conflict và các giới hạn: [docs/INTEGRATION.md](docs/INTEGRATION.md). Quyết định kiến trúc: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Kịch bản chức năng gốc giữ tại [docs/ORIGINAL_REQUIREMENTS.md](docs/ORIGINAL_REQUIREMENTS.md).

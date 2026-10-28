@@ -8,10 +8,15 @@ function copy(value) {
 export function createMemoryPersistence(seed = {}) {
   let rooms = copy(Array.isArray(seed.rooms) ? seed.rooms : []);
   let matches = copy(Array.isArray(seed.matches) ? seed.matches : []);
+  let accounts = copy(seed.accounts ?? {});
 
   return assertPersistence({
     kind: 'memory',
     async init() {},
+    accounts: {
+      async load() { return copy(accounts); },
+      async save(next) { accounts = copy(next); },
+    },
     rooms: {
       async loadAll() {
         return copy(rooms);

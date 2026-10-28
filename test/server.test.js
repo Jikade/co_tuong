@@ -58,7 +58,7 @@ function createClient(url) {
 
 test('creates, synchronizes and persists a server-authoritative online match', async (t) => {
   const persistence = createMemoryPersistence();
-  const server = createGameServer({
+  const server = createGameServer({ requireAuth: false,
     host: '127.0.0.1',
     port: 0,
     persistence,

@@ -1448,3 +1448,72 @@ button:focus-visible, a:focus-visible { outline: 2px solid #edc778; outline-offs
   .replay-controls .button { flex: 1; min-height: 38px; padding: 5px 7px; }
   #replay-exit { flex: 2; white-space: nowrap; }
 }
+[hidden] { display: none !important; }
+.auth-view { max-width: 540px; margin: 4vh auto; padding: 28px; }
+.auth-view h1 { font-size: clamp(25px, 5vw, 36px); margin: 14px 0; }
+.auth-tabs, .account-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.auth-view form, .account-dashboard form { display: grid; gap: 12px; }
+.auth-view label, .account-dashboard label { display: block; margin: 10px 0 6px; }
+.account-bar { margin-left: auto; font-size: 14px; }
+.account-dashboard { padding: 24px; margin: 18px 0; }
+.account-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.account-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 0; border-bottom: 1px solid #d8decb; overflow-wrap: anywhere; }
+.account-row > span { flex: 1 1 150px; }
+.public-rooms { margin-top: 24px; }
+@media (max-width: 900px) { .account-grid { grid-template-columns: 1fr; } .topbar { flex-wrap: wrap; } .account-bar { width: 100%; margin-left: 0; } }
+
+/* One compact match header, with the board given the remaining play area. */
+.page-shell:has(#room-view:not([hidden])) .topbar { display: flex; justify-content: flex-end; min-height: 36px; margin-bottom: 12px; }
+.room-view { --dock-top: 0px; }
+#room-brand { display: none; }
+.room-banner { position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px 24px; padding: 14px 18px; margin-bottom: 16px; border: 1px solid #a77b3d55; border-radius: 14px; background: #241a13e8; }
+.room-banner .room-identity { grid-column: 1; grid-row: 1; order: initial; width: auto; margin: 0; text-align: left; }
+.room-banner .room-identity h1 { font-size: 16px; font-weight: 650; color: #f1d7ae; }
+.room-banner .room-identity .eyebrow { display: none; }
+.room-meta { grid-column: 2; grid-row: 1; }
+.room-panel { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; width: 100%; }
+.player-seat { padding: 0; align-self: center; align-items: flex-start; text-align: left; }
+.player-slot { flex-direction: row; align-items: center; gap: 12px; }
+.player-avatar, .player-seat-opponent .player-avatar { width: 52px; height: 52px; border-width: 2px; }
+.avatar-initials, .player-seat-opponent .avatar-initials { font-size: 25px; }
+.player-details { width: auto; align-items: flex-start; gap: 3px; }
+.player-name { font-size: 14px; }
+.player-role, .player-meta { font-size: 10px; }
+.player-role { padding: 0; border: 0; background: none; }
+.role-seal { width: 16px; height: 16px; flex-basis: 16px; font-size: 13px; }
+.player-state { font-size: 10px; }
+.control-panel { grid-column: 2; grid-row: 2; }
+.clock-row { bottom: -7px; width: 100%; padding: 1px; border-radius: 6px; }
+.clock-row strong { font-size: 15px; }
+.play-column { display: flex; flex-direction: column; min-height: 0; gap: 10px; }
+.board-area { flex: none; width: 100%; }
+.game-tools, .game-sidebar { margin-top: 0; }
+.game-layout:not(.has-panels) { grid-template-columns: minmax(0, 1fr) var(--rail-width); grid-template-areas: "play tools"; }
+.game-layout.has-panels { grid-template-columns: minmax(0, 1fr) var(--rail-width) var(--dock-width); grid-template-areas: "play tools extensions"; }
+.match-panel { flex: none; width: 100%; }
+.match-alerts { position: relative; top: auto; right: auto; margin-left: auto; margin-bottom: 8px; }
+.room-view:has(.match-alerts > :not([hidden])) .game-sidebar { padding-top: 0; }
+.account-dashboard { position: relative; z-index: 65; }
+@media (max-width: 1100px) {
+  .game-layout.has-panels { grid-template-columns: minmax(0, 1fr) var(--rail-width); grid-template-areas: "play tools" "extensions extensions"; }
+  .game-sidebar { width: 100%; max-height: none; }
+  .extension-panels { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+  .game-tools { position: sticky; top: 8px; flex-direction: column; }
+  .room-banner { padding: 12px; gap: 12px; }
+}
+@media (max-width: 600px) {
+  .room-banner { grid-template-columns: 1fr; padding: 12px 10px; }
+  .room-banner .room-identity { grid-row: 1; grid-column: 1; }
+  .room-panel { grid-row: 2; grid-column: 1; gap: 12px; }
+  .room-meta { grid-row: 3; grid-column: 1; justify-content: flex-start; }
+  .room-code-group { justify-content: flex-start; }
+  .control-panel { grid-row: 4; grid-column: 1; justify-content: flex-start; }
+  .player-avatar, .player-seat-opponent .player-avatar { width: 38px; height: 38px; }
+  .player-slot { gap: 9px; }
+  .player-name { font-size: 12px; }
+  .player-meta { display: none; }
+  .room-view { --rail-width: 44px; }
+  .tool-button { min-height: 48px; font-size: 8px; padding: 4px 1px; }
+  .tool-button svg { width: 20px; height: 20px; }
+  .account-bar .button { min-height: 36px; padding: 7px; font-size: 11px; }
+}

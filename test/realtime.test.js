@@ -58,7 +58,7 @@ function client(url) {
 
 async function setup(t, options = {}) {
   const persistence = options.persistence ?? createMemoryPersistence();
-  const server = createGameServer({ host: '127.0.0.1', port: 0,
+  const server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0,
     ...options, persistence });
   const url = await server.listen();
   const sockets = [];
@@ -86,7 +86,7 @@ async function setup(t, options = {}) {
   return { host, opponent, spectator, code, connect, server };
 }
 
-test('room chat reaches players and spectators, retains same-room history, and rejects forged spectator sends', async (t) => {
+test('private chat reaches only the two players and rejects forged spectator sends', async (t) => {
   const { host, opponent, spectator, connect, code } = await setup(t);
   const otherRoomHost = await connect();
   otherRoomHost.send({ action: 'create-room', playerId: 'host-chat-room-b', displayName: 'Other host', roomName: 'Other room' });
@@ -94,12 +94,12 @@ test('room chat reaches players and spectators, retains same-room history, and r
 
   const hostMessage = host.next((m) => m.type === 'chat-message');
   const opponentMessage = opponent.next((m) => m.type === 'chat-message');
-  const spectatorMessage = spectator.next((m) => m.type === 'chat-message');
+  const spectatorMessage = spectator.noMessage((m) => m.type === 'chat-message');
   host.send({ action: 'chat-send', text: '  Hello  ' });
   const [sent, received, spectatorReceived] = await Promise.all([hostMessage, opponentMessage, spectatorMessage]);
   assert.equal(sent.message.text, 'Hello');
   assert.equal(received.message.senderName, 'Host');
-  assert.equal(spectatorReceived.message.senderName, 'Host');
+  assert.equal(spectatorReceived, true);
   assert.equal(typeof received.message.sentAt, 'number');
   assert.equal(await otherRoomHost.noMessage((m) => m.type === 'chat-message'), true);
 
@@ -107,7 +107,7 @@ test('room chat reaches players and spectators, retains same-room history, and r
   lateSpectator.send({ action: 'join-room', playerId: 'late-viewer-123', displayName: 'Late viewer', roomCode: code });
   await lateSpectator.next((m) => m.type === 'room-state' && m.room.spectators.length === 2);
   const history = await lateSpectator.next((m) => m.type === 'chat-history');
-  assert.deepEqual(history.messages.map((item) => item.text), ['Hello']);
+  assert.deepEqual(history.messages, []);
 
   const denied = spectator.next((m) => m.type === 'chat-error');
   spectator.send({ action: 'chat-send', text: 'fake', playerId: 'host-player-123', role: 'host', roomCode: code });
@@ -211,7 +211,7 @@ test('rejecting or disconnecting clears only that room call state', async (t) =>
 test('a server restart restores membership as offline and allows a valid reconnect', async (t) => {
   const persistence = createMemoryPersistence();
   let clients = [];
-  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
+  let server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence });
   t.after(async () => {
     await Promise.all(clients.map((item) => item.close()));
     await server.close();
@@ -226,7 +226,7 @@ test('a server restart restores membership as offline and allows a valid reconne
   await originalHost.close();
   await server.close();
 
-  server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
+  server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence });
   url = await server.listen();
   const room = server.rooms.get(code);
   assert.ok(room);
@@ -252,14 +252,14 @@ test('a server restart restores membership as offline and allows a valid reconne
   delete savedRooms[0].lastActivityAt;
   savedRooms[0].lastPersistAt = Date.now();
   await persistence.rooms.saveAll(savedRooms);
-  server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
+  server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence });
   await server.listen();
   assert.equal(server.rooms.size, 0, 'legacy inactive rooms without a lease must not be revived');
 });
 
 test('expired rooms are removed while completed match history is preserved', async (t) => {
   const persistence = createMemoryPersistence();
-  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
+  const server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence,
     roomTtlMs: 100, roomCleanupIntervalMs: 15 });
   const url = await server.listen();
   const host = client(url);
@@ -454,4 +454,24 @@ test('reusing a player ID in another room detaches the old socket membership', a
   assert.equal(currentSocket.playerId, 'host-player-123');
   assert.equal(currentSocket.roomCode, roomB.room.code);
   assert.equal(otherTab.socket.readyState, WebSocket.OPEN);
+});
+test('seat changes clear private chat, spectators can take the open seat, and kicked users cannot return', async (t) => {
+  const { host, opponent, spectator, code, server } = await setup(t);
+  host.send({ action: 'chat-send', text: 'Only the original pair' });
+  await opponent.next((m) => m.type === 'chat-message');
+  host.send({ action: 'remove-opponent' });
+  await host.next((m) => m.type === 'room-state' && !m.room.opponent);
+  assert.equal(server.rooms.get(code).spectators.length, 2);
+  spectator.send({ action: 'become-opponent' });
+  await spectator.next((m) => m.type === 'room-state' && m.room.opponent?.id === 'spectator-player-123');
+  const fresh = await spectator.next((m) => m.type === 'chat-history');
+  assert.deepEqual(fresh.messages, []);
+  host.send({ action: 'chat-send', text: 'Only the new pair' });
+  assert.equal((await spectator.next((m) => m.type === 'chat-message')).message.text, 'Only the new pair');
+  assert.equal(await opponent.noMessage((m) => m.type === 'chat-message'), true);
+  host.send({ action: 'kick-member', targetPlayerId: 'opponent-player-123' });
+  await opponent.next((m) => m.type === 'room-closed');
+  opponent.send({ action: 'join-room', playerId: 'opponent-player-123', displayName: 'Former opponent', roomCode: code });
+  await opponent.next((m) => m.type === 'error');
+  assert.equal(server.rooms.get(code).spectators.length, 0);
 });

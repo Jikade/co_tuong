@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
 import { randomInt, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -14,12 +15,11 @@ import {
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './src/constants.js';
 import { createHistoryStore } from './src/history-store.js';
 import { createPersistenceFromEnv } from './src/persistence/index.js';
+import { createMemoryPersistence } from './src/persistence/memory-persistence.js';
+import { createAccounts, ApiError } from './src/accounts.js';
+import { createAccountHttp, sameOrigin, sessionToken } from './src/account-http.js';
 
-const corsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, OPTIONS',
-  'access-control-allow-headers': 'content-type',
-};
+const corsHeaders = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
 
 function publicParticipant(room, participant) {
   if (!participant) return null;
@@ -82,7 +82,7 @@ function validIdentity(message) {
     && message.playerId.length <= 128
     && typeof message.displayName === 'string'
     && message.displayName.trim().length > 0
-    && message.displayName.trim().length <= 32;
+    && message.displayName.trim().length <= 50;
 }
 
 function newRoom(code, name, host) {
@@ -122,6 +122,9 @@ export function createGameServer({
   host = '0.0.0.0',
   port = Number(process.env.PORT) || 3001,
   persistence = createPersistenceFromEnv(),
+  requireAuth = true,
+  accountOptions = {},
+  staticDir = path.resolve('dist'),
   countdownMs = 3000,
   ackTimeoutMs = 15000,
   turnSeconds = 60,
@@ -138,6 +141,15 @@ export function createGameServer({
     throw new Error('Set both TLS_CERT_FILE and TLS_KEY_FILE to enable HTTPS.');
   }
   const rooms = new Map();
+  if (requireAuth && !persistence.accounts) throw new Error('Persistence cần accounts repository khi bật xác thực.');
+  const accounts = createAccounts(persistence.accounts ?? createMemoryPersistence().accounts, {
+    async deliverReset(delivery) {
+      const directory = path.resolve(process.env.MAIL_OUTBOX || 'data/outbox');
+      await mkdir(directory, { recursive: true });
+      await writeFile(path.join(directory, `${randomUUID()}.json`), JSON.stringify({ ...delivery, createdAt: Date.now() }), { mode: 0o600 });
+    },
+    ...accountOptions,
+  });
   const peers = new Map();
   const roomRepository = persistence.rooms;
   const history = createHistoryStore(persistence.matches);
@@ -150,13 +162,28 @@ export function createGameServer({
   let started = false;
   let shuttingDown = false;
   let cleanupTimer = null;
+  let actionQueue = Promise.resolve();
+  function enqueueAction(action) {
+    const operation = actionQueue.then(action);
+    actionQueue = operation.catch(() => {});
+    return operation;
+  }
 
   function sendJson(response, status, payload) {
     response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', ...corsHeaders });
     response.end(JSON.stringify(payload));
   }
 
-  function handleHttp(request, response) {
+  const handleAccountHttp = createAccountHttp({
+    accounts, sendJson,
+    secure: Boolean(tlsCertFile),
+    roomList: () => [...rooms.values()].filter((r) => r.visibility !== 'private').map((r) => publicRoom(r, warningSeconds)),
+    roomForInvite: (code) => rooms.get(code),
+    isOnline: (id) => [...wss.clients].some((s) => s.accountId === id && s.readyState === WebSocket.OPEN),
+    revokeSockets: () => { for (const s of wss.clients) if (s.authToken && !accounts.authenticate(s.authToken)) s.close(4401, 'Session expired'); },
+  });
+
+  async function handleHttp(request, response) {
     const url = new URL(request.url, 'http://localhost');
     if (request.method === 'OPTIONS') {
       response.writeHead(204, corsHeaders);
@@ -164,11 +191,15 @@ export function createGameServer({
       return;
     }
     if (url.pathname === '/health') {
-      sendJson(response, 200, { status: 'ok' });
+      const health = await persistence.health?.() ?? { ok: true };
+      sendJson(response, health.ok ? 200 : 503, { status: health.ok ? 'ok' : 'unavailable', database: { kind: persistence.kind, ok: health.ok } });
       return;
     }
+    if (await handleAccountHttp(request, response, url)) return;
+    const identity = accounts.authenticate(sessionToken(request));
+    if (requireAuth && url.pathname.startsWith('/api/') && !identity) throw new ApiError(401, 'Vui lòng đăng nhập.');
     if (url.pathname === '/api/history') {
-      const playerId = url.searchParams.get('playerId');
+      const playerId = requireAuth ? identity.user.id : url.searchParams.get('playerId');
       if (!playerId) {
         sendJson(response, 400, { error: 'Thieu tham so playerId.' });
         return;
@@ -183,24 +214,44 @@ export function createGameServer({
         sendJson(response, 404, { error: 'Khong tim thay tran dau.' });
         return;
       }
+      if (requireAuth && ![record.players?.red?.id, record.players?.black?.id].includes(identity.user.id)) throw new ApiError(403, 'Bạn không có quyền xem lịch sử này.');
       sendJson(response, 200, record);
       return;
     }
-    response.writeHead(404);
-    response.end('Not found');
+    if (request.method === 'GET' && !url.pathname.startsWith('/api/')) {
+      const relative = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
+      const filename = path.resolve(staticDir, `.${relative}`);
+      if (!filename.startsWith(path.resolve(staticDir) + path.sep)) throw new ApiError(403, 'Đường dẫn không hợp lệ.');
+      try {
+        const content = await readFile(filename);
+        const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png' };
+        response.writeHead(200, { 'content-type': types[path.extname(filename)] ?? 'application/octet-stream', 'x-content-type-options': 'nosniff' });
+        response.end(content);
+        return;
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+    sendJson(response, 404, { error: 'Not found' });
+  }
+
+  function httpListener(request, response) {
+    handleHttp(request, response).catch((error) => {
+      if (!error.status) console.error('HTTP request failed:', error);
+      if (!response.headersSent) sendJson(response, error.status ?? 500, { error: error.status ? error.message : 'Không thể xử lý yêu cầu.' });
+      else response.end();
+    });
   }
 
   const httpServer = tlsCertFile
-    ? createHttpsServer({ cert: readFileSync(tlsCertFile), key: readFileSync(tlsKeyFile) }, handleHttp)
-    : createServer(handleHttp);
+    ? createHttpsServer({ cert: readFileSync(tlsCertFile), key: readFileSync(tlsKeyFile) }, httpListener)
+    : createServer(httpListener);
   const wss = new WebSocketServer({ noServer: true, maxPayload: 16 * 1024 });
 
   function send(socket, message) {
     if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
   }
 
-  function sendError(socket, message) {
-    send(socket, { type: 'error', message });
+  function sendError(socket, message, requestId) {
+    send(socket, { type: 'error', message, ...(typeof requestId === 'string' ? { requestId } : {}) });
   }
 
   function connectedParticipants(room) {
@@ -218,7 +269,7 @@ export function createGameServer({
 
   function serializeRoom(room) {
     const { connections, timer, ackTimer, pauseTimer, ...saved } = room;
-    return saved;
+    return structuredClone({ ...saved, chatHistory: chatHistoryByRoom.get(room.code) ?? [] });
   }
 
   function persistRooms() {
@@ -773,6 +824,8 @@ export function createGameServer({
         lastPersistAt: Date.now(),
       };
       if (room.match) {
+        const archived = history.find(room.match.id);
+        if (archived?.result) room.match = { ...room.match, status: MATCH_STATUS.FINISHED, result: archived.result, endedAt: archived.endedAt, pieces: archived.finalPieces, history: archived.moves, capturedPieces: archived.capturedPieces, turnDeadline: null, timeRemaining: 0 };
         room.match.disconnects = {};
         room.match.drawOffer = null;
       }
@@ -802,6 +855,7 @@ export function createGameServer({
         continue;
       }
       rooms.set(room.code, room);
+      chatHistoryByRoom.set(room.code, Array.isArray(saved.chatHistory) ? saved.chatHistory : []);
     }
     if (pruned) await persistRooms();
   }
@@ -877,6 +931,7 @@ export function createGameServer({
   async function finishMatch(room, { winner = null, reason, voided = false } = {}) {
     const match = room.match;
     if (!match || match.status === MATCH_STATUS.FINISHED) return false;
+    const previous = structuredClone(match);
     clearRoomTimer(room);
     clearPauseTimer(room);
     clearTimeout(room.ackTimer);
@@ -898,7 +953,13 @@ export function createGameServer({
     };
     if (room.host) room.host.ready = false;
     if (room.opponent) room.opponent.ready = false;
-    await history.append(matchRecord(room));
+    try { await history.append(matchRecord(room)); }
+    catch (error) {
+      Object.assign(match, previous);
+      if (match.status === MATCH_STATUS.PLAYING) scheduleTurn(room, 1000);
+      if (match.status === MATCH_STATUS.PAUSED) scheduleReconnectCheck(room);
+      throw error;
+    }
     return true;
   }
 
@@ -923,18 +984,18 @@ export function createGameServer({
     scheduleTurn(room);
   }
 
-  function scheduleTurn(room) {
+  function scheduleTurn(room, minimumDelay = 1) {
     if (shuttingDown) return;
     clearRoomTimer(room);
     if (room.match?.status !== MATCH_STATUS.PLAYING) return;
     room.timer = setTimeout(() => {
-      runTurnTick(room).catch((error) => {
+      enqueueAction(() => runTurnTick(room)).catch((error) => {
         console.error('Could not update the turn clock:', error);
         for (const socket of connectedParticipants(room)) {
           sendError(socket, 'Không thể cập nhật trạng thái trận đấu. Vui lòng thử tải lại trang.');
         }
       });
-    }, Math.min(1000, Math.max(1, room.match.turnDeadline - Date.now())));
+    }, Math.max(minimumDelay, Math.min(1000, Math.max(1, room.match.turnDeadline - Date.now()))));
   }
 
   function scheduleReconnectCheck(room) {
@@ -946,7 +1007,7 @@ export function createGameServer({
     if (deadlines.length === 0) return;
     const nextDeadline = Math.min(...deadlines);
     room.pauseTimer = setTimeout(() => {
-      checkReconnects(room).catch((error) => {
+      enqueueAction(() => checkReconnects(room)).catch((error) => {
         console.error('Could not resolve the reconnect window:', error);
       });
     }, Math.max(1, nextDeadline - Date.now()));
@@ -1122,6 +1183,7 @@ export function createGameServer({
         room.host = room.spectators.shift();
       }
     }
+    if (!room.host) { rooms.delete(room.code); chatHistoryByRoom.delete(room.code); }
   }
 
   async function resumeMatchIfReady(room) {
@@ -1166,7 +1228,13 @@ export function createGameServer({
     await persistAndBroadcast(room);
   }
 
-  function chatSend(socket, message) {
+  function sendChatHistory(room) {
+    const currentIds = [room.host?.id, room.opponent?.id].filter(Boolean);
+    const messages = (chatHistoryByRoom.get(room.code) ?? []).filter((m) => currentIds.length === 2 && m.participantIds?.length === 2 && currentIds.every((id) => m.participantIds.includes(id)));
+    for (const peer of connectedParticipants(room)) send(peer, { type: 'chat-history', messages: [room.host?.id, room.opponent?.id].includes(peer.playerId) ? messages : [] });
+  }
+
+  async function chatSend(socket, message) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
     if (!access || typeof message.text !== 'string' || !message.text.trim()
@@ -1175,7 +1243,6 @@ export function createGameServer({
       return;
     }
     touchRoom(room);
-    persistRooms().catch((error) => console.error('Could not update room activity:', error));
     const payload = {
       type: 'chat-message',
       message: {
@@ -1183,13 +1250,17 @@ export function createGameServer({
         senderName: access.participant.name,
         text: message.text.trim(),
         sentAt: Date.now(),
+        participantIds: [room.host.id, room.opponent.id],
       },
     };
-    const roomHistory = chatHistoryByRoom.get(room.code) ?? [];
+    const previous = chatHistoryByRoom.get(room.code) ?? [];
+    const roomHistory = previous.slice();
     roomHistory.push(payload.message);
     if (roomHistory.length > 100) roomHistory.splice(0, roomHistory.length - 100);
     chatHistoryByRoom.set(room.code, roomHistory);
-    broadcast(room, payload);
+    try { await persistRooms(); }
+    catch (error) { chatHistoryByRoom.set(room.code, previous); throw error; }
+    send(socket, payload); send(access.recipient, payload);
   }
 
   function startCall(socket) {
@@ -1275,7 +1346,7 @@ export function createGameServer({
     }
     if (socket.computerMatchId) detachComputerSocket(socket);
     if (!validIdentity(message) || typeof message.roomName !== 'string'
-        || !message.roomName.trim() || message.roomName.trim().length > 40) {
+        || !message.roomName.trim() || message.roomName.trim().length > 100) {
       sendError(socket, 'Vui lòng nhập tên người chơi và tên Room hợp lệ.');
       return;
     }
@@ -1286,6 +1357,8 @@ export function createGameServer({
     const code = chooseRoomCode();
     const hostPlayer = { id: message.playerId, name: message.displayName.trim() };
     const room = newRoom(code, message.roomName.trim(), hostPlayer);
+    room.visibility = message.visibility === 'private' ? 'private' : 'public';
+    room.id = randomUUID();
     rooms.set(code, room);
     chatHistoryByRoom.set(code, []);
     setConnection(socket, room, room.host);
@@ -1337,7 +1410,7 @@ export function createGameServer({
     setConnection(socket, room, participant);
     await resumeMatchIfReady(room);
     await persistAndBroadcast(room);
-    send(socket, { type: 'chat-history', messages: chatHistoryByRoom.get(room.code) ?? [] });
+    sendChatHistory(room);
   }
 
   async function setReady(socket, message) {
@@ -1487,6 +1560,8 @@ export function createGameServer({
     }
     const piece = match.pieces.find((candidate) => candidate.id === message.pieceId);
     const from = { x: piece.x, y: piece.y };
+    const previousState = structuredClone(match);
+    clearRoomTimer(room);
     match.pieces = moveResult.pieces;
     if (moveResult.capturedPiece) match.capturedPieces.push(moveResult.capturedPiece);
     match.currentSide = playerSide === 'red' ? 'black' : 'red';
@@ -1504,16 +1579,24 @@ export function createGameServer({
       playedAt: Date.now(),
     });
     touchRoom(room);
-    if (!turnStatus.hasLegalMove) {
-      await finishMatch(room, {
-        winner: turnStatus.winner,
-        reason: turnStatus.reason === 'checkmate' ? MATCH_REASON.CHECKMATE : MATCH_REASON.NO_LEGAL_MOVES,
-      });
-    } else {
-      match.timeRemaining = turnSeconds;
-      match.turnDeadline = Date.now() + turnSeconds * 1000;
+    try {
+      if (!turnStatus.hasLegalMove) {
+        await finishMatch(room, {
+          winner: turnStatus.winner,
+          reason: turnStatus.reason === 'checkmate' ? MATCH_REASON.CHECKMATE : MATCH_REASON.NO_LEGAL_MOVES,
+        });
+      } else {
+        match.timeRemaining = turnSeconds;
+        match.turnDeadline = Date.now() + turnSeconds * 1000;
+      }
+      await persistRooms();
+    } catch (error) {
+      // A durable terminal record wins if only the later room snapshot failed.
+      if (!history.find(match.id)?.result) Object.assign(match, previousState);
+      if (match.status === MATCH_STATUS.PLAYING) scheduleTurn(room);
+      broadcastRoom(room);
+      throw error;
     }
-    await persistRooms();
     send(socket, { type: 'move-accepted', requestId, match: publicMatch(room, warningSeconds) });
     broadcastRoom(room);
     if (match.status === MATCH_STATUS.PLAYING) scheduleTurn(room);
@@ -1536,6 +1619,7 @@ export function createGameServer({
       reason: MATCH_REASON.SURRENDER,
     });
     await persistAndBroadcast(room);
+    sendChatHistory(room);
   }
 
   async function offerDraw(socket) {
@@ -1624,17 +1708,17 @@ export function createGameServer({
     const room = roomForSocket(socket);
     if (!room || room.connections.get(socket.playerId) !== socket
         || peers.get(socket.playerId) !== socket) {
-      sendError(socket, 'Káº¿t ná»‘i nĂ y khĂ´ng cĂ²n á»Ÿ trong phĂ²ng.');
+      sendError(socket, 'Kết nối này không còn ở trong phòng.');
       return;
     }
     const participant = participantFor(room, socket.playerId);
     if (!participant) {
-      sendError(socket, 'Báº¡n khĂ´ng cĂ²n lĂ  thĂ nh viĂªn cá»§a phĂ²ng.');
+      sendError(socket, 'Bạn không còn là thành viên của phòng.');
       return;
     }
     if ((participant === room.host || participant === room.opponent)
         && room.match && room.match.status !== MATCH_STATUS.FINISHED) {
-      sendError(socket, 'HĂ£y káº¿t thĂºc tráº­n Ä‘áº¥u trÆ°á»›c khi rá»i phĂ²ng.');
+      sendError(socket, 'Hãy kết thúc trận đấu trước khi rời phòng.');
       return;
     }
     const playerId = socket.playerId;
@@ -1648,6 +1732,7 @@ export function createGameServer({
     if (room.opponent) room.opponent.ready = false;
     send(socket, { type: 'left-room', roomCode: room.code });
     await persistAndBroadcast(room);
+    sendChatHistory(room);
   }
 
   async function closeRoom(socket) {
@@ -1657,7 +1742,7 @@ export function createGameServer({
       sendError(socket, 'Chỉ chủ phòng đang kết nối mới được đóng phòng.');
       return;
     }
-    if (isActiveMatch(room.match)) {
+    if (room.match && room.match.status !== MATCH_STATUS.FINISHED) {
       sendError(socket, 'Không thể đóng phòng khi trận đấu đang diễn ra.');
       return;
     }
@@ -1677,13 +1762,60 @@ export function createGameServer({
     await persistRooms();
   }
 
+  async function changeSeat(socket, message) {
+    const room = roomForSocket(socket);
+    if (!room || (room.match && room.match.status !== MATCH_STATUS.FINISHED)) { sendError(socket, 'Chỉ đổi vai trò trong phòng chờ.'); return; }
+    if (message.action === 'become-opponent') {
+      const person = room.spectators.find((p) => p.id === socket.playerId);
+      if (!person || room.opponent) { sendError(socket, 'Vị trí đối thủ không còn trống.'); return; }
+      room.spectators = room.spectators.filter((p) => p.id !== person.id); room.opponent = person;
+    } else {
+      if (room.host.id !== socket.playerId) { sendError(socket, 'Chỉ chủ phòng được thực hiện.'); return; }
+      if (message.action === 'remove-opponent') {
+        if (!room.opponent || room.spectators.length >= 10) { sendError(socket, 'Không có đối thủ hoặc chỗ khán giả đã đầy.'); return; }
+        clearCall(room, { notify: room.opponent.id });
+        room.spectators.push({ ...room.opponent, ready: false }); room.opponent = null;
+      } else {
+        const target = participantFor(room, message.targetPlayerId);
+        if (!target || target.id === room.host.id) { sendError(socket, 'Thành viên không hợp lệ.'); return; }
+        clearCall(room, { notify: target.id });
+        const peer = room.connections.get(target.id);
+        room.blocked.push(target.id); room.connections.delete(target.id);
+        if (peer) { peers.delete(target.id); peer.playerId = null; peer.roomCode = null; send(peer, { type: 'room-closed', roomCode: room.code, reason: 'kicked' }); }
+        removeParticipant(room, target.id);
+      }
+    }
+    room.host.ready = false; if (room.opponent) room.opponent.ready = false;
+    await persistAndBroadcast(room); sendChatHistory(room);
+  }
+
   async function dispatch(socket, message) {
     if (!message || typeof message !== 'object' || Array.isArray(message)
         || typeof message.action !== 'string') {
       sendError(socket, 'Yêu cầu không hợp lệ.');
       return;
     }
+    if (requireAuth) {
+      const identity = accounts.authenticate(socket.authToken);
+      if (!identity) { socket.close(4401, 'Session expired'); return; }
+      if (message.playerId && message.playerId !== identity.user.id) { sendError(socket, 'Không được giả mạo người chơi.'); return; }
+      message.playerId = identity.user.id;
+      message.displayName = identity.user.displayName;
+      if (['create-room', 'join-room', 'computer-start'].includes(message.action)) {
+        const existing = [...rooms.values()].find((r) => participantFor(r, identity.user.id));
+        if (existing && !(message.action === 'join-room' && message.roomCode === existing.code)) {
+          sendError(socket, `Bạn vẫn đang ở phòng ${existing.code}. Hãy rời phòng trước.`); return;
+        }
+        const computer = [...computerMatches.values()].find((m) => m.humanPlayerId === identity.user.id && m.status === MATCH_STATUS.PLAYING);
+        if (computer && message.action !== 'computer-start') { sendError(socket, 'Hãy hoàn tất trận với máy trước.'); return; }
+      }
+    }
     switch (message.action) {
+      case 'become-opponent':
+      case 'remove-opponent':
+      case 'kick-member':
+        await changeSeat(socket, message);
+        break;
       case 'create-room':
         await createRoom(socket, message);
         break;
@@ -1736,7 +1868,7 @@ export function createGameServer({
         await closeRoom(socket);
         break;
       case 'chat-send':
-        chatSend(socket, message);
+        await chatSend(socket, message);
         break;
       case 'call-start':
         startCall(socket);
@@ -1766,7 +1898,12 @@ export function createGameServer({
       socket.destroy();
       return;
     }
+    if (!sameOrigin(request)) { socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); return; }
+    const identity = accounts.authenticate(sessionToken(request));
+    if (requireAuth && !identity) { socket.end('HTTP/1.1 401 Unauthorized\r\n\r\n'); return; }
     wss.handleUpgrade(request, socket, head, (webSocket) => {
+      webSocket.authToken = sessionToken(request);
+      webSocket.accountId = identity?.user.id;
       wss.emit('connection', webSocket, request);
     });
   });
@@ -1780,13 +1917,14 @@ export function createGameServer({
         sendError(socket, 'Dữ liệu gửi lên không phải JSON hợp lệ.');
         return;
       }
-      dispatch(socket, message).catch((error) => {
+      const operation = enqueueAction(() => dispatch(socket, message));
+      operation.catch((error) => {
         console.error('WebSocket action failed:', error);
         if (error.code === 'PERSISTENCE_ERROR') {
-          sendError(socket, 'Không thể lưu trạng thái trận với máy. Trạng thái chưa được xác nhận.');
+          sendError(socket, 'Không thể lưu trạng thái trận. Hãy thử lại.', message.requestId);
           return;
         }
-        sendError(socket, 'Không thể xử lý yêu cầu. Vui lòng thử lại.');
+        sendError(socket, 'Không thể xử lý yêu cầu. Vui lòng thử lại.', message.requestId);
       });
     });
 
@@ -1801,7 +1939,7 @@ export function createGameServer({
       clearCall(room, { notify: playerId, type: 'call-ended' });
       const isPlayer = Boolean(room.match && playerIds(room.match).includes(playerId));
       if (isPlayer) {
-        handleDisconnect(room, playerId).catch((error) => {
+        enqueueAction(() => handleDisconnect(room, playerId)).catch((error) => {
           console.error('Could not pause the match:', error);
         });
       } else {
@@ -1814,8 +1952,9 @@ export function createGameServer({
     async listen() {
       if (started) throw new Error('Game server is already listening.');
       await persistence.init?.();
-      await loadRooms();
+      await accounts.init();
       await history.load();
+      await loadRooms();
       await restoreComputerMatches();
       await new Promise((resolve, reject) => {
         httpServer.once('error', reject);
@@ -1826,6 +1965,7 @@ export function createGameServer({
       });
       started = true;
       cleanupTimer = setInterval(() => {
+        if (requireAuth) for (const s of wss.clients) if (!accounts.authenticate(s.authToken)) s.close(4401, 'Session expired');
         cleanupExpiredRooms().catch((error) => console.error('Could not clean expired rooms:', error));
       }, roomCleanupIntervalMs);
       cleanupTimer.unref?.();
@@ -1861,6 +2001,8 @@ export function createGameServer({
         clearTimeout(room.ackTimer);
       }
       await writeQueue;
+      await actionQueue;
+      await accounts.flush();
       await persistence.close?.();
     },
     address() {
@@ -1869,6 +2011,7 @@ export function createGameServer({
     rooms,
     history,
     persistence,
+    accounts,
   };
 }
 

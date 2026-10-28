@@ -66,7 +66,7 @@ function withMatchWriteControl(persistence = createMemoryPersistence()) {
 
 async function setup(t, { turnSeconds = 60, computerMoveDelayMs = 25, writeControl = withMatchWriteControl() } = {}) {
   const { persistence } = writeControl;
-  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds, computerMoveDelayMs });
+  const server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence, turnSeconds, computerMoveDelayMs });
   const url = await server.listen();
   const sockets = [];
   t.after(async () => {
@@ -163,7 +163,7 @@ test('resumes a Black human match with the same board, history, and deadline', a
 
 test('server restart during the computer turn applies exactly one reply and continues the match', async (t) => {
   const persistence = createMemoryPersistence();
-  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
+  let server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence,
     turnSeconds: 30, computerMoveDelayMs: 180 });
   let url = await server.listen();
   const sockets = [];
@@ -190,7 +190,7 @@ test('server restart during the computer turn applies exactly one reply and cont
 
   await server.close();
   await firstPlayer.close();
-  server = createGameServer({ host: '127.0.0.1', port: 0, persistence,
+  server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence,
     turnSeconds: 30, computerMoveDelayMs: 180 });
   url = await server.listen();
 
@@ -251,7 +251,7 @@ test('computer with no legal moves loses by checkmate and persists the result in
     turnDeadline: null, timeRemaining: 0, inCheck: true, initialPieces: createInitialPieces(),
     finalPieces: pieces, capturedPieces: [], history: [], moves: [],
   });
-  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence, computerMoveDelayMs: 180 });
+  const server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence, computerMoveDelayMs: 180 });
   const url = await server.listen();
   const player = client(url);
   t.after(async () => {
@@ -309,7 +309,7 @@ test('a delayed computer callback cannot change a terminal match', async (t) => 
 test('history persistence failure is rejected and a failed PvC start is not reported as successful', async (t) => {
   const writeControl = withMatchWriteControl();
   const { persistence } = writeControl;
-  const server = createGameServer({ host: '127.0.0.1', port: 0, persistence });
+  const server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence });
   const url = await server.listen();
   const player = client(url);
   t.after(async () => {
@@ -437,7 +437,7 @@ test('human timeout awards the computer a win and completed matches appear in hi
 
 test('refresh recovery keeps the same match and its original human deadline', async (t) => {
   const persistence = createMemoryPersistence();
-  let server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
+  let server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
   let url = await server.listen();
   const sockets = [];
   let firstPlayer = client(url);
@@ -454,7 +454,7 @@ test('refresh recovery keeps the same match and its original human deadline', as
   await server.close();
   await firstPlayer.close();
 
-  server = createGameServer({ host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
+  server = createGameServer({ requireAuth: false, host: '127.0.0.1', port: 0, persistence, turnSeconds: 30, computerMoveDelayMs: 40 });
   url = await server.listen();
   returningPlayer = client(url);
   sockets.push(returningPlayer);

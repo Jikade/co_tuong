@@ -12,6 +12,11 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      '/api': { target: `${tlsCertFile ? 'https' : 'http'}://localhost:${process.env.PORT || 3001}`, secure: false },
+      '/ws': { target: `${tlsCertFile ? 'wss' : 'ws'}://localhost:${process.env.PORT || 3001}`, ws: true, secure: false },
+      '/health': { target: `${tlsCertFile ? 'https' : 'http'}://localhost:${process.env.PORT || 3001}`, secure: false },
+    },
     ...(tlsCertFile && {
       https: {
         cert: readFileSync(tlsCertFile),

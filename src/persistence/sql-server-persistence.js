@@ -39,6 +39,8 @@ async function loadMssql() {
 }
 
 /**
+ * @deprecated Phase 4 reference adapter, retained for its original regression tests.
+ * Production selection in index.js uses integration-sql-persistence.js exclusively.
  * SQL Server bridge for Phase 4.
  *
  * It intentionally uses isolated runtime tables because Phase 4 currently has

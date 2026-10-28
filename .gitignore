@@ -30,5 +30,7 @@ test-result.txt
 /certs/
 bin/
 obj/
+/test-results/
+/playwright-report/
 *.user
 .vs/

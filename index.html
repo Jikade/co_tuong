@@ -29,12 +29,13 @@
           <p class="muted">Tạo phòng mới hoặc nhập mã 6 chữ số để vào trận và theo dõi trực tiếp.</p>
         </div>
         <label class="field-label" for="display-name">Tên hiển thị</label>
-        <input id="display-name" class="text-input" maxlength="32" autocomplete="nickname" placeholder="Tên của bạn" />
+        <input id="display-name" class="text-input" maxlength="50" autocomplete="nickname" placeholder="Tên của bạn" readonly />
         <div class="lobby-actions">
           <form id="create-room-form" class="action-card">
             <h2>Tạo Room</h2>
             <label class="field-label" for="room-name">Tên Room</label>
-            <input id="room-name" class="text-input" maxlength="40" placeholder="Ví dụ: Cờ cuối tuần" required />
+            <input id="room-name" class="text-input" maxlength="100" placeholder="Ví dụ: Cờ cuối tuần" required />
+            <label class="field-label" for="room-visibility">Hiển thị</label><select id="room-visibility" class="text-input"><option value="public">Công khai</option><option value="private">Riêng tư (vào bằng mã hoặc link)</option></select>
             <button class="button button-primary" type="submit">Tạo Room</button>
           </form>
           <form id="join-room-form" class="action-card">

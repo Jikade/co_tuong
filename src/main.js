@@ -1,5 +1,6 @@
 import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from './xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './constants.js';
+import { createAccountUi } from './account-ui.js';
 import {
   createClientId,
   getApiBase,
@@ -94,8 +95,29 @@ const remoteVideo = document.querySelector('#remote-video');
 const computerPlayButton = document.querySelector('#computer-play-button');
 const computerSidePicker = document.querySelector('#computer-side-picker');
 const computerCancelButton = document.querySelector('#computer-cancel-button');
+const mediaToggleButtons = ['audio', 'video'].map((kind) => {
+  const button = document.createElement('button'); button.type = 'button'; button.className = 'button button-quiet'; button.hidden = true;
+  button.id = `toggle-${kind}`;
+  button.onclick = () => {
+    const tracks = callState?.localStream?.getTracks().filter((t) => t.kind === kind) ?? [];
+    const enable = !tracks.some((t) => t.enabled);
+    for (const track of tracks) track.enabled = enable;
+    renderPrivatePanels();
+  };
+  document.querySelector('.call-controls').append(button);
+  return { kind, button };
+});
+const becomeOpponentButton = document.createElement('button');
+becomeOpponentButton.id = 'become-opponent'; becomeOpponentButton.className = 'button button-secondary'; becomeOpponentButton.textContent = 'Làm đối thủ'; becomeOpponentButton.hidden = true;
+document.querySelector('.room-controls').append(becomeOpponentButton);
+const removeOpponentButton = document.createElement('button');
+removeOpponentButton.id = 'remove-opponent'; removeOpponentButton.className = 'button button-quiet'; removeOpponentButton.textContent = 'Chuyển đối thủ sang khán giả'; removeOpponentButton.hidden = true;
+document.querySelector('.settings-actions').append(removeOpponentButton);
+becomeOpponentButton.onclick = () => sendAction('become-opponent');
+removeOpponentButton.onclick = () => sendAction('remove-opponent');
 
-const playerId = getStoredPlayerId();
+let playerId = null;
+let authenticated = false;
 displayNameInput.value = localStorage.getItem('xiangqi.displayName') ?? '';
 const invitationCode = new URLSearchParams(location.search).get('room');
 if (/^\d{6}$/.test(invitationCode ?? '')) roomCodeInput.value = invitationCode;
@@ -139,7 +161,7 @@ function syncPanelLayout() {
 
 function renderTools() {
   const multiplayer = Boolean(currentRoom);
-  const allowed = { chat: multiplayer, video: multiplayer && privateRole(), moves: true, spectators: multiplayer && !replayView };
+  const allowed = { chat: multiplayer && privateRole(), video: multiplayer && privateRole(), moves: true, spectators: multiplayer && !replayView };
   for (const [name, id] of Object.entries(panelTargets)) {
     const button = document.querySelector(`#${name}-toggle`);
     const open = allowed[name] && panelState[name];
@@ -214,17 +236,8 @@ function renderPlayerPresentation(match, replay = false) {
   clockOwner?.append(turnClockRow);
 }
 
-function getStoredPlayerId() {
-  let id = localStorage.getItem('xiangqi.playerId');
-  if (!id) {
-    id = createClientId();
-    localStorage.setItem('xiangqi.playerId', id);
-  }
-  return id;
-}
-
 function apiBase() {
-  const configured = import.meta.env.VITE_WS_URL;
+  const configured = import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`;
   return getApiBase(getWebSocketUrl({
     override: configured,
     protocol: location.protocol,
@@ -238,14 +251,13 @@ function fitScene() {
   const desktop = window.matchMedia('(min-width: 1200px)').matches;
   const mobile = window.matchMedia('(max-width: 600px)').matches;
   const identity = document.querySelector('.room-identity');
-  const identityTarget = desktop ? document.querySelector('.player-seat-host') : document.querySelector('.room-banner');
+  const identityTarget = document.querySelector('.room-banner');
   if (identity.parentElement !== identityTarget) identityTarget.prepend(identity);
   layout.classList.toggle('panels-below', !desktop);
   const playTop = document.querySelector('.play-column').getBoundingClientRect().top + window.scrollY;
   const statusHeight = document.querySelector('.match-panel').offsetHeight;
   const replayHeight = replayBar.hidden ? 0 : replayBar.offsetHeight + 8;
-  const playerRowHeight = window.matchMedia('(max-width: 900px)').matches
-    ? Math.max(document.querySelector('.player-seat-host').offsetHeight, document.querySelector('.player-seat-opponent').offsetHeight) + 8 : 0;
+  const playerRowHeight = 0;
   const availableHeight = mobile ? boardArea.clientWidth
     : Math.max(340, window.innerHeight - playTop - playerRowHeight - statusHeight - replayHeight - 32);
   layout.style.setProperty('--arena-height', `${Math.max(380, window.innerHeight - playTop - 20)}px`);
@@ -375,7 +387,7 @@ function showNotice(message) {
 function sendAction(action, details = {}) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     const endpoint = getWebSocketUrl({
-      override: import.meta.env.VITE_WS_URL,
+      override: import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`,
       protocol: location.protocol,
       hostname: location.hostname,
     });
@@ -387,9 +399,10 @@ function sendAction(action, details = {}) {
 }
 
 function connect() {
+  if (!authenticated) return;
   clearTimeout(reconnectTimer);
   const url = getWebSocketUrl({
-    override: import.meta.env.VITE_WS_URL,
+    override: import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`,
     protocol: location.protocol,
     hostname: location.hostname,
   });
@@ -413,7 +426,9 @@ function connect() {
   socket.addEventListener('message', (event) => {
     handleServerMessage(JSON.parse(event.data));
   });
-  socket.addEventListener('close', () => {
+  socket.addEventListener('close', (event) => {
+    if (event.currentTarget !== socket || !authenticated) return;
+    if (event.code === 4401) { accountUi.expire(); return; }
     cleanupCall({ message: 'Mất kết nối máy chủ; cuộc gọi đã kết thúc.' });
     renderPrivatePanels();
     if (replacedByAnotherTab) {
@@ -421,6 +436,7 @@ function connect() {
       return;
     }
     setConnection('disconnected', 'Mất kết nối — đang thử lại');
+    accountUi.request('/api/me').catch(() => {});
     reconnectTimer = setTimeout(connect, reconnectDelay);
     reconnectDelay = Math.min(reconnectDelay * 2, 5000);
   });
@@ -767,7 +783,7 @@ function renderPrivatePanels() {
   chatForm.hidden = false;
   const online = socket?.readyState === WebSocket.OPEN;
   chatNote.textContent = opponent
-    ? `Chat phòng với ${opponent.name}${opponent.connected ? '' : ' (đang ngoại tuyến)'} · khán giả có thể xem`
+    ? `Chat riêng với ${opponent.name}${opponent.connected ? '' : ' (đang ngoại tuyến)'}`
     : 'Đang chờ người chơi thứ hai.';
   chatInput.disabled = !online || !opponent?.connected;
   document.querySelector('#chat-send').disabled = chatInput.disabled;
@@ -778,6 +794,13 @@ function renderPrivatePanels() {
   callAcceptButton.hidden = callState?.status !== 'incoming';
   callRejectButton.hidden = callState?.status !== 'incoming';
   callEndButton.hidden = !callState || callState.status === 'incoming';
+  for (const { kind, button } of mediaToggleButtons) {
+    const tracks = callState?.localStream?.getTracks().filter((t) => t.kind === kind) ?? [];
+    button.hidden = !tracks.length;
+    const enabled = tracks.some((t) => t.enabled);
+    button.textContent = `${enabled ? 'Tắt' : 'Bật'} ${kind === 'audio' ? 'micro' : 'camera'}`;
+    button.setAttribute('aria-pressed', String(!enabled));
+  }
   callStatus.textContent = !callState
     ? !online ? 'Chưa kết nối máy chủ.' : !opponent ? 'Đang chờ người chơi thứ hai.'
       : !opponent.connected ? 'Đối phương đang ngoại tuyến.' : 'Đang chờ cuộc gọi'
@@ -950,6 +973,18 @@ function renderRoom() {
   const player = role === 'host' ? currentRoom.host : currentRoom.opponent;
   const bothPlayers = Boolean(currentRoom.host && currentRoom.opponent);
   const awaitingOpponent = !match || match.status === MATCH_STATUS.FINISHED;
+  becomeOpponentButton.hidden = role !== 'spectator' || !awaitingOpponent || Boolean(currentRoom.opponent);
+  removeOpponentButton.hidden = role !== 'host' || !awaitingOpponent || !currentRoom.opponent;
+  if (role === 'host' && awaitingOpponent) {
+    spectatorList.replaceChildren();
+    for (const person of currentRoom.spectators) {
+      const row = document.createElement('div'); row.className = 'account-row';
+      const name = document.createElement('span'); name.textContent = person.name;
+      const kick = document.createElement('button'); kick.type = 'button'; kick.className = 'button button-quiet danger'; kick.textContent = 'Mời rời phòng';
+      kick.onclick = () => sendAction('kick-member', { targetPlayerId: person.id }); row.append(name, kick); spectatorList.append(row);
+    }
+    if (!currentRoom.spectators.length) spectatorList.textContent = 'Chưa có khán giả.';
+  }
   readyButton.hidden = !awaitingOpponent || !isPlayer || !bothPlayers;
   readyButton.textContent = player?.ready ? 'Hủy sẵn sàng' : 'Sẵn sàng';
   startButton.hidden = !awaitingOpponent || role !== 'host';
@@ -969,6 +1004,7 @@ function renderRoom() {
 }
 
 function renderComputerRoom() {
+  becomeOpponentButton.hidden = true; removeOpponentButton.hidden = true;
   document.querySelector('#room-title').textContent = 'Chơi với máy';
   document.querySelector('.room-banner .muted').hidden = true;
   document.querySelector('#copy-room-code').hidden = true;
@@ -1316,7 +1352,7 @@ async function openHistory() {
   historyEmpty.hidden = false;
   historyEmpty.textContent = 'Đang tải lịch sử trận…';
   try {
-    const response = await fetch(`${apiBase()}/api/history?playerId=${encodeURIComponent(playerId)}`);
+    const response = await fetch(`${apiBase()}/api/history`, { credentials: 'same-origin' });
     if (!response.ok) throw new Error('history request failed');
     const payload = await response.json();
     renderHistoryList(payload.matches ?? []);
@@ -1369,8 +1405,8 @@ function requestResign() {
 
 function startComputerGame(side) {
   const displayName = displayNameInput.value.trim();
-  if (!displayName || displayName.length > 32) {
-    showNotice('Vui lòng nhập tên hiển thị (tối đa 32 ký tự).');
+  if (!displayName || displayName.length > 50) {
+    showNotice('Vui lòng nhập tên hiển thị (tối đa 50 ký tự).');
     displayNameInput.focus();
     return;
   }
@@ -1457,26 +1493,26 @@ document.querySelector('#create-room-form').addEventListener('submit', (event) =
   event.preventDefault();
   const displayName = displayNameInput.value.trim();
   const roomName = roomNameInput.value.trim();
-  if (!displayName || displayName.length > 32) {
-    showNotice('Vui lòng nhập tên hiển thị (tối đa 32 ký tự).');
+  if (!displayName || displayName.length > 50) {
+    showNotice('Vui lòng nhập tên hiển thị (tối đa 50 ký tự).');
     displayNameInput.focus();
     return;
   }
-  if (!roomName || roomName.length > 40) {
+  if (!roomName || roomName.length > 100) {
     showNotice('Vui lòng nhập tên Room hợp lệ.');
     roomNameInput.focus();
     return;
   }
   localStorage.setItem('xiangqi.displayName', displayName);
-  sendAction('create-room', { playerId, displayName, roomName });
+  sendAction('create-room', { playerId, displayName, roomName, visibility: document.querySelector('#room-visibility').value });
 });
 
 document.querySelector('#join-room-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const displayName = displayNameInput.value.trim();
   const roomCode = roomCodeInput.value.trim();
-  if (!displayName || displayName.length > 32) {
-    showNotice('Vui lòng nhập tên hiển thị (tối đa 32 ký tự).');
+  if (!displayName || displayName.length > 50) {
+    showNotice('Vui lòng nhập tên hiển thị (tối đa 50 ký tự).');
     displayNameInput.focus();
     return;
   }
@@ -1606,7 +1642,31 @@ setInterval(() => {
   }
   if (match?.status === MATCH_STATUS.PAUSED) renderReconnectLabel(match);
 }, 250);
+document.querySelector('.room-banner').prepend(document.querySelector('.room-panel'));
 drawBoard();
 renderPieces();
 fitScene();
-connect();
+const accountUi = createAccountUi({
+  apiBase, notify: showNotice, currentRoom: () => currentRoom,
+  joinRoom: (roomCode) => sendAction('join-room', { roomCode }),
+  onLogin(user) {
+    if (localStorage.getItem('xiangqi.accountId') !== user.id) {
+      localStorage.removeItem('xiangqi.roomCode');
+      localStorage.removeItem('xiangqi.computerMatchId');
+    }
+    localStorage.setItem('xiangqi.accountId', user.id);
+    playerId = user.id; authenticated = true;
+    displayNameInput.value = user.displayName; displayNameInput.readOnly = true;
+    lobbyEl.hidden = false;
+    connect();
+    if (invitationCode) localStorage.setItem('xiangqi.roomCode', invitationCode);
+  },
+  onLogout() {
+    authenticated = false; playerId = null;
+    clearTimeout(reconnectTimer); socket?.close(); cleanupCall();
+    currentRoom = null; computerMatch = null; replayView = null; selectedPieceId = null;
+    historyOverlay.hidden = true; roomViewEl.hidden = true; lobbyEl.hidden = true;
+    renderPrivatePanels(); setConnection('disconnected', 'Chưa đăng nhập');
+  },
+});
+accountUi.init();

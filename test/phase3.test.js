@@ -88,7 +88,7 @@ async function waitFor(check, timeoutMs = 3000) {
 
 async function startServer(t, overrides = {}) {
   const persistence = createMemoryPersistence();
-  const server = createGameServer({
+  const server = createGameServer({ requireAuth: false,
     host: '127.0.0.1',
     port: 0,
     persistence,
@@ -411,4 +411,41 @@ test('does not let spectators drive the phase 3 actions', async (t) => {
     spectator.send({ action });
     assert.match((await denied).message, /Khán giả/);
   }
+});
+test('online persistence failures roll back unacknowledged moves and allow a safe terminal retry', async (t) => {
+  const persistence = createMemoryPersistence();
+  const originalSave = persistence.rooms.saveAll;
+  const originalUpsert = persistence.matches.upsert;
+  let failRooms = false, failMatches = false;
+  persistence.rooms.saveAll = async (rooms) => {
+    if (failRooms) { failRooms = false; throw new Error('Simulated online room persistence failure'); }
+    return originalSave(rooms);
+  };
+  persistence.matches.upsert = async (record) => {
+    if (failMatches) { failMatches = false; throw new Error('Simulated online match persistence failure'); }
+    return originalUpsert(record);
+  };
+  const context = await startServer(t, { persistence });
+  const { host, opponent, roomCode } = await startMatch(context);
+  const room = context.server.rooms.get(roomCode);
+  const before = structuredClone(room.match);
+  const message = { action: 'move', requestId: 'online-safe-retry-123', pieceId: 'red-pawn-0', to: { x: 0, y: 5 } };
+  failRooms = true; host.send(message);
+  assert.equal((await host.next((m) => m.type === 'error')).requestId, message.requestId);
+  assert.deepEqual(room.match.pieces, before.pieces);
+  assert.equal(room.match.history.length, 0);
+  assert.equal(room.match.turnDeadline, before.turnDeadline);
+  host.send(message);
+  await host.next((m) => m.type === 'move-accepted');
+  assert.equal(room.match.history.length, 1);
+  host.send(message);
+  await host.next((m) => m.type === 'move-accepted' && m.duplicate);
+  assert.equal(room.match.history.length, 1);
+  failMatches = true; opponent.send({ action: 'resign' });
+  await opponent.next((m) => m.type === 'error');
+  assert.equal(room.match.status, 'playing');
+  assert.equal(room.match.result, null);
+  opponent.send({ action: 'resign' });
+  await opponent.next((m) => m.type === 'room-state' && m.room.match?.status === 'finished');
+  assert.equal(context.server.history.size, 1);
 });
