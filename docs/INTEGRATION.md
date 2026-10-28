@@ -2,6 +2,8 @@
 
 Tài liệu này ghi quyết định tích hợp 5 phase. Sau chuẩn hóa JavaScript, đường dẫn nội bộ được chuyển sang client/server/shared; xem [NORMALIZATION.md](NORMALIZATION.md) và [SOURCE_AUDIT.md](SOURCE_AUDIT.md). Schema, API contracts và shape dữ liệu integration giữ nguyên.
 
+Ghi chú sau nghiệm thu: các mô tả “gợi ý nước đi” bên dưới là quyết định của mốc tích hợp ban đầu. Nhánh QA đã bỏ marker trên UI, phân màu ngẫu nhiên từng Match và sửa các khoảng thiếu theo Word; engine legal-move vẫn dùng để kiểm tra và cho AI. Kết quả hiện hành tại [QA_FINAL_REPORT.md](QA_FINAL_REPORT.md); các nhánh nguồn vẫn được bảo toàn.
+
 ## Nguồn và chức năng
 
 | Nhánh | Commit nguồn | Phần dùng trong runtime |

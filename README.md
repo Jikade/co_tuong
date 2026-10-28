@@ -2,6 +2,10 @@
 
 Ứng dụng thống nhất từ 5 phase: tài khoản → trang chủ → tạo/vào phòng → thi đấu realtime → kết quả → lịch sử/replay. Runtime là Node.js + Vite + WebSocket; không cần chạy backend .NET riêng.
 
+Nghiệm thu theo Word trên nhánh QA: [báo cáo cuối](docs/QA_FINAL_REPORT.md), [ma trận 409 case](docs/QA_TEST_MATRIX.md), [lỗi đã sửa/còn lại](docs/QA_BUG_REPORT.md), [checklist môi trường thật](docs/QA_MANUAL_CHECKLIST.md). Kết luận hiện tại **CHƯA ĐẠT NGHIỆM THU**: SMTP chưa triển khai, camera thật và NAT/TURN còn cần xác minh.
+
+Theo kịch bản đã đối chiếu: mỗi Match phân ngẫu nhiên Đỏ/Đen một lần; chọn quân chỉ highlight, không gợi ý ô đi; Chia Room mở URL và nút Sao chép link trong ứng dụng. Các chức năng này đã sửa trên nhánh QA, chưa merge vào `integration`.
+
 ## Cấu trúc JavaScript
 
 ```text
@@ -121,11 +125,12 @@ npm.cmd run check:architecture
 npm.cmd test
 npm.cmd run build
 npm.cmd run test:e2e
+npm.cmd run test:qa:e2e
 ```
 
 `check:architecture` kiểm tra import/cú pháp, chặn frontend nhập backend, shared nhập Node API và runtime nhập archive/.NET. Các test gốc vẫn giữ assertion; thêm test cho cấu hình, envelope lỗi HTTP/WS và các thao tác Phase 1.
 
-E2E dùng Microsoft Edge headless đã cài sẵn; có thể đặt `BROWSER_PATH` tới Chromium tương thích. Hai browser context độc lập kiểm tra đăng ký, chơi, chat, WebRTC giả lập, reconnect, replay và đăng xuất; một bài kiểm tra viewport mobile. Ảnh nằm trong `test-results/integration-desktop.png` và `integration-mobile.png` sau khi chạy.
+E2E dùng Microsoft Edge headless đã cài sẵn; có thể đặt `BROWSER_PATH` tới Chromium tương thích. Suite nền có 4 bài (cả layout), suite QA có 12 bài với bốn phiên độc lập, spectator, privacy, offline, Word/reset, AI/replay và media giả lập. Server test dùng cổng 3107/3108 và memory riêng; suite QA có hai lần chờ 60 giây thực nên chạy vài phút. Ảnh/log nằm trong `test-results/` và `artifacts/qa/`.
 
 SQL integration chỉ chạy khi bật rõ ràng và tên database bắt đầu bằng `CoTuongIntegrationTest_`:
 
@@ -142,3 +147,5 @@ Remove-Item Env:RUN_SQL_TESTS,Env:DB_SERVER,Env:DB_DATABASE,Env:DB_DRIVER
 Test SQL tự kiểm tra/tạo schema trong database test trống và thêm tài khoản/trận test mới, không tự dọn/xóa database. Đừng trỏ test tới database đang dùng.
 
 Kết quả và phạm vi xác minh thực tế: [docs/VALIDATION.md](docs/VALIDATION.md). Bảng phase, conflict và các giới hạn: [docs/INTEGRATION.md](docs/INTEGRATION.md). Quyết định kiến trúc: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Kịch bản chức năng gốc giữ tại [docs/ORIGINAL_REQUIREMENTS.md](docs/ORIGINAL_REQUIREMENTS.md).
+
+Lượt QA mới dùng Word [docs/KICH_BAN_CHUC_NANG.docx](docs/KICH_BAN_CHUC_NANG.docx). Chạy 7 bài SQL QA bằng `npm.cmd run test:qa:sql` với DB test chính xác `CoTuongIntegrationTest_QA_20261028`; lệnh/môi trường và cách xuất báo cáo lại nằm trong [QA_FINAL_REPORT.md](docs/QA_FINAL_REPORT.md). Các tài liệu VALIDATION/NORMALIZATION mô tả mốc lịch sử, không thay kết luận nghiệm thu mới.
