@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
-import { createMemoryPersistence } from '../src/persistence/index.js';
+import { createMemoryPersistence } from '../src/server/persistence/index.js';
 
 const HOST_ID = 'player-host-0001';
 const OPPONENT_ID = 'player-opponent-01';

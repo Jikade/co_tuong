@@ -9,7 +9,7 @@ import {
   isInCheck,
   toDisplayCoordinate,
   toLogicCoordinate,
-} from '../src/xiangqi.js';
+} from '../src/shared/game/xiangqi.js';
 
 test('rotates black perspective coordinates and maps displayed clicks back to logic', () => {
   const redKing = { x: 4, y: 9 };

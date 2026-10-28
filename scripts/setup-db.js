@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { createSqlConnection, sqlValue } from '../src/persistence/sql-connection.js';
+import { createSqlConnection, sqlValue } from '../src/server/persistence/sql-connection.js';
 
 // Explicitly refuses a partially populated base schema. Never rebuild an existing DB.
 export async function setupDatabase(env = process.env) {

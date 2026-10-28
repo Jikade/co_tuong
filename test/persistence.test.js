@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSqlServerPersistence } from '../src/persistence/sql-server-persistence.js';
+import { createSqlServerPersistence } from '../reference/phase4/sql-server-persistence.js';
 
 function fakeDriver({ failConnectCount = 0, failCloseCount = 0 } = {}) {
   const pools = [];

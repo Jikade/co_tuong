@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
-import { createMemoryPersistence } from '../src/persistence/index.js';
-import { applyLegalMove, createInitialPieces, getLegalMoves } from '../src/xiangqi.js';
-import { MATCH_STATUS } from '../src/constants.js';
+import { createMemoryPersistence } from '../src/server/persistence/index.js';
+import { applyLegalMove, createInitialPieces, getLegalMoves } from '../src/shared/game/xiangqi.js';
+import { MATCH_STATUS } from '../src/shared/game/constants.js';
 
 function client(url) {
   const socket = new WebSocket(url);

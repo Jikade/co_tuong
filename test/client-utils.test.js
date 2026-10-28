@@ -6,7 +6,7 @@ import {
   getWebSocketUrl,
   mediaErrorMessage,
   webRtcErrorMessage,
-} from '../src/client-utils.js';
+} from '../src/client/utils.js';
 
 test('uses the browser LAN hostname for the default WebSocket endpoint', () => {
   const url = getWebSocketUrl({ protocol: 'http:', hostname: '192.168.1.10' });

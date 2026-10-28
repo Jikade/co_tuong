@@ -93,7 +93,7 @@ export function createIntegrationSqlPersistence({ env = process.env } = {}) {
   return {
     kind: 'sqlserver',
     async init() {
-      if (env.DB_AUTO_MIGRATE === 'true') await db.execute(await readFile(new URL('../../database/03_integration.sql', import.meta.url), 'utf8'));
+      if (env.DB_AUTO_MIGRATE === 'true') await db.execute(await readFile(new URL('../../../database/03_integration.sql', import.meta.url), 'utf8'));
       await db.execute("IF NOT EXISTS(SELECT 1 FROM dbo.integration_account_state WHERE singleton=1) INSERT dbo.integration_account_state(singleton,payload) VALUES(1,N'{}');");
     },
     accounts: {

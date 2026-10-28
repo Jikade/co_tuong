@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server.js';
-import { createMemoryPersistence } from '../src/persistence/index.js';
+import { createMemoryPersistence } from '../src/server/persistence/index.js';
 
 function createClient(url) {
   const socket = new WebSocket(url);

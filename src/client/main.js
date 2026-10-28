@@ -1,5 +1,5 @@
-import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from './xiangqi.js';
-import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from './constants.js';
+import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
+import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constants.js';
 import { createAccountUi } from './account-ui.js';
 import {
   createClientId,
@@ -7,7 +7,7 @@ import {
   getWebSocketUrl,
   mediaErrorMessage,
   webRtcErrorMessage,
-} from './client-utils.js';
+} from './utils.js';
 
 const CELL = 49;
 const PAD = 20;

@@ -1,4 +1,4 @@
-import { accountInfo, ApiError } from './accounts.js';
+import { accountInfo, ApiError } from '../services/accounts.js';
 
 export const SESSION_COOKIE = 'cotuong_session';
 export function sessionToken(request) {

@@ -1,4 +1,4 @@
-import { MATCH_RESULT } from './constants.js';
+import { MATCH_RESULT } from '../../shared/game/constants.js';
 
 function sideOf(record, playerId) {
   if (record.players?.red?.id === playerId) return 'red';

@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { setupDatabase } from '../scripts/setup-db.js';
-import { createIntegrationSqlPersistence } from '../src/persistence/integration-sql-persistence.js';
-import { createSqlConnection, sqlValue } from '../src/persistence/sql-connection.js';
+import { createIntegrationSqlPersistence } from '../src/server/persistence/integration-sql-persistence.js';
+import { createSqlConnection, sqlValue } from '../src/server/persistence/sql-connection.js';
 import { playAuthenticatedGame } from './helpers/authenticated-game.js';
-import { createAccounts } from '../src/accounts.js';
+import { createAccounts } from '../src/server/services/accounts.js';
 import { randomUUID } from 'node:crypto';
 
 test('SQL Server stores authenticated players, memberships, captures, result and replay across a server restart', { skip: process.env.RUN_SQL_TESTS !== 'true' }, async (t) => {

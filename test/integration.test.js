@@ -5,8 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { once } from 'node:events';
 import { createGameServer } from '../server.js';
-import { createMemoryPersistence } from '../src/persistence/memory-persistence.js';
-import { createFilePersistence } from '../src/persistence/file-persistence.js';
+import { createMemoryPersistence } from '../src/server/persistence/memory-persistence.js';
+import { createFilePersistence } from '../src/server/persistence/file-persistence.js';
 import { api, client, register, playAuthenticatedGame } from './helpers/authenticated-game.js';
 
 test('two authenticated players capture, synchronize, reconnect, restart and replay using durable file storage', async (t) => {

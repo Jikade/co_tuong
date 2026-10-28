@@ -1,4 +1,4 @@
-import { assertPersistence } from './persistence-port.js';
+import { assertPersistence } from '../../src/server/persistence/persistence-port.js';
 
 function boolEnv(value, fallback = false) {
   if (value == null || value === '') return fallback;
