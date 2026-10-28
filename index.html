@@ -7,6 +7,7 @@
   <title>Cờ Tướng Trực Tuyến</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/src/client/styles/main.css" />
+  <link rel="stylesheet" href="/src/client/styles/arena.css" />
 </head>
 <body>
   <div class="page-shell">
@@ -68,9 +69,10 @@
         <div id="room-brand"></div>
         <header class="room-banner match-header" aria-label="Thông tin và điều khiển phòng">
           <div class="room-meta"><div class="room-code-group"><p class="muted">Mã phòng <strong id="room-code"></strong></p><button id="copy-room-code" class="button button-quiet" type="button" title="Sao chép mã phòng" aria-label="Sao chép mã phòng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></svg></button><button id="share-room" class="button button-secondary share-room" type="button" title="Chia sẻ phòng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 11 6-4m-6 6 6 4"/></svg><span>Chia Room</span></button></div>
-          <div id="room-connection"></div><span id="my-role" class="role-badge"></span></div>
+          </div>
 
           <section class="control-panel" aria-label="Điều khiển trận cờ" aria-describedby="control-hint">
+            <div id="room-connection"></div><span id="my-role" class="role-badge"></span>
             <div class="panel-heading"><h2>Điều khiển trận</h2><span id="control-phase" class="control-phase"></span></div>
             <p id="control-hint" class="muted"></p>
             <div class="room-controls"><button id="ready-button" class="button button-primary" type="button" hidden>Sẵn sàng</button><button id="start-button" class="button button-primary" type="button" hidden>Bắt đầu</button></div>
@@ -90,12 +92,12 @@
                 </div>
               </div>
 <div id="incoming-call" class="incoming-call" role="status" hidden><strong>Cuộc gọi video đến</strong><p id="incoming-call-text"></p><div class="draw-prompt-actions"><button id="incoming-call-accept" class="button button-primary" type="button">Chấp nhận</button><button id="incoming-call-reject" class="button button-quiet" type="button">Từ chối</button></div></div>
-</div>        <div class="game-layout">
+</div>        <div class="game-layout" aria-label="Không gian thi đấu">
           <div class="play-column">
             <section class="room-panel" aria-label="Thông tin người chơi">
-              <div class="player-seat player-seat-host"><div id="host-slot" class="player-slot"></div><div class="room-identity"><p id="room-kind" class="eyebrow">CỜ TƯỚNG · TRỰC TUYẾN</p><h1 id="room-title">Room</h1></div></div>
+              <div class="player-seat player-seat-host" aria-label="Người chơi bên trái"><div id="host-slot" class="player-slot"></div><div class="room-identity"><p id="room-kind" class="eyebrow">CỜ TƯỚNG · TRỰC TUYẾN</p><h1 id="room-title">Room</h1></div></div>
               <span class="versus sr-only">Đối đầu</span>
-              <div class="player-seat player-seat-opponent"><div id="opponent-slot" class="player-slot"></div></div>
+              <div class="player-seat player-seat-opponent" aria-label="Người chơi bên phải"><div id="opponent-slot" class="player-slot"></div></div>
             </section>
           <section class="board-area" aria-label="Bàn cờ tướng">
             <div class="game-scene" id="game-scene">

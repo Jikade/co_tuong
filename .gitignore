@@ -32,5 +32,6 @@ bin/
 obj/
 /test-results/
 /playwright-report/
+/artifacts/
 *.user
 .vs/

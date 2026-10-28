@@ -246,21 +246,23 @@ function fitScene() {
   const layout = document.querySelector('.game-layout');
   const desktop = window.matchMedia('(min-width: 1200px)').matches;
   const mobile = window.matchMedia('(max-width: 600px)').matches;
-  const identity = document.querySelector('.room-identity');
-  const identityTarget = document.querySelector('.room-banner');
-  if (identity.parentElement !== identityTarget) identityTarget.prepend(identity);
-  layout.classList.toggle('panels-below', !desktop);
-  const playTop = document.querySelector('.play-column').getBoundingClientRect().top + window.scrollY;
+  const top = boardArea.getBoundingClientRect().top + window.scrollY;
   const statusHeight = document.querySelector('.match-panel').offsetHeight;
-  const replayHeight = replayBar.hidden ? 0 : replayBar.offsetHeight + 8;
-  const playerRowHeight = 0;
-  const availableHeight = mobile ? boardArea.clientWidth
-    : Math.max(340, window.innerHeight - playTop - playerRowHeight - statusHeight - replayHeight - 32);
-  layout.style.setProperty('--arena-height', `${Math.max(380, window.innerHeight - playTop - 20)}px`);
-  layout.style.setProperty('--sidebar-height', `${Math.max(220, window.innerHeight - playTop - (desktop ? 116 : 0) - 20)}px`);
-  const scale = Math.max(0, Math.min(boardArea.clientWidth / SCENE_SIZE, availableHeight / SCENE_SIZE));
-  scene.style.transform = `translateX(-50%) scale(${scale})`;
-  boardArea.style.height = `${SCENE_SIZE * scale}px`;
+  const replayHeight = replayBar.hidden ? 0 : replayBar.offsetHeight + 10;
+  const inset = desktop ? 40 : mobile ? 0 : 12;
+  const availableHeight = Math.max(300, window.innerHeight - top - statusHeight - replayHeight - 20);
+  // Desktop reserves the dock even when closed: opening panels never rescales the board.
+  // Mobile crops only excess decorative width; the entire scene shares one transform.
+  const logicalWidth = mobile ? 490 : SCENE_SIZE;
+  const scale = Math.max(0, mobile
+    ? boardArea.clientWidth / logicalWidth
+    : Math.min(boardArea.clientWidth / SCENE_SIZE, (availableHeight - inset) / SCENE_SIZE));
+  scene.style.top = inset + 'px';
+  scene.style.transform = 'translateX(-50%) scale(' + scale + ')';
+  boardArea.style.height = (SCENE_SIZE * scale + inset) + 'px';
+  const dockTop = desktop ? Math.max(104, Math.ceil(document.querySelector('.room-banner').getBoundingClientRect().bottom - layout.getBoundingClientRect().top + 10)) : 0;
+  layout.style.setProperty('--dock-top', dockTop + 'px');
+  layout.style.setProperty('--sidebar-height', Math.max(560, window.innerHeight - layout.getBoundingClientRect().top - window.scrollY - dockTop - 20) + 'px');
 }
 
 function line(ctx, x1, y1, x2, y2) {
@@ -1630,7 +1632,6 @@ setInterval(() => {
   }
   if (match?.status === MATCH_STATUS.PAUSED) renderReconnectLabel(match);
 }, 250);
-document.querySelector('.room-banner').prepend(document.querySelector('.room-panel'));
 drawBoard();
 renderPieces();
 fitScene();
