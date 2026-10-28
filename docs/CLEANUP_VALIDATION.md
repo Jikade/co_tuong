@@ -1,5 +1,7 @@
 # Xác minh dọn source an toàn
 
+> Báo cáo tại mốc cleanup 783a20d. Migration sau đó đã triển khai SMTP/hash compatibility và loại source .NET; kết quả hiện tại ở [MIGRATION_VALIDATION.md](MIGRATION_VALIDATION.md). Các số liệu 177/7 bên dưới được giữ làm lịch sử.
+
 ## Mốc và kết luận
 
 Baseline thực tế chạy lại tại `d92474d20a155904274dd93ff87975a325a74580` trên `qa/system-acceptance-20261028`, không lấy kết quả QA cũ làm bằng chứng cho lượt này. Môi trường Windows, Node v24.15.0, npm 11.12.1, Vite 5.4.21, Microsoft Edge headless/Playwright; SQL Server Express `.\SQLEXPRESS`, Windows Authentication/sqlcmd.

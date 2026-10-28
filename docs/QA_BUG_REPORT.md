@@ -1,5 +1,7 @@
 # Báo cáo lỗi nghiệm thu — 28/10/2026
 
+> Lịch sử lỗi tại mốc QA. QA-018 hiện đã có SMTP JavaScript/TLS/auth/retry và test; chỉ delivery hộp thư thật còn BLOCKED. Chi tiết chuyển đổi và các giới hạn khác ở [FULL_JAVASCRIPT_MIGRATION.md](FULL_JAVASCRIPT_MIGRATION.md).
+
 Nhánh: `qa/system-acceptance-20261028`, tách từ `integration` tại `a7b9718`. Không sửa `main` hoặc các nhánh nguồn; chưa push.
 
 19 mục đã khắc phục bên dưới gồm lỗi tái hiện bằng test và khoảng thiếu được tìm thấy khi đối chiếu Word/source. Không coi 19 mục là 19 test FAIL độc lập: một số điểm UI được phát hiện từ code/baseline thể hiện hành vi trái kịch bản rồi mới thêm regression test. Kết quả cuối không còn assertion FAIL; SMTP vẫn là chức năng bắt buộc chưa triển khai.

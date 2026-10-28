@@ -1,5 +1,7 @@
 # Báo cáo nghiệm thu hệ thống Cờ tướng — 28/10/2026
 
+> Báo cáo này giữ số liệu mốc QA d92474d, trước full migration. Hiện SMTP Node đã triển khai, external delivery vẫn BLOCKED; ma trận/JSON liên kết đã cập nhật thành 405 PASS/4 BLOCKED. Kết quả mới 196 Node/9 SQL/16 Edge và source .NET đã loại nằm tại [MIGRATION_VALIDATION.md](MIGRATION_VALIDATION.md). Các bảng/số liệu cũ bên dưới không phải kết quả mới của migration.
+
 **Kết luận: CHƯA ĐẠT NGHIỆM THU.** Các kiểm thử local/file/SQL/realtime/UI đã đạt sau sửa lỗi, nhưng chức năng gửi email SMTP thật chưa triển khai và hai kiểm tra thiết bị/mạng thật còn BLOCKED. Không tuyên bố ứng dụng hoạt động 100% hoặc đủ điều kiện triển khai production trên mọi mạng.
 
 ## Nguồn, phiên bản và phạm vi

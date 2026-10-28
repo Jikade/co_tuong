@@ -1,5 +1,7 @@
 # Kiểm toán source và dọn an toàn
 
+> Mốc lịch sử trước full migration: các quyết định giữ C# bên dưới mô tả nhánh cleanup tại 783a20d. Nhánh ứng dụng mới đã chuyển phần còn thiếu và loại source .NET; xem [FULL_JAVASCRIPT_MIGRATION.md](FULL_JAVASCRIPT_MIGRATION.md).
+
 Mốc gốc được kiểm thử lại: `d92474d20a155904274dd93ff87975a325a74580`, nhánh QA `qa/system-acceptance-20261028`. Working tree sạch trước khi bắt đầu. Sau baseline đã tạo `refactor/safe-cleanup` và `backup/safe-cleanup-d92474d`. Không merge/push, không thay `main`, `integration`, các nhánh Phase hoặc backup cũ.
 
 ## Kết quả phạm vi

@@ -1,5 +1,7 @@
 # Kết quả chuẩn hóa JavaScript
 
+> Báo cáo lịch sử của mốc integration ban đầu. Nhánh migration hiện không còn source .NET và có SMTP JavaScript; kiểm chứng mới tại [MIGRATION_VALIDATION.md](MIGRATION_VALIDATION.md).
+
 Nhánh làm việc: `integration`. Mốc trước thay đổi: `6da0a47`. Nhánh sao lưu `backup/integration-6da0a47` trỏ đúng commit đó, không thay đổi lịch sử main hoặc 5 nhánh phase, không push.
 
 ## Kết quả kiến trúc

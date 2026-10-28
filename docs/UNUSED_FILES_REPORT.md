@@ -1,5 +1,7 @@
 # Quyết định giữ/xóa file
 
+> Danh mục lịch sử của safe-cleanup, không phải danh mục file hiện còn trên nhánh migration. Các file C#/E đã xử lý trong [PHASE1_PARITY_MATRIX.md](PHASE1_PARITY_MATRIX.md); source cũ chỉ còn trên Git archive.
+
 Mốc gốc `d92474d20a155904274dd93ff87975a325a74580`: **238 file**, A=28, B=137, C=65, D=2, E=6. Xóa **2 file được Git theo dõi**, giữ **236 file gốc**; bỏ thêm 2 khối CSS trong một file vẫn giữ. Các tài liệu/script kiểm toán mới không cộng vào mẫu 238 file gốc. Phân loại C chỉ nói luồng game đã được thay trong integration, không phải chứng nhận mọi contract C# giống Node; vì vậy cả 65 file C vẫn giữ. E chưa đủ bằng chứng xóa, giữ cả 6.
 
 ## Nhóm xóa và chứng minh an toàn

@@ -4,7 +4,7 @@ Ngày: 28/10/2026. Các mục này chưa được thay bằng PASS từ fake med
 
 ## M-01 — Email giao thật (QA-018, P1-021, ENV-001)
 
-Trạng thái hiện tại: **NOT IMPLEMENTED**, runtime chỉ ghi outbox. Cần triển khai/cấu hình SMTP transport và email có URL reset trên môi trường test trước khi chạy.
+Trạng thái hiện tại: **BLOCKED cho hộp thư thật**. SMTP JavaScript đã triển khai và test bằng server local có STARTTLS/TLS/auth/retry; cần cấu hình credentials/môi trường và email nhận thực tế để chạy checklist này. Xem [FULL_JAVASCRIPT_MIGRATION.md](FULL_JAVASCRIPT_MIGRATION.md); `npm.cmd run mail:verify` chỉ kiểm tra kết nối/TLS/auth, chưa chứng minh inbox delivery.
 
 1. Tạo hai tài khoản test có hộp thư nhận được kiểm soát, A/B, không dùng tài khoản người chơi thật.
 2. Quên mật khẩu A; kiểm tra phản hồi chung như email không tồn tại. Kiểm tra A nhận thư chứa đúng link, B không nhận nhầm; kiểm tra trạng thái gửi/lỗi vận chuyển.

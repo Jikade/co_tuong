@@ -1,5 +1,7 @@
 # Rà soát chuẩn hóa JavaScript
 
+> Mốc chuẩn hóa ban đầu, trước QA/cleanup/full migration. Source C# hiện chỉ còn trên nhánh archive; xem [FULL_JAVASCRIPT_MIGRATION.md](FULL_JAVASCRIPT_MIGRATION.md) cho trạng thái mới.
+
 Mốc so sánh: `6da0a47`, nhánh sao lưu `backup/integration-6da0a47`. Không có code C# trong đồ thị import runtime tại mốc này. Vì vậy công việc chuẩn hóa tái tổ chức và tách trách nhiệm của JavaScript hiện có, không viết lại tài khoản/phòng/bộ luật đã hoạt động.
 
 ## Phân loại toàn repository
