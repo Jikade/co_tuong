@@ -30,6 +30,22 @@ const checkedFiles = serverOnly
   : [...sourceFiles, ...roots, ...await filesIn(rootPath('scripts')), ...await filesIn(rootPath('test')), ...await filesIn(rootPath('e2e'))];
 const failures = [];
 
+// The application branch must not reintroduce framework source/config. Exclude
+// dependency packages, private user data, build output and local QA/archive files.
+const excludedTrees = new Set(['.git', 'node_modules', '.npm-cache', 'artifacts', 'data', 'dist', 'test-results', 'playwright-report', 'coverage', 'certs', '.vs', '.vscode', '.idea']);
+const ownedFiles = [];
+for (const entry of await readdir(PROJECT_ROOT, { withFileTypes: true })) {
+  if (excludedTrees.has(entry.name)) continue;
+  if (entry.isDirectory()) ownedFiles.push(...await filesIn(rootPath(entry.name)));
+  else ownedFiles.push(rootPath(entry.name));
+}
+for (const filename of ownedFiles) {
+  if (/\.(?:cs|csproj|sln|slnx|razor|resx|props|targets)$/i.test(filename)
+      || /(?:^|[\\/])(?:appsettings[^\\/]*\.json|launchSettings\.json|nuget\.config|global\.json)$/i.test(filename)) {
+    failures.push(`Framework source/config in application tree: ${relative(filename)}`);
+  }
+}
+
 for (const filename of [...sourceFiles, ...roots]) {
   if (/\.(?:cs|csproj|razor|slnx|props)$/i.test(filename)) failures.push(`.NET file in runtime: ${relative(filename)}`);
 }

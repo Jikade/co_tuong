@@ -1,12 +1,12 @@
-# Cờ Tướng Online — integration
+# Cờ Tướng Online — JavaScript
 
 Ứng dụng thống nhất từ 5 phase: tài khoản → trang chủ → tạo/vào phòng → thi đấu realtime → kết quả → lịch sử/replay. Runtime là Node.js + Vite + WebSocket; không cần chạy backend .NET riêng.
 
-Nghiệm thu theo Word trên nhánh QA: [báo cáo cuối](docs/QA_FINAL_REPORT.md), [ma trận 409 case](docs/QA_TEST_MATRIX.md), [lỗi đã sửa/còn lại](docs/QA_BUG_REPORT.md), [checklist môi trường thật](docs/QA_MANUAL_CHECKLIST.md). Kết luận hiện tại **CHƯA ĐẠT NGHIỆM THU**: SMTP chưa triển khai, camera thật và NAT/TURN còn cần xác minh.
+Phiên bản hiện tại trên `migration/full-javascript` đã chuyển phần còn thiếu của Phase 1 và loại source/project C#/Blazor/SignalR/EF khỏi nhánh ứng dụng. Xem [migration](docs/FULL_JAVASCRIPT_MIGRATION.md), [đối chiếu Phase 1](docs/PHASE1_PARITY_MATRIX.md), [kiểm chứng trước/sau](docs/MIGRATION_VALIDATION.md). SMTP Node đã triển khai và test bằng SMTP server local có TLS; gửi đến hộp thư thật, camera/micro vật lý và NAT/TURN vẫn **BLOCKED/chưa nghiệm thu đầy đủ**.
 
 Theo kịch bản đã đối chiếu: mỗi Match phân ngẫu nhiên Đỏ/Đen một lần; chọn quân chỉ highlight, không gợi ý ô đi; Chia Room mở URL và nút Sao chép link trong ứng dụng. Các chức năng này đã sửa trên nhánh QA, chưa merge vào `integration`.
 
-Kiểm toán/dọn bảo thủ trên `refactor/safe-cleanup`: [CODE_AUDIT_REPORT.md](docs/CODE_AUDIT_REPORT.md), [quyết định từng file](docs/UNUSED_FILES_REPORT.md), [kiểm thử trước/sau và cài sạch](docs/CLEANUP_VALIDATION.md). Chỉ bỏ hai trang demo Blazor và hai rule CSS marker cũ; giữ mã nghiệp vụ C#, migrations, SMTP tham khảo và toàn bộ tests. Không coi việc dọn source là hoàn tất các mục nghiệm thu còn thiếu.
+Các mốc QA/cleanup trước được giữ trong [QA_FINAL_REPORT.md](docs/QA_FINAL_REPORT.md), [CODE_AUDIT_REPORT.md](docs/CODE_AUDIT_REPORT.md), [UNUSED_FILES_REPORT.md](docs/UNUSED_FILES_REPORT.md), [CLEANUP_VALIDATION.md](docs/CLEANUP_VALIDATION.md). Kết luận “giữ source C#” và “SMTP chưa triển khai” trong các bản lịch sử mô tả đúng thời điểm đó; migration mới thay chúng bằng archive Git và SMTP JavaScript.
 
 ## Cấu trúc JavaScript
 
@@ -21,16 +21,16 @@ src/
     errors.js              # Lỗi HTTP/WS, giữ nguyên shape response
     http/                  # Routes, request/cookie, response, static hosting
     realtime/              # WebSocket upgrade/auth/JSON, quản lý socket
-    services/              # Tài khoản/xã hội và lịch sử
+    services/              # Tài khoản/xã hội/lịch sử, password và SMTP
     persistence/           # File, memory và SQL Server
 database/                  # Schema/migration T-SQL đang sử dụng
 scripts/                   # Dev, kiểm tra build/kiến trúc, setup database
 test/                      # Unit/integration Node (JavaScript)
 e2e/                       # Playwright desktop/mobile (JavaScript)
-reference/                 # Source C# và adapter/schema cũ, không deploy runtime
+reference/                 # Chỉ còn adapter SQL Phase 4 có test và SQL nguồn
 ```
 
-Tất cả module ứng dụng dùng JavaScript ESM. HTML/CSS/T-SQL được giữ đúng vai trò. `reference/phase1` chứa source C#/Blazor/EF để đối chiếu; không có import runtime hay lệnh gọi .NET. Bảng kiểm kê/đối chiếu Phase 1: [SOURCE_AUDIT.md](docs/SOURCE_AUDIT.md). Kết quả trước/sau và các commit chuẩn hóa: [NORMALIZATION.md](docs/NORMALIZATION.md).
+Tất cả module ứng dụng dùng JavaScript ESM. HTML/CSS/T-SQL được giữ đúng vai trò. Source Phase 1 đầy đủ chỉ còn trên nhánh Git `archive/phase1-dotnet-original` tại `d92474d`; hai tài liệu lịch sử chuyển sang `docs/archive/phase1`. Không cần .NET SDK/runtime để cài, build, test hoặc chạy ứng dụng.
 
 ## Chạy nhanh trên Windows
 
@@ -94,7 +94,9 @@ Cần `sqlcmd` và ODBC Driver cho SQL Server trên PATH. `sqlcmd` dùng Windows
 
 Máy khác có thể dùng `DB_DRIVER=mssql`, `DB_SERVER`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` với SQL Authentication và TCP/IP được bật. Driver này chưa được kiểm thử kết nối thật trong phiên tích hợp; Windows/sqlcmd đã kiểm thử thật. Tài liệu tham số sqlcmd: [Microsoft Learn](https://learn.microsoft.com/en-us/sql/tools/sqlcmd-utility).
 
-`db:setup` chỉ cài schema gốc khi database trống, chạy các batch trong transaction, và từ chối database có schema một phần/không phù hợp. Với schema nền đầy đủ, nó chỉ thêm các bảng integration còn thiếu; chạy lại không xóa dữ liệu. Schema nền có **24 bảng, 5 view**, Phase 1 thêm bảng idempotency, integration thêm mapping/snapshot. `DB_AUTO_MIGRATE=true` chỉ thêm bảng integration, không tự cài lại schema nền. Không chạy `reference/phase1/database/99_drop_all.sql`.
+`db:setup` chỉ cài schema gốc khi database trống, chạy các batch trong transaction, và từ chối database có schema một phần/không phù hợp. Với schema nền đầy đủ, nó thêm các bảng integration và chạy `04_phase1_compat.sql` để bảo toàn table/index của EF cũ; chạy lại không xóa dữ liệu. Schema nền có **24 bảng, 5 view**, Phase 1 thêm bảng idempotency, integration thêm mapping/snapshot. `DB_AUTO_MIGRATE=true` chỉ thêm bảng integration, không tự cài lại schema nền.
+
+Tài khoản Node đang dùng tiếp tục hoạt động. Với tài khoản ASP.NET chưa được map trong cùng SQL database, `npm.cmd run db:import-phase1` chỉ dry-run; áp dụng cần dừng cả ứng dụng cũ/mới và thêm `-- --apply --server-stopped`. Không tự chạy import trên dữ liệu thật. Hash Identity V2/V3 được xác minh bằng JavaScript, chỉ nâng sang scrypt sau đăng nhập đúng và commit thành công. JWT/refresh cookie cũ yêu cầu đăng nhập lại, không được nhận làm credential Node. Phạm vi/giới hạn nhập dữ liệu ở [FULL_JAVASCRIPT_MIGRATION.md](docs/FULL_JAVASCRIPT_MIGRATION.md).
 
 Tài khoản đã có từ backend .NET và hai bảng bridge Phase 4 không được tự chuyển đổi. Dùng database integration riêng; nhập tài khoản/phiên cũ cần migration được kiểm tra riêng. Chi tiết bảng đang dùng: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
@@ -104,7 +106,9 @@ Mật khẩu băm scrypt với salt riêng; cookie phiên HttpOnly/SameSite=Stri
 
 Mở **Tài khoản & bạn bè** để sửa tên, thu hồi phiên khác, tìm người chơi, kết bạn, xem thông báo và mời bạn đang online vào phòng còn ghế trống. Dữ liệu xã hội làm mới mỗi 15 giây hoặc khi có thao tác.
 
-Luồng Quên mật khẩu hoạt động ở chế độ **hộp thư phát triển**: bản tin `{email, token}` nằm trong `data/outbox/*.json` (hoặc `MAIL_OUTBOX`), không trả token qua HTTP. Mở `http://localhost:5173/?reset=TOKEN` để đặt mật khẩu mới; token hết hạn sau 15 phút, dùng một lần và vô hiệu các phiên cũ. Chưa có adapter gửi email SMTP; cần cấu hình/triển khai adapter `deliverReset` trước khi cung cấp khôi phục mật khẩu cho người dùng ngoài máy phát triển.
+Mặc định `MAIL_PROVIDER=file`: bản tin `{email, token}` nằm trong `data/outbox/*.json` (hoặc `MAIL_OUTBOX`), không trả token qua HTTP. Mở `http://localhost:5173/?reset=TOKEN` để đặt mật khẩu mới; token hết hạn sau 15 phút, dùng một lần và vô hiệu các phiên cũ.
+
+Để gửi SMTP, đặt `MAIL_PROVIDER=smtp`, `APP_PUBLIC_URL`, `MAIL_FROM`, `SMTP_HOST/PORT/USER/PASSWORD` trong `.env`; xem `.env.example`. Port 587 thường dùng `SMTP_SECURE=false` và `SMTP_REQUIRE_TLS=true` (STARTTLS); port 465 dùng `SMTP_SECURE=true`. Chứng chỉ luôn được xác minh. `npm.cmd run mail:verify` chỉ kiểm tra kết nối/TLS/auth, không gửi thư. Sau đó test luồng Quên mật khẩu bằng email của bạn trên môi trường thử; chưa có bằng chứng delivery đến hộp thư thật trong lần migration này. Retry có giới hạn, không có hàng đợi email nền bền vững.
 
 ## Video và kiểm thử hai thiết bị
 
@@ -150,4 +154,4 @@ Test SQL tự kiểm tra/tạo schema trong database test trống và thêm tài
 
 Kết quả và phạm vi xác minh thực tế: [docs/VALIDATION.md](docs/VALIDATION.md). Bảng phase, conflict và các giới hạn: [docs/INTEGRATION.md](docs/INTEGRATION.md). Quyết định kiến trúc: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Kịch bản chức năng gốc giữ tại [docs/ORIGINAL_REQUIREMENTS.md](docs/ORIGINAL_REQUIREMENTS.md).
 
-Lượt QA mới dùng Word [docs/KICH_BAN_CHUC_NANG.docx](docs/KICH_BAN_CHUC_NANG.docx). Chạy 7 bài SQL QA bằng `npm.cmd run test:qa:sql` với DB test chính xác `CoTuongIntegrationTest_QA_20261028`; lệnh/môi trường và cách xuất báo cáo lại nằm trong [QA_FINAL_REPORT.md](docs/QA_FINAL_REPORT.md). Các tài liệu VALIDATION/NORMALIZATION mô tả mốc lịch sử, không thay kết luận nghiệm thu mới.
+Lượt QA dùng Word [docs/KICH_BAN_CHUC_NANG.docx](docs/KICH_BAN_CHUC_NANG.docx). `test:qa:sql` hiện chạy **9 bài**: 7 bài gốc trên `CoTuongIntegrationTest_QA_20261028`, thêm 2 bài migration trên DB riêng có prefix `CoTuongIntegrationTest_Migration_20261028_`. Các DB test được giữ làm bằng chứng, không tự dọn/xóa. Lệnh và kết quả mới ở [MIGRATION_VALIDATION.md](docs/MIGRATION_VALIDATION.md); VALIDATION/NORMALIZATION/cleanup ghi mốc lịch sử.

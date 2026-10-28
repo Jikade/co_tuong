@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/CoTuong.Core/CoTuong.Core.csproj" />
-    <Project Path="src/CoTuong.Infrastructure/CoTuong.Infrastructure.csproj" />
-    <Project Path="src/CoTuong.Tests/CoTuong.Tests.csproj" />
-    <Project Path="src/CoTuong.Web/CoTuong.Web.csproj" />
-  </Folder>
-</Solution>
