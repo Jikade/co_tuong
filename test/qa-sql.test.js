@@ -4,6 +4,7 @@ import { setupDatabase } from '../scripts/setup-db.js';
 import { createIntegrationSqlPersistence } from '../src/server/persistence/integration-sql-persistence.js';
 import { createSqlConnection, sqlValue as v } from '../src/server/persistence/sql-connection.js';
 import { fixture, proof } from './helpers/qa.js';
+import {api,client} from './helpers/authenticated-game.js';
 const enabled={skip:process.env.RUN_SQL_TESTS!=='true'};
 const safe=()=>assert.equal(process.env.DB_DATABASE,'CoTuongIntegrationTest_QA_20261028','QA writes require the explicitly dedicated QA database.');
 test('QA SQL actual schema, foreign keys, unique/check enforcement and all view queries',enabled,async(t)=>{
@@ -33,4 +34,16 @@ test('QA SQL randomized Black host remains match creator; repeated move is one S
   const [row]=await db.json(`SELECT t.ma_nguoi_tao AS creator,t.ma_nguoi_choi_den AS black,t.so_nuoc_di,(SELECT COUNT(*) FROM dbo.nuoc_di_tran_dau n WHERE n.ma_tran_dau=t.ma) AS moves FROM dbo.tran_dau t JOIN dbo.integration_match_state s ON s.match_id=t.ma WHERE s.external_id=${v(match.id)}`);
   assert.equal(row.creator,row.black);assert.equal(row.moves,1);assert.equal(row.so_nuoc_di,1);
   proof(['DB-003'],'Real SQL with host Black: creator remains actual host and duplicate request leaves exactly one move row; base integration test verifies 3 moves/1 captured piece/result/memberships.','test/qa-sql.test.js; artifacts/qa/sql.log');
+});
+test('QA SQL computer mode persists bot opening, human result, replay and authentication across server restart',enabled,async(t)=>{
+  safe();const f=await fixture(t,{persistence:createIntegrationSqlPersistence(),computerMoveDelayMs:1},1),c=f.clients[0];
+  c.send({action:'computer-start',side:'black'});const before=(await c.next(m=>m.type==='computer-state'&&m.match.history.length===1)).match;
+  await c.close();await f.server.close();
+  const {createGameServer}=await import('../server.js');const server=createGameServer({host:'127.0.0.1',port:0,persistence:createIntegrationSqlPersistence()});t.after(()=>server.close());const url=await server.listen(),base=url.replace(/^ws/,'http').replace(/\/ws$/,'');const back=await client(url,f.users[0].cookie);t.after(()=>back.close());
+  back.send({action:'computer-resume',matchId:before.id});const restored=(await back.next(m=>m.type==='computer-state')).match;for(const key of ['id','pieces','capturedPieces','currentSide','history','turnDeadline'])assert.deepEqual(restored[key],before[key],key);
+  back.send({action:'computer-resign',matchId:before.id});await back.next(m=>m.type==='computer-state'&&m.match.status==='finished');
+  const replay=await api(base,`/api/matches/${before.id}`,{cookie:f.users[0].cookie});assert.equal(replay.status,200);assert.equal(replay.body.mode,'computer');assert.equal(replay.body.moves.length,1);assert.equal(replay.body.result.reason,'surrender');
+  const db=createSqlConnection();t.after(()=>db.close());const [row]=await db.json(`SELECT t.loai_tran,t.ben_cua_may,t.ma_nguoi_tao,t.ma_nguoi_choi_den,t.ma_nguoi_choi_do,t.ket_qua,t.so_nuoc_di FROM dbo.tran_dau t JOIN dbo.integration_match_state s ON s.match_id=t.ma WHERE s.external_id=${v(before.id)}`);
+  assert.equal(row.loai_tran,'PvE');assert.equal(row.ben_cua_may,'Red');assert.equal(row.ma_nguoi_tao,row.ma_nguoi_choi_den);assert.ok(row.ma_nguoi_choi_do==null);assert.equal(row.ket_qua,'RedWin');assert.equal(row.so_nuoc_di,1);
+  proof(['DB-003','DB-004','P4-049','P4-052'],'Actual SQL PvE: Black human, Red bot opening, restart with persisted login/board/deadline/history, resign/replay; SQL row is PvE/Red bot, real human creator, one move, RedWin.', 'test/qa-sql.test.js; artifacts/qa/sql.log');
 });
