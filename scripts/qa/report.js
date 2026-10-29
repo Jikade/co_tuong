@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 const catalog = JSON.parse(readFileSync('docs/qa-cases.json', 'utf8'));
+const requirementChange = JSON.parse(readFileSync('docs/QA_REQUIREMENT_CHANGES.json', 'utf8'));
 const records = existsSync('artifacts/qa/evidence.jsonl') ? readFileSync('artifacts/qa/evidence.jsonl', 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse) : [];
 if (!records.length && existsSync('docs/qa-results.json')) throw new Error('Không có bằng chứng local. Chạy các suite QA trước; không ghi đè báo cáo đã bàn giao bằng dữ liệu rỗng.');
 const overrides = existsSync('scripts/qa/assessment.json') ? JSON.parse(readFileSync('scripts/qa/assessment.json', 'utf8')) : {};
@@ -17,7 +18,9 @@ const bugCases = {
 const results = catalog.cases.map((c) => {
   const matches = records.filter((r) => r.ids.includes(c.id));
   const last = matches.at(-1);
-  return { ...c, status: 'NOT TESTED', actual: 'Chưa chạy assertion cho toàn bộ điều kiện của yêu cầu này.', evidence: '', bug: '', ...last, ...overrides[c.id] };
+  const changed = requirementChange.requirements[c.id];
+  return { ...c, status: 'NOT TESTED', actual: 'Chưa chạy assertion cho toàn bộ điều kiện của yêu cầu này.', evidence: '', bug: '', ...last, ...overrides[c.id],
+    ...(changed ? { originalRequirement: c.requirement, requirement: `${changed} [Thay đổi ${requirementChange.id}; Word gốc giữ nguyên.]` } : {}) };
 });
 for (const c of results) {
   if (!c.bug) c.bug = Object.entries(bugCases).filter(([,ids])=>ids.includes(c.id)).map(([id])=>id+' (FIXED)').join(', ');
@@ -45,5 +48,5 @@ let matrix = `# Ma trận nghiệm thu hệ thống Cờ tướng\n\nNguồn ch�
 for (const c of results) matrix += '| ' + [c.id, `${phases[c.phase]} / ${c.section}${c.paragraph ? ` [¶${c.paragraph}](QA_REQUIREMENTS.md#p${c.paragraph})` : ''}`, c.requirement, setup(c), c.steps ?? procedures(c), c.input ?? 'Tài khoản @example.test; QAChess123/ChessTest123 theo fixture; Room 6 số; input sai theo yêu cầu; chỉ local/test.', c.id === 'P1-140' ? 'Theo chỉ dẫn người dùng: spectator không nhận/xem/gửi chat riêng.' : c.requirement, c.actual, c.status, c.evidence, c.bug].map(clean).join(' | ') + ' |\n';
 writeFileSync('docs/QA_TEST_MATRIX.md', matrix);
 writeFileSync('artifacts/qa/summary.json', JSON.stringify({ source: catalog.sha256, cases: results, summaries }, null, 2));
-writeFileSync('docs/qa-results.json', JSON.stringify({ date: '2026-10-28', source: catalog.sha256, summaries, results: results.map(({id,phase,status,actual,evidence,bug})=>({id,phase,status,actual,evidence,bug})) }, null, 2)+'\n');
+writeFileSync('docs/qa-results.json', JSON.stringify({ date: '2026-10-28', source: catalog.sha256, requirementChange, summaries, results: results.map(({id,phase,status,actual,evidence,bug})=>({id,phase,status,actual,evidence,bug})) }, null, 2)+'\n');
 console.log(table);

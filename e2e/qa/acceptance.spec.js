@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {appendFileSync} from 'node:fs';
+import {expectMoveHints} from '../helpers/move-hints.js';
 const evidence=(ids,actual)=>appendFileSync('artifacts/qa/evidence.jsonl',JSON.stringify({ids,status:'PASS',actual,evidence:'e2e/qa/acceptance.spec.js; artifacts/qa/browser-results.json',at:new Date().toISOString()})+'\n');
 async function user(browser,baseURL,label,options={}) {
   const context=await browser.newContext({baseURL,viewport:{width:1694,height:1000},permissions:['camera','microphone'],...options});
@@ -17,7 +18,7 @@ async function create(page) {await page.locator('#room-name').fill('Nghiệm thu
 async function join(page,code) {await page.locator('#room-code-input').fill(code);await page.locator('#join-room-form button').click();await expect(page.locator('#room-view')).toBeVisible();}
 async function clickMove(page,piece,x,y,black=false) {
   await page.getByRole('button',{name:piece,exact:true}).click();
-  await expect(page.locator('.piece.selected')).toHaveCount(1);await expect(page.locator('.legal-move')).toHaveCount(0);
+  await expect(page.locator('.piece.selected')).toHaveCount(1);await expectMoveHints(page);
   const canvas=page.locator('#board-canvas'),box=await canvas.boundingBox(),size=await canvas.evaluate(e=>({width:e.width,height:e.height}));
   await page.mouse.click(box.x+(20+(black?8-x:x)*49)/size.width*box.width,box.y+(20+(black?9-y:y)*49)/size.height*box.height);
 }

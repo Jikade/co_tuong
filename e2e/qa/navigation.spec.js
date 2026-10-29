@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { appendFileSync } from 'node:fs';
+import {expectMoveHints} from '../helpers/move-hints.js';
 const evidence=(ids,actual)=>appendFileSync('artifacts/qa/evidence.jsonl',JSON.stringify({ids,status:'PASS',actual,evidence:'e2e/qa/navigation.spec.js; artifacts/qa/browser-results.json',at:new Date().toISOString()})+'\n');
 async function user(browser,baseURL,label){
   const context=await browser.newContext({baseURL,viewport:{width:1694,height:1000},permissions:['clipboard-read','clipboard-write']});
@@ -12,7 +13,7 @@ async function user(browser,baseURL,label){
 async function create(page){await page.locator('#room-name').fill('Navigation QA');await page.locator('#create-room-form button').click();await expect(page.locator('#room-view')).toBeVisible();return await page.locator('#room-code').innerText()}
 async function join(page,code){await page.locator('#room-code-input').fill(code);await page.locator('#join-room-form button').click();await expect(page.locator('#room-view')).toBeVisible()}
 async function move(page,label,x,y,black=false){
-  await page.getByRole('button',{name:label,exact:true}).click();await expect(page.locator('.piece.selected')).toHaveCount(1);await expect(page.locator('.legal-move')).toHaveCount(0);
+  await page.getByRole('button',{name:label,exact:true}).click();await expect(page.locator('.piece.selected')).toHaveCount(1);await expectMoveHints(page);
   const el=page.locator('#board-canvas'),box=await el.boundingBox(),size=await el.evaluate(e=>({width:e.width,height:e.height}));
   await page.mouse.click(box.x+(20+(black?8-x:x)*49)/size.width*box.width,box.y+(20+(black?9-y:y)*49)/size.height*box.height);
 }
@@ -29,7 +30,7 @@ test('QA private link through login, actual clipboard, reload and closed link er
     evidence(['P1-012','P1-014','P1-066','P1-069','P1-074','P1-075','P1-076','P1-123','P1-124','P1-125','P1-126'],'Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.');
   }finally{await Promise.all(people.map(u=>u.context.close()))}
 });
-test('QA natural check sequence rejects failed escape and shows no hints while checked',async({browser,baseURL})=>{
+test('QA natural check sequence suggests only legal escapes and rejects failed escape',async({browser,baseURL})=>{
   const people=[];try{
     const A=await user(browser,baseURL,'checkA'),B=await user(browser,baseURL,'checkB');people.push(A,B);const a=A.page,b=B.page;
     const code=await create(a);await join(b,code);await a.locator('#ready-button').click();await b.locator('#ready-button').click();await a.locator('#start-button').click();await expect(a.locator('#room-view')).toHaveAttribute('data-phase','playing');
@@ -38,6 +39,6 @@ test('QA natural check sequence rejects failed escape and shows no hints while c
     for(let i=0;i<steps.length;i++){await move(...steps[i]);await expect(a.locator('#move-history li')).toHaveCount(i+1);await expect(b.locator('#move-history li')).toHaveCount(i+1)}
     await expect(black.locator('#check-label')).toBeVisible();await move(black,'Tốt Đen, cột 1, hàng 7',0,7,true);await expect(black.locator('#notice')).toContainText('Nước đi không hợp lệ');await expect(black.locator('#move-history li')).toHaveCount(7);await expect(black.locator('#room-view')).toHaveAttribute('data-phase','playing');
     await move(black,'Pháo Đen, cột 2, hàng 3',4,2,true);await expect(black.locator('#move-history li')).toHaveCount(8);await expect(black.locator('#check-label')).toBeHidden();await black.screenshot({path:'artifacts/qa/check-escape.png',fullPage:true});for(const u of people)expect(u.errors).toEqual([]);
-    evidence(['P2-018','P2-021','P2-080','P2-081','P2-082'],'Eight naturally played UI moves: cannon gives check; selected piece has no hint markers; unrelated pawn move rejected without losing/advancing turn; cannon blocks check and indicator clears.');
+    evidence(['P2-018','P2-021','P2-080','P2-081','P2-082'],'Eight naturally played UI moves: cannon gives check; hints match shared legal destinations, checked unrelated pawn has none; illegal move rejected without losing/advancing turn; cannon blocks check and indicator clears. User change 2026-10-29 supersedes original no-hints requirement.');
   }finally{await Promise.all(people.map(u=>u.context.close()))}
 });

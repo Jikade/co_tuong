@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { appendFileSync, readdirSync, readFileSync } from 'node:fs';
 import { getLegalMoves } from '../../src/shared/game/xiangqi.js';
+import {expectMoveHints} from '../helpers/move-hints.js';
 const proof=(ids,actual)=>appendFileSync('artifacts/qa/evidence.jsonl',JSON.stringify({ids,status:'PASS',actual,evidence:'e2e/qa/account-computer.spec.js; artifacts/qa/account-computer.log',at:new Date().toISOString()})+'\n');
 async function user(browser,baseURL,label,options={}){
   const context=await browser.newContext({baseURL,...options}),username=`qa_${label}_${randomUUID().slice(0,6)}`;
@@ -28,7 +29,7 @@ test('QA mobile plays both AI colors through reload, surrender, separate histori
     for(const side of ['red','black']){
       await page.locator('#computer-play-button').click();await page.locator(`[data-computer-side="${side}"]`).click();await expect(page.locator('#room-view')).toHaveAttribute('data-phase','playing');if(side==='black')await expect(page.locator('#move-history li')).toHaveCount(1);
       const initial=U.messages.filter(m=>m.type==='computer-state'&&m.match.currentSide===side).at(-1).match,legal=getLegalMoves(initial.pieces,side)[0],piece=initial.pieces.find(p=>p.id===legal.pieceId);expect(initial.humanSide).toBe(side);
-      await page.getByRole('button',{name:`${names[piece.type]} ${side==='red'?'Đỏ':'Đen'}, cột ${piece.x+1}, hàng ${piece.y+1}`,exact:true}).click();await expect(page.locator('.legal-move')).toHaveCount(0);
+      await page.getByRole('button',{name:`${names[piece.type]} ${side==='red'?'Đỏ':'Đen'}, cột ${piece.x+1}, hàng ${piece.y+1}`,exact:true}).click();await expectMoveHints(page);
       const canvas=page.locator('#board-canvas'),box=await canvas.boundingBox(),size=await canvas.evaluate(e=>({width:e.width,height:e.height})),x=side==='black'?8-legal.to.x:legal.to.x,y=side==='black'?9-legal.to.y:legal.to.y;
       await page.mouse.click(box.x+(20+x*49)/size.width*box.width,box.y+(20+y*49)/size.height*box.height);await expect(page.locator('#move-history li')).toHaveCount(initial.history.length+2);
       const before=U.messages.filter(m=>m.type==='computer-state').at(-1).match;await page.reload();await expect(page.locator('#room-view')).toHaveAttribute('data-phase','playing');await expect(page.locator('#move-history li')).toHaveCount(before.history.length);expect(U.messages.filter(m=>m.type==='computer-state').at(-1).match.id).toBe(before.id);

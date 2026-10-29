@@ -1,4 +1,4 @@
-import { createInitialPieces, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
+import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constants.js';
 import { createAccountUi } from './account-ui.js';
 import {
@@ -371,6 +371,10 @@ function setConnection(state, text) {
   connectionDot.classList.toggle('connected', state === 'connected');
   connectionDot.classList.toggle('disconnected', state === 'disconnected');
   roomViewEl.dataset.connection = state;
+  if (state === 'disconnected') {
+    selectedPieceId = null;
+    renderPieces();
+  }
 }
 
 function showNotice(message) {
@@ -473,6 +477,7 @@ function handleServerMessage(message) {
   }
   if (message.type === 'computer-move-accepted') {
     pendingRequestId = null;
+    selectedPieceId = null;
     computerMatch = message.match;
     renderRoom();
     return;
@@ -1162,7 +1167,7 @@ function renderMoveHistory(history, limit = history.length) {
 }
 
 function canPlay() {
-  if (replayView) return false;
+  if (replayView || !navigator.onLine || socket?.readyState !== WebSocket.OPEN) return false;
   const match = computerMatch ?? currentRoom?.match;
   if (!match || match.status !== MATCH_STATUS.PLAYING || pendingRequestId) return false;
   if (computerMatch) return match.currentSide === computerMatch.humanSide;
@@ -1176,18 +1181,38 @@ function renderPieces() {
     ? replayView.pieces
     : computerMatch?.pieces ?? currentRoom?.match?.pieces ?? createInitialPieces();
   piecesEl.replaceChildren();
+  const match = computerMatch ?? currentRoom?.match;
+  const selectedPiece = canPlay()
+    ? matchPieces.find((piece) => piece.id === selectedPieceId && piece.color === match.currentSide)
+    : null;
+  if (selectedPiece) {
+    for (const move of getLegalDestinations(matchPieces, selectedPiece.id)) {
+      const target = matchPieces.find((piece) => piece.x === move.x && piece.y === move.y);
+      const marker = document.createElement('span');
+      marker.className = `legal-move${target ? ' capture' : ''}`;
+      marker.setAttribute('aria-hidden', 'true');
+      marker.dataset.x = String(move.x);
+      marker.dataset.y = String(move.y);
+      const displayMove = toDisplayCoordinate(move, isBlackPerspective());
+      marker.style.left = `${PAD + displayMove.x * CELL}px`;
+      marker.style.top = `${PAD + displayMove.y * CELL}px`;
+      piecesEl.appendChild(marker);
+    }
+  }
   for (const piece of matchPieces) {
     const displayCoordinate = toDisplayCoordinate(piece, isBlackPerspective());
     const element = document.createElement('button');
     const name = pieceTypes[piece.type].name;
     const colorName = piece.color === 'red' ? 'Đỏ' : 'Đen';
     const label = `${name} ${colorName}, cột ${piece.x + 1}, hàng ${piece.y + 1}`;
-    element.className = `piece ${piece.color}${piece.id === selectedPieceId ? ' selected' : ''}`;
+    const selected = piece.id === selectedPiece?.id;
+    element.className = `piece ${piece.color}${selected ? ' selected' : ''}`;
     element.type = 'button';
     element.textContent = pieceTypes[piece.type][piece.color];
     element.title = label;
+    element.dataset.pieceId = piece.id;
     element.setAttribute('aria-label', label);
-    element.setAttribute('aria-pressed', String(piece.id === selectedPieceId));
+    element.setAttribute('aria-pressed', String(selected));
     element.disabled = !canPlay();
     element.style.left = `${PAD + displayCoordinate.x * CELL - PIECE_SIZE / 2}px`;
     element.style.top = `${PAD + displayCoordinate.y * CELL - PIECE_SIZE / 2}px`;
@@ -1202,7 +1227,7 @@ function handleCell(x, y) {
   const selected = match.pieces.find((piece) => piece.id === selectedPieceId);
   const clicked = match.pieces.find((piece) => piece.x === x && piece.y === y);
   if (clicked?.color === match.currentSide) {
-    selectedPieceId = clicked.id;
+    selectedPieceId = selectedPieceId === clicked.id ? null : clicked.id;
     renderPieces();
     return;
   }
@@ -1653,6 +1678,10 @@ document.querySelector('#incoming-call-reject').addEventListener('click', () => 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && !historyOverlay.hidden) closeHistory();
   if (event.key === 'Escape') setRoomSettings(false);
+  if (event.key === 'Escape' && selectedPieceId) {
+    selectedPieceId = null;
+    renderPieces();
+  }
 });
 setInterval(() => {
   if (replayView) return;

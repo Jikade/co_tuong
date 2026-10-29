@@ -1,0 +1,11 @@
+{
+  "id": "MOVE_HINTS_20261029",
+  "date": "2026-10-29",
+  "source": "Yêu cầu trực tiếp của người dùng ngày 2026-10-29, ưu tiên hơn quy định không gợi ý trong Word gốc.",
+  "requirements": {
+    "P2-019": "Khi chọn quân của mình trong lượt được phép thao tác, làm nổi bật quân và hiển thị mọi ô hợp lệ bằng chấm tròn; ô ăn quân dùng vòng viền. Dùng shared Game Engine, loại nước tự chiếu hoặc hai Tướng đối mặt. Áp dụng cả hai màu và PvP/PvE.",
+    "P2-020": "Người chơi chọn đích từ gợi ý hoặc tự chọn ô. Frontend chỉ hiển thị gợi ý, server vẫn kiểm tra và quyết định nước đi cuối cùng; không có tự động đi quân.",
+    "P2-021": "Nước trái luật vẫn bị server từ chối; bàn cờ/lượt không đổi. Gợi ý sau phản hồi được tính lại từ trạng thái chính thức, không gợi ý nước trái luật hoặc tự động chọn nước thay thế.",
+    "P2-082": "Khi bị chiếu, chỉ gợi ý các nước của quân được chọn thực sự thoát chiếu. Nước không thoát chiếu không có marker và vẫn bị server từ chối; không đổi lượt hay bàn cờ."
+  }
+}
