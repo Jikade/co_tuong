@@ -1,6 +1,7 @@
 import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constants.js';
 import { createAccountUi } from './account-ui.js';
+import { acquireCallMedia as acquireCallMediaInternal, renderCallMediaToggles, releaseCallResources, toggleCallTrack as toggleCallTrackInternal } from './call-media.js';
 import {
   createClientId,
   getAppEndpoints,
@@ -99,12 +100,11 @@ const computerCancelButton = document.querySelector('#computer-cancel-button');
 const mediaToggleButtons = ['audio', 'video'].map((kind) => {
   const button = document.createElement('button'); button.type = 'button'; button.className = 'button button-quiet'; button.hidden = true;
   button.id = `toggle-${kind}`;
-  button.onclick = () => {
-    const tracks = callState?.localStream?.getTracks().filter((t) => t.kind === kind) ?? [];
-    const enable = !tracks.some((t) => t.enabled);
-    for (const track of tracks) track.enabled = enable;
-    renderPrivatePanels();
-  };
+  button.onclick = () => toggleCallTrack(callState, kind, {
+    showNotice,
+    mediaErrorMessage,
+    onChange: renderPrivatePanels,
+  });
   document.querySelector('.call-controls').append(button);
   return { kind, button };
 });
@@ -697,14 +697,15 @@ function handleServerMessage(message) {
         try {
           await acquireCallMedia(state);
         } catch (error) {
-          cleanupCall({ notify: true, message: mediaErrorMessage(error) });
+          cleanupCall({ notify: true, message: mediaErrorMessage(error), expectedState: state });
           return;
         }
         const pc = ensurePeerConnection(state);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
+        if (callState !== state) return;
         sendAction('call-offer', { callId: state.callId, description: pc.localDescription });
-      })().catch((error) => cleanupCall({ notify: true, message: webRtcErrorMessage(error) }));
+      })().catch((error) => cleanupCall({ notify: true, message: webRtcErrorMessage(error), expectedState: state }));
     }
     return;
   }
@@ -807,60 +808,51 @@ function renderPrivatePanels() {
   callAcceptButton.hidden = callState?.status !== 'incoming';
   callRejectButton.hidden = callState?.status !== 'incoming';
   callEndButton.hidden = !callState || callState.status === 'incoming';
-  for (const { kind, button } of mediaToggleButtons) {
-    const tracks = callState?.localStream?.getTracks().filter((t) => t.kind === kind) ?? [];
-    button.hidden = !tracks.length;
-    const enabled = tracks.some((t) => t.enabled);
-    button.textContent = `${enabled ? 'Tắt' : 'Bật'} ${kind === 'audio' ? 'micro' : 'camera'}`;
-    button.setAttribute('aria-pressed', String(!enabled));
-  }
+  renderCallMediaToggles(callState, mediaToggleButtons);
+  const audioOnly = Boolean(callState && callState.localStream && !callState.localStream.getVideoTracks().length);
   callStatus.textContent = !callState
     ? !online ? 'Chưa kết nối máy chủ.' : !opponent ? 'Đang chờ người chơi thứ hai.'
       : !opponent.connected ? 'Đối phương đang ngoại tuyến.' : 'Đang chờ cuộc gọi'
     : callState.status === 'incoming' ? `${callState.callerName} đang gọi…`
       : callState.status === 'calling' ? `Đang gọi ${opponent?.name ?? 'đối phương'}…`
         : callState.status === 'connecting' ? 'Đang kết nối video…'
-          : callState.status === 'connected' ? 'Đã kết nối' : 'Đang chuẩn bị cuộc gọi…';
+          : callState.status === 'connected' ? audioOnly ? 'Đã kết nối bằng âm thanh (camera không khả dụng)' : 'Đã kết nối' : audioOnly ? 'Đang kết nối bằng âm thanh (camera không khả dụng)…' : 'Đang chuẩn bị cuộc gọi…';
 }
 
-function cleanupCall({ notify = false, message = '' } = {}) {
+function cleanupCall({ notify = false, message = '', expectedState = null } = {}) {
   const previous = callState;
-  callState = null;
+  if (!releaseCallResources(previous, {
+    currentState: callState,
+    expectedState,
+    beforeRelease: () => { callState = null; },
+    localVideo,
+    remoteVideo,
+  })) return;
   if (notify && previous?.callId) sendAction('call-end', { callId: previous.callId });
-  if (previous?.pc) {
-    previous.pc.onicecandidate = null;
-    previous.pc.ontrack = null;
-    previous.pc.onconnectionstatechange = null;
-    previous.pc.close();
-  }
-  previous?.localStream?.getTracks().forEach((track) => track.stop());
-  localVideo.srcObject = null;
-  remoteVideo.srcObject = null;
   if (message) showNotice(message);
   renderPrivatePanels();
 }
 
-async function acquireCallMedia(state) {
-  if (state.localStream) return state.localStream;
+function acquireCallMedia(state) {
+  if (state.localStream) return Promise.resolve(state.localStream);
   if (!window.isSecureContext) {
-    throw new Error('Trang chưa ở secure context. Hãy mở website bằng HTTPS với chứng chỉ được iPhone tin cậy.');
+    return Promise.reject(new Error('Trang cần HTTPS để dùng camera và microphone.'));
   }
-  if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error('Trình duyệt này không hỗ trợ API camera/microphone (getUserMedia). Hãy dùng Safari bản mới nhất.');
-  }
-  try {
-    state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  } catch (error) {
-    if (!['NotFoundError', 'DevicesNotFoundError', 'NotReadableError', 'OverconstrainedError'].includes(error?.name)) throw error;
-    state.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-    showNotice('Camera không khả dụng. Cuộc gọi tiếp tục bằng âm thanh.');
-  }
-  if (callState !== state) {
-    state.localStream.getTracks().forEach((track) => track.stop());
-    throw new Error('Cuộc gọi đã kết thúc.');
-  }
-  localVideo.srcObject = state.localStream;
-  return state.localStream;
+  return acquireCallMediaInternal(state, {
+    localVideo,
+    isCurrent: (candidate) => callState === candidate,
+    showNotice,
+    mediaErrorMessage,
+  });
+}
+
+function toggleCallTrack(state, kind, options = {}) {
+  return toggleCallTrackInternal(state, kind, {
+    showNotice,
+    mediaErrorMessage,
+    onChange: renderPrivatePanels,
+    ...options,
+  });
 }
 
 function ensurePeerConnection(state) {
@@ -868,6 +860,7 @@ function ensurePeerConnection(state) {
   if (typeof RTCPeerConnection !== 'function') {
     throw new Error('Trình duyệt không hỗ trợ WebRTC. Hãy dùng Safari bản mới nhất.');
   }
+  if (!state.localStream?.getTracks().length) throw new Error('Chưa có microphone hoặc camera khả dụng để gọi.');
   const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
   state.pc = pc;
   for (const track of state.localStream.getTracks()) pc.addTrack(track, state.localStream);
@@ -875,13 +868,16 @@ function ensurePeerConnection(state) {
     if (candidate && callState === state) sendAction('call-ice-candidate', { callId: state.callId, candidate });
   };
   pc.ontrack = ({ streams }) => {
-    if (callState === state && streams[0]) remoteVideo.srcObject = streams[0];
+    if (callState === state && streams[0]) {
+      remoteVideo.srcObject = streams[0];
+      remoteVideo.hidden = !streams[0].getVideoTracks().length;
+    }
   };
   pc.onconnectionstatechange = () => {
     if (callState !== state) return;
     if (pc.connectionState === 'connected') state.status = 'connected';
     else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
-      cleanupCall({ notify: pc.connectionState === 'failed', message: webRtcErrorMessage(new Error(`trạng thái ${pc.connectionState}`)) });
+      cleanupCall({ notify: pc.connectionState === 'failed', message: webRtcErrorMessage(new Error(`trạng thái ${pc.connectionState}`)), expectedState: state });
       return;
     }
     renderPrivatePanels();
@@ -891,7 +887,10 @@ function ensurePeerConnection(state) {
 
 async function flushIceCandidates(state) {
   if (!state.pc?.remoteDescription) return;
-  for (const candidate of state.pendingCandidates.splice(0)) await state.pc.addIceCandidate(candidate);
+  for (const candidate of state.pendingCandidates.splice(0)) {
+    if (callState !== state) return;
+    await state.pc.addIceCandidate(candidate);
+  }
 }
 
 async function handleCallSignal(message) {
@@ -905,19 +904,22 @@ async function handleCallSignal(message) {
     const pc = ensurePeerConnection(state);
     if (message.type === 'call-offer') {
       await pc.setRemoteDescription(message.description);
+      if (callState !== state) return;
       await flushIceCandidates(state);
       const answer = await pc.createAnswer();
+      if (callState !== state) return;
       await pc.setLocalDescription(answer);
-      sendAction('call-answer', { callId: state.callId, description: pc.localDescription });
+      if (callState === state) sendAction('call-answer', { callId: state.callId, description: pc.localDescription });
     } else if (message.type === 'call-answer') {
       await pc.setRemoteDescription(message.description);
+      if (callState !== state) return;
       await flushIceCandidates(state);
     } else if (message.type === 'call-ice-candidate') {
       if (pc.remoteDescription) await pc.addIceCandidate(message.candidate);
       else state.pendingCandidates.push(message.candidate);
     }
   } catch (error) {
-    cleanupCall({ notify: true, message: webRtcErrorMessage(error) });
+    cleanupCall({ notify: true, message: webRtcErrorMessage(error), expectedState: state });
   }
 }
 
@@ -1479,8 +1481,9 @@ callAcceptButton.addEventListener('click', async () => {
   try {
     await acquireCallMedia(state);
   } catch (error) {
+    if (callState !== state) return;
     sendAction('call-reject', { callId: state.callId });
-    cleanupCall({ message: mediaErrorMessage(error) });
+    cleanupCall({ message: error?.message ?? mediaErrorMessage(error), expectedState: state });
     return;
   }
   if (callState !== state) return;
@@ -1488,8 +1491,9 @@ callAcceptButton.addEventListener('click', async () => {
     ensurePeerConnection(state);
     if (!sendAction('call-accept', { callId: state.callId })) cleanupCall();
   } catch (error) {
+    if (callState !== state) return;
     sendAction('call-reject', { callId: state.callId });
-    cleanupCall({ message: webRtcErrorMessage(error) });
+    cleanupCall({ message: webRtcErrorMessage(error), expectedState: state });
   }
 });
 

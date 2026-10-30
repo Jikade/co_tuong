@@ -181,6 +181,26 @@ test('unanswered call times out and permits a later call', async (t) => {
   await restarted;
 });
 
+test('server rejects call acceptance after its deadline before the timeout timer runs', async (t) => {
+  const { host, opponent } = await setup(t, { callTimeoutMs: 5_000 });
+  const started = host.next((m) => m.type === 'call-started');
+  const incoming = opponent.next((m) => m.type === 'call-incoming');
+  host.send({ action: 'call-start' });
+  const [{ callId }, invite] = await Promise.all([started, incoming]);
+  const originalNow = Date.now;
+  const hostTimeout = host.next((m) => m.type === 'call-timeout');
+  const opponentTimeout = opponent.next((m) => m.type === 'call-timeout');
+  const lateError = opponent.next((m) => m.type === 'call-error');
+  try {
+    Date.now = () => originalNow() + 6_000;
+    opponent.send({ action: 'call-accept', callId: invite.callId });
+    await Promise.all([hostTimeout, opponentTimeout, lateError]);
+  } finally {
+    Date.now = originalNow;
+  }
+  assert.ok(callId);
+});
+
 test('rejecting or disconnecting clears only that room call state', async (t) => {
   const { host, opponent, connect, code } = await setup(t, { callTimeoutMs: 5_000 });
   const started = host.next((m) => m.type === 'call-started');

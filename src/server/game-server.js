@@ -1101,6 +1101,15 @@ export function createGameServer(options = {}) {
     return call;
   }
 
+  function timeoutCall(room, call) {
+    if (calls.get(room.code) !== call || call.status !== 'ringing') return;
+    for (const playerId of [call.callerId, call.calleeId]) {
+      const peer = room.connections.get(playerId);
+      if (peer && peers.get(playerId) === peer) send(peer, { type: 'call-timeout', callId: call.id });
+    }
+    clearCall(room, { callId: call.id });
+  }
+
   function sendPrivateCallError(socket, message) {
     send(socket, { type: 'call-error', message });
   }
@@ -1245,11 +1254,7 @@ export function createGameServer(options = {}) {
       calleeId: access.opponent.id, status: 'ringing', deadline: Date.now() + callTimeoutMs, timer: null,
     };
     call.timer = setTimeout(() => {
-      for (const playerId of [call.callerId, call.calleeId]) {
-        const peer = room.connections.get(playerId);
-        if (peer && peers.get(playerId) === peer) send(peer, { type: 'call-timeout', callId: call.id });
-      }
-      clearCall(room, { callId: call.id });
+      timeoutCall(room, call);
     }, callTimeoutMs);
     call.timer.unref?.();
     calls.set(room.code, call);
@@ -1267,6 +1272,11 @@ export function createGameServer(options = {}) {
     if (!access || !call || call.status !== 'ringing' || call.calleeId !== socket.playerId
         || message.callId !== call.id) {
       sendPrivateCallError(socket, 'Lời mời gọi không còn hợp lệ.');
+      return;
+    }
+    if (Date.now() >= call.deadline) {
+      timeoutCall(room, call);
+      sendPrivateCallError(socket, 'Lời mời gọi đã hết hạn.');
       return;
     }
     if (!accepted) {

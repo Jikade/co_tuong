@@ -36,9 +36,10 @@ test('creates a UUID v4 when randomUUID is unavailable in an insecure LAN contex
 });
 
 test('distinguishes camera permission denial from missing media devices', () => {
-  assert.match(mediaErrorMessage({ name: 'NotAllowedError' }), /đã từ chối quyền/);
-  assert.match(mediaErrorMessage({ name: 'NotFoundError' }), /Không tìm thấy camera/);
-  assert.match(mediaErrorMessage({ name: 'NotReadableError' }), /đang được ứng dụng khác sử dụng/);
+  assert.match(mediaErrorMessage({ name: 'NotAllowedError' }, 'camera'), /chưa cấp quyền camera/);
+  assert.match(mediaErrorMessage({ name: 'NotAllowedError' }, 'microphone'), /chưa cấp quyền microphone/);
+  assert.match(mediaErrorMessage({ name: 'NotFoundError' }, 'camera'), /Không tìm thấy camera/);
+  assert.match(mediaErrorMessage({ name: 'NotReadableError' }, 'microphone'), /microphone đang được ứng dụng khác sử dụng/);
 });
 
 test('reports WebRTC transport failures separately from media permission failures', () => {

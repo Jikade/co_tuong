@@ -30,20 +30,13 @@ export function createClientId(cryptoApi = globalThis.crypto) {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-export function mediaErrorMessage(error) {
-  if (error?.name === 'NotAllowedError' || error?.name === 'PermissionDeniedError') {
-    return 'Bạn đã từ chối quyền camera hoặc microphone. Hãy cho phép quyền này trong cài đặt Safari của iPhone rồi thử lại.';
-  }
-  if (error?.name === 'NotFoundError' || error?.name === 'DevicesNotFoundError') {
-    return 'Không tìm thấy camera hoặc microphone khả dụng trên thiết bị.';
-  }
-  if (error?.name === 'NotReadableError' || error?.name === 'TrackStartError') {
-    return 'Camera hoặc microphone đang được ứng dụng khác sử dụng. Hãy đóng ứng dụng đó rồi thử lại.';
-  }
-  if (error?.name === 'OverconstrainedError') {
-    return 'Camera hoặc microphone không đáp ứng được cấu hình yêu cầu.';
-  }
-  return `Không thể bật camera hoặc microphone${error?.message ? `: ${error.message}` : '.'}`;
+export function mediaErrorMessage(error, device = 'camera hoặc microphone') {
+  const name = error?.name;
+  if (name === 'NotAllowedError' || name === 'PermissionDeniedError') return `Bạn chưa cấp quyền ${device}. Hãy cho phép thiết bị này trong cài đặt trình duyệt rồi thử lại.`;
+  if (name === 'NotFoundError' || name === 'DevicesNotFoundError') return `Không tìm thấy ${device} khả dụng trên thiết bị.`;
+  if (name === 'NotReadableError' || name === 'TrackStartError') return `${device} đang được ứng dụng khác sử dụng.`;
+  if (name === 'OverconstrainedError') return `${device} không đáp ứng được cấu hình yêu cầu.`;
+  return `Không thể bật ${device}${error?.message ? `: ${error.message}` : '.'}`;
 }
 
 export function webRtcErrorMessage(error) {
