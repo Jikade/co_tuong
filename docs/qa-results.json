@@ -1,0 +1,3350 @@
+{
+  "date": "2026-10-28",
+  "source": "2c5b95ba2c6b1c0c966ec572aa95919db825eca58cce5893878c7c3fccef32cd",
+  "summaries": [
+    {
+      "phase": "P1",
+      "name": "Phase 1",
+      "total": 195,
+      "PASS": 194,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "P2",
+      "name": "Phase 2",
+      "total": 84,
+      "PASS": 84,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "P3",
+      "name": "Phase 3",
+      "total": 58,
+      "PASS": 58,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "P4",
+      "name": "Phase 4",
+      "total": 52,
+      "PASS": 52,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "DB",
+      "name": "Database",
+      "total": 7,
+      "PASS": 7,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "SEC",
+      "name": "Security/ổn định",
+      "total": 7,
+      "PASS": 7,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    },
+    {
+      "phase": "ENV",
+      "name": "Môi trường/UI",
+      "total": 6,
+      "PASS": 3,
+      "FAIL": 0,
+      "BLOCKED": 3,
+      "NOT IMPLEMENTED": 0,
+      "NOT TESTED": 0
+    }
+  ],
+  "results": [
+    {
+      "id": "P1-001",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-002",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA registration API: every invalid field, generic login errors, concurrent duplicate creates one account: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-003",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-004",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA registration API: every invalid field, generic login errors, concurrent duplicate creates one account: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-005",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA registration API: every invalid field, generic login errors, concurrent duplicate creates one account: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-006 (FIXED)"
+    },
+    {
+      "id": "P1-006",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-006 (FIXED)"
+    },
+    {
+      "id": "P1-007",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-008",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA registration API: every invalid field, generic login errors, concurrent duplicate creates one account: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-009",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-010",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-011",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA registration API: every invalid field, generic login errors, concurrent duplicate creates one account: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-012",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-013",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Edge UI đã chạy: logout/back/reload không trở lại màn bảo vệ; lọc đúng danh sách bạn.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-014",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-015",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-016",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-017",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-018",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-019",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-020",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-021",
+      "phase": "P1",
+      "status": "BLOCKED",
+      "actual": "Luồng Quên mật khẩu đã gọi SMTP JavaScript, token một lần/15 phút/rate limit giữ nguyên, log được redaction và token gửi lỗi bị vô hiệu. Delivery tới hộp thư thật chưa xác minh vì thiếu cấu hình/credentials thực tế.",
+      "evidence": "test/mail.test.js; test/password-migration.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-018 (external delivery BLOCKED)"
+    },
+    {
+      "id": "P1-022",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-023",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-007 (FIXED)"
+    },
+    {
+      "id": "P1-024",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-007 (FIXED)"
+    },
+    {
+      "id": "P1-025",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-026",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-027",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-028",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-029",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-030",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-031",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual local outbox -> valid reset form; forged/reused links rejected; generic known/unknown reply; old password 401, new login succeeds. SMTP delivery is not established.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-007 (FIXED)"
+    },
+    {
+      "id": "P1-032",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-033",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-034",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA resets: empty/malformed email, indistinguishable replies, expiry, account binding, newest token, one use, rate limits: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-035",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-036",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-037",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-038",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-039",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-040",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-041",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-042",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-043",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-044",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-045",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-046",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-047",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-048",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual friendship request UI has accept/reject and sender gets both statuses; invitation shows sender/room/two actions/same remaining; after real60s both pending rows disappear; new invite has new ID and old invite cannot accept.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-049",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-050",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-051",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-052",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-053",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual friendship request UI has accept/reject and sender gets both statuses; invitation shows sender/room/two actions/same remaining; after real60s both pending rows disappear; new invite has new ID and old invite cannot accept.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-054",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-055",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-056",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Đã thực thi lời mời hai chiều đồng thời, chỉ giữ một Pending. Câu Word dùng 'có thể' cho auto-accept nên đây là lựa chọn tùy chọn; ứng dụng giữ Pending và để người nhận Chấp nhận.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-057",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-058",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-059",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA friendship: search exclusion, simultaneous invitations, authorization, accept/reject/cancel and double processing: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-060",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-061",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-008 (FIXED)"
+    },
+    {
+      "id": "P1-062",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-063",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Unfriend after archive removes both relationships, keeps accounts/history byte-for-byte; host leaves finished room => opponent promoted without new loss; last participant leaves => room closes, archived result survives.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-064",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-065",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-066",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-067",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA room inputs reject invalid visibility and empty/long names; repeated creates and public/private listing preserve identity: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-068",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA room inputs reject invalid visibility and empty/long names; repeated creates and public/private listing preserve identity: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-069",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-070",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA room inputs reject invalid visibility and empty/long names; repeated creates and public/private listing preserve identity: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-071",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-021 (FIXED)"
+    },
+    {
+      "id": "P1-072",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual Edge clipboard contains code and explicit copied room link; no native/external message sent.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-021 (FIXED)"
+    },
+    {
+      "id": "P1-073",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA room inputs reject invalid visibility and empty/long names; repeated creates and public/private listing preserve identity: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-074",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-075",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-076",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-077",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA room inputs reject invalid visibility and empty/long names; repeated creates and public/private listing preserve identity: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-078",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-079",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-080",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Edge UI đã chạy: logout/back/reload không trở lại màn bảo vệ; lọc đúng danh sách bạn.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-010 (FIXED)"
+    },
+    {
+      "id": "P1-081",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-082",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-083",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-084",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-085",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-086",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-087",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-088",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-089",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-090",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-091",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual friendship request UI has accept/reject and sender gets both statuses; invitation shows sender/room/two actions/same remaining; after real60s both pending rows disappear; new invite has new ID and old invite cannot accept.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-009 (FIXED)"
+    },
+    {
+      "id": "P1-092",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-093",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-009 (FIXED)"
+    },
+    {
+      "id": "P1-094",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-009 (FIXED)"
+    },
+    {
+      "id": "P1-095",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-096",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-097",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-098",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Full room rejects invite acceptance without completing it; freeing a slot permits atomic spectator join.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": "QA-003 (FIXED)"
+    },
+    {
+      "id": "P1-099",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-100",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-003 (FIXED)"
+    },
+    {
+      "id": "P1-101",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Full room rejects invite acceptance without completing it; freeing a slot permits atomic spectator join.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": "QA-003 (FIXED)"
+    },
+    {
+      "id": "P1-102",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-003 (FIXED)"
+    },
+    {
+      "id": "P1-103",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation does not reserve opponent; occupied or playing room accepts invitee as spectator: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-003 (FIXED)"
+    },
+    {
+      "id": "P1-104",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-105",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-106",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-107",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-108",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-109",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual friendship request UI has accept/reject and sender gets both statuses; invitation shows sender/room/two actions/same remaining; after real60s both pending rows disappear; new invite has new ID and old invite cannot accept.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-009 (FIXED)"
+    },
+    {
+      "id": "P1-110",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-111",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-112",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual friendship request UI has accept/reject and sender gets both statuses; invitation shows sender/room/two actions/same remaining; after real60s both pending rows disappear; new invite has new ID and old invite cannot accept.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-113",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-114",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-115",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-116",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Pending invite is absent/cancelled after room closure and cannot accept; kick block belongs only to the original room and does not block a fresh room.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": "QA-004 (FIXED)"
+    },
+    {
+      "id": "P1-117",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-004 (FIXED)"
+    },
+    {
+      "id": "P1-118",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real invite decline/cancel notifies parties and is single use; new invite allowed; kick invalidates it; closed room leaves public list and cannot join.",
+      "evidence": "test/acceptance-invites.test.js; artifacts/qa/invites.log; artifacts/migration/final/node.log",
+      "bug": "QA-004 (FIXED)"
+    },
+    {
+      "id": "P1-119",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA invitation lifecycle: offline/nonfriend rejected; host departure cancels pending so old host can invite in new room: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-120",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual Edge clipboard contains code and explicit copied room link; no native/external message sent.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-021 (FIXED)"
+    },
+    {
+      "id": "P1-121",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual Edge clipboard contains code and explicit copied room link; no native/external message sent.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-021 (FIXED)"
+    },
+    {
+      "id": "P1-122",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actual Edge clipboard contains code and explicit copied room link; no native/external message sent.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-021 (FIXED)"
+    },
+    {
+      "id": "P1-123",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-124",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-125",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-126",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Private room hidden publicly; anonymous deep link returns through login to exact room; session/role survive reload; closing invalidates link with error.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-127",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-128",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-129",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-010 (FIXED)"
+    },
+    {
+      "id": "P1-130",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-010 (FIXED)"
+    },
+    {
+      "id": "P1-131",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-010 (FIXED)"
+    },
+    {
+      "id": "P1-132",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-133",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-134",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-135",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-136",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-137",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-138",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-139",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-140",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Áp dụng chỉ dẫn người dùng và Phase 4 ¶438: khán giả không nhận/xem/gửi chat. Câu Phase 1 ¶195 được coi là mâu thuẫn tài liệu, không dùng để cấp quyền xem dữ liệu riêng.",
+      "evidence": "test/acceptance-security.test.js; e2e/qa/acceptance.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-141",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-142",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-143",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-005 (FIXED)"
+    },
+    {
+      "id": "P1-144",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-145",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-146",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-147",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": "QA-022 (FIXED)"
+    },
+    {
+      "id": "P1-148",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-149",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-150",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA vacant opponent with spectators requires opt-in; only one concurrent claimant; readiness resets: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-151",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-152",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-153",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-154",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-155",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actor bị demote vẫn ở Room và chủ động lấy ghế lại unready; các nhánh ghế trống/có spectator và đủ hai người đã chạy. Gửi tám start khi Syncing và tám khi Countdown chỉ có một UUID, không có nước trước Playing.",
+      "evidence": "test/acceptance-completeness.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-156",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-157",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Pending invite is absent/cancelled after room closure and cannot accept; kick block belongs only to the original room and does not block a fresh room.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-158",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-159",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-160",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-161",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Bad/nonexistent code rejects without membership; repeated authenticated join remains one opponent and two connections; pre-match actions do not create results.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-162",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Bad/nonexistent code rejects without membership; repeated authenticated join remains one opponent and two connections; pre-match actions do not create results.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-163",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-164",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actor bị demote vẫn ở Room và chủ động lấy ghế lại unready; các nhánh ghế trống/có spectator và đủ hai người đã chạy. Gửi tám start khi Syncing và tám khi Countdown chỉ có một UUID, không có nước trước Playing.",
+      "evidence": "test/acceptance-completeness.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-005 (FIXED)"
+    },
+    {
+      "id": "P1-165",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Bad/nonexistent code rejects without membership; repeated authenticated join remains one opponent and two connections; pre-match actions do not create results.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-166",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-167",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-168",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-169",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-170",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-171",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-172",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-173",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-174",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-175",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-176",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-177",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Unfriend after archive removes both relationships, keeps accounts/history byte-for-byte; host leaves finished room => opponent promoted without new loss; last participant leaves => room closes, archived result survives.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-178",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-179",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-180",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-181",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host cũ rời phòng: GET social loại pending cũ, không chặn host tạo lời mời mới; quyền chủ được chuyển cho đối thủ.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-004 (FIXED)"
+    },
+    {
+      "id": "P1-182",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-183",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-184",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-185",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-186",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-187",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-188",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-189",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-190",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-191",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-192",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Three real browsers: public list updates without refresh, join via list, invalid input blocked, ready/unready gates start, demotion -> explicit spectator claim -> all ready reset, host leaves -> actual UI role/name/start controls change and require new ready; close removes listing, no result before Match.",
+      "evidence": "e2e/qa/rooms.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P1-193",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-194",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "Actor bị demote vẫn ở Room và chủ động lấy ghế lại unready; các nhánh ghế trống/có spectator và đủ hai người đã chạy. Gửi tám start khi Syncing và tám khi Countdown chỉ có một UUID, không có nước trước Playing.",
+      "evidence": "test/acceptance-completeness.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P1-195",
+      "phase": "P1",
+      "status": "PASS",
+      "actual": "QA both color draws are possible and chosen once; repeated start during syncing does not replace match: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-001",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-002",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-003",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-004",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-005",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-006",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Late spectator receives captured board, same ID and ordered history.",
+      "evidence": "test/acceptance.test.js; artifacts/qa/acceptance-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-007",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-008",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-009",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Late spectator receives captured board, same ID and ordered history.",
+      "evidence": "test/acceptance.test.js; artifacts/qa/acceptance-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-010",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Late spectator receives captured board, same ID and ordered history.",
+      "evidence": "test/acceptance.test.js; artifacts/qa/acceptance-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-011",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Late spectator receives captured board, same ID and ordered history.",
+      "evidence": "test/acceptance.test.js; artifacts/qa/acceptance-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-012",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-013",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA production color RNG yields both assignments and remains fixed per match: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": "QA-001 (FIXED)"
+    },
+    {
+      "id": "P2-014",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-015",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-016",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-017",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-018",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Eight naturally played UI moves: cannon gives check; selected piece has no hint markers; unrelated pawn move rejected without losing/advancing turn; cannon blocks check and indicator clears.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-019",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-002 (FIXED)"
+    },
+    {
+      "id": "P2-020",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-002 (FIXED)"
+    },
+    {
+      "id": "P2-021",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Eight naturally played UI moves: cannon gives check; selected piece has no hint markers; unrelated pawn move rejected without losing/advancing turn; cannon blocks check and indicator clears.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-022",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-023",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-024",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-025",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-026",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-027",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-028",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-029",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-030",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-031",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-032",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-033",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-034",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-035",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-036",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-037",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-038",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-039",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-040",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-041",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-042",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-043",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-044",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-045",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-046",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-047",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-048",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-049",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-050",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-051",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-052",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-053",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-054",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-055",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-056",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-057",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-058",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-059",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-060",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-061",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-062",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-063",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-064",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-065",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-066",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-067",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-068",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-069",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-070",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-071",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-072",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-073",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-074",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-075",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-076",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-077",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-078",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-079",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Normal server move from explicit sparse legal-board fixture => checkmate, Red winner, immutable terminal board, saved ordered replay. Fixture is not a full naturally played match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-080",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Eight naturally played UI moves: cannon gives check; selected piece has no hint markers; unrelated pawn move rejected without losing/advancing turn; cannon blocks check and indicator clears.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-081",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "77 luật bổ sung đã chạy: cả Đỏ/Đen, nước đúng/sai, ăn quân/cùng bên, chân Mã/mắt Tượng/sông/cung, 0/1/2 ngòi Pháo, tự chiếu, đối mặt Tướng, thoát chiếu; không sửa input board. Xoay tọa độ Đen còn được kiểm chứng bằng click UI thực.",
+      "evidence": "test/acceptance-rules.test.js; test/xiangqi.test.js; e2e/qa/navigation.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P2-082",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Eight naturally played UI moves: cannon gives check; selected piece has no hint markers; unrelated pawn move rejected without losing/advancing turn; cannon blocks check and indicator clears.",
+      "evidence": "e2e/qa/navigation.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-002 (FIXED)"
+    },
+    {
+      "id": "P2-083",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Normal server move from explicit sparse legal-board fixture => checkmate, Red winner, immutable terminal board, saved ordered replay. Fixture is not a full naturally played match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P2-084",
+      "phase": "P2",
+      "status": "PASS",
+      "actual": "Normal server move from explicit sparse legal-board fixture => no-legal-moves, Red winner, immutable terminal board, saved ordered replay. Fixture is not a full naturally played match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-001",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-002",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-003",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-004",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-005",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-006",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-007",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-008",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-009",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-010",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-011",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-012",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-012 (FIXED)"
+    },
+    {
+      "id": "P3-013",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-014",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-015",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-012 (FIXED)"
+    },
+    {
+      "id": "P3-016",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-017",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-018",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-012 (FIXED)"
+    },
+    {
+      "id": "P3-019",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Expired disconnected participant reconnects to the saved finished result with the same Match ID; moves remain locked and history remains one record.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": "QA-017 (FIXED)"
+    },
+    {
+      "id": "P3-020",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Missing saved pieces rejected with explicit startup error; repository is unchanged and no initial board is fabricated.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": "QA-014 (FIXED)"
+    },
+    {
+      "id": "P3-021",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-022",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-023",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Cả hai socket đóng: lưu SystemError/Voided, không trao thắng tùy tiện. Snapshot thiếu dữ liệu bị từ chối khởi động và không viết đè state.",
+      "evidence": "test/phase3.test.js; test/acceptance-results.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-024",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Two real WS closes at separate times; no premature Voided at first deadline; second returns before own deadline and receives saved win without a new match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": "QA-013 (FIXED)"
+    },
+    {
+      "id": "P3-025",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-026",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-027",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-028",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-029",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Normal server move from explicit sparse legal-board fixture => checkmate, Red winner, immutable terminal board, saved ordered replay. Fixture is not a full naturally played match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-030",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Normal server move from explicit sparse legal-board fixture => no-legal-moves, Red winner, immutable terminal board, saved ordered replay. Fixture is not a full naturally played match.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-031",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-032",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-033",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-034",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-035",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-036",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Host leaves => opponent promoted/unready; next leave promotes earliest spectator, explicit seat claim; unfriend leaves match/roles/history intact, outsider cannot replay.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-037",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Cả hai socket đóng: lưu SystemError/Voided, không trao thắng tùy tiện. Snapshot thiếu dữ liệu bị từ chối khởi động và không viết đè state.",
+      "evidence": "test/phase3.test.js; test/acceptance-results.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-038",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-039",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-040",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-041",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-042",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-043",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-044",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-045",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Actual sockets: draw decline continues, duplicate offer rejected, accept saved Draw; next match resign invalidates offer; third active host leave saves winner immediately before host moves to opponent; all 3 histories preserved.",
+      "evidence": "test/acceptance-results.test.js; artifacts/qa/results.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-046",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-047",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-048",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-049",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-050",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-051",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-052",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Match mới ID riêng, 32 quân, history/captured rỗng, Red đi trước, countdown mới; thay đối thủ có khán giả yêu cầu opt-in và ready mới. RNG production đã quan sát cả hai cách phân bên.",
+      "evidence": "test/realtime.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-053",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-054",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Unfriend after archive removes both relationships, keeps accounts/history byte-for-byte; host leaves finished room => opponent promoted without new loss; last participant leaves => room closes, archived result survives.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-055",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Unfriend after archive removes both relationships, keeps accounts/history byte-for-byte; host leaves finished room => opponent promoted without new loss; last participant leaves => room closes, archived result survives.",
+      "evidence": "test/acceptance-lifecycle.test.js; artifacts/qa/lifecycle.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-056",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Match mới ID riêng, 32 quân, history/captured rỗng, Red đi trước, countdown mới; thay đối thủ có khán giả yêu cầu opt-in và ready mới. RNG production đã quan sát cả hai cách phân bên.",
+      "evidence": "test/realtime.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P3-057",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P3-058",
+      "phase": "P3",
+      "status": "PASS",
+      "actual": "Match mới ID riêng, 32 quân, history/captured rỗng, Red đi trước, countdown mới; thay đối thủ có khán giả yêu cầu opt-in và ready mới. RNG production đã quan sát cả hai cách phân bên.",
+      "evidence": "test/realtime.test.js; test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-001",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-002",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-003",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-004",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-005",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-006",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-007",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-008",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-009",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Room displays name/code/link/host/opponent/spectator names/count; Offline friend cannot be invited but code/link copy still works, nonfriend not in friend list; actual clipboard and stable board; no manual Save/Load; public Playing/WaitingNewMatch, deep link midmatch viewer no video; offline submit not displayed as delivered.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-010",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Two rooms with separate authenticated peers: all spectator state fields/current capture/result verified; no foreign Room state event; spectator receives no call data and spectator-chat is unsupported; chat preserves turn/deadline; reconnect preserves owner/colors/all pieces/captures/history/side/remaining; finished room listed and late entrant spectator.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-011",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-012",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual player leave ends call and private membership; new pair chat not sent to former player, forged former chat rejected; closing room clears its single accepted call.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-013",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-014",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-015",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-016",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-017",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-018",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-019",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge UI unanswered call expires after real production 60 seconds, incoming prompt closes and caller is notified.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-020",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-021",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-022",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-023",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-024",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-025",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-026",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-027",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-011 (FIXED)"
+    },
+    {
+      "id": "P4-028",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-029",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-030",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-031",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-032",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-033",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-034",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Edge fake media: denied permission rejected with game still playing; missing camera retried audio only, peer connected; mic/camera toggle, hangup and recall/reject. Physical devices not tested.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-035",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-036",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual local fake WebRTC connects; host closes waiting room; both real MediaStream tracks stop and lobby returns, new room can ring/reject again.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-037",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual mobile UI: both human colors, automatic AI opening/reply, reload retains ID/history, confirmed surrender, two saved matches and replay.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-038",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual mobile UI: both human colors, automatic AI opening/reply, reload retains ID/history, confirmed surrender, two saved matches and replay.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-039",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual mobile UI: both human colors, automatic AI opening/reply, reload retains ID/history, confirmed surrender, two saved matches and replay.",
+      "evidence": "e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-040",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-041",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-042",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-043",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Test-only 50ms human clock/160ms machine delay: machine remains Playing after 90ms, no AFK; out-of-turn human packet rejected; actual AI reply arrives and only then starts human clock. Production defaults unchanged.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-044",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual AI intermediate state renders thinking label and disables pieces/no hint markers; real reply arrives. QA-only machine delay800ms improves observability; production180ms unchanged.",
+      "evidence": "e2e/qa/completeness.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-045",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-046",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Production RNG (not injected): observed two distinct legal automatic opening moves across newly created AI matches; every sampled opening belongs to engine legal set.",
+      "evidence": "test/acceptance-completeness.test.js; artifacts/qa/completeness-node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-047",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-048",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-049",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual SQL PvE: Black human, Red bot opening, restart with persisted login/board/deadline/history, resign/replay; SQL row is PvE/Red bot, real human creator, one move, RedWin.",
+      "evidence": "test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "P4-050",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-051",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "AI chọn trong tập legal moves và nước trả lời được kiểm chứng; sai lượt/đi hộ máy bị từ chối; lưu/resume/restart không nhân đôi nước; AI hết nước bị xử thua từ fixture chiếu bí. Có thắng người (fixture), thua AFK (60s thật), đầu hàng và replay UI.",
+      "evidence": "test/computer.test.js; test/acceptance-time.test.js; e2e/qa/account-computer.spec.js; artifacts/migration/final/edge-qa.log; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "P4-052",
+      "phase": "P4",
+      "status": "PASS",
+      "actual": "Actual SQL PvE: Black human, Red bot opening, restart with persisted login/board/deadline/history, resign/replay; SQL row is PvE/Red bot, real human creator, one move, RedWin.",
+      "evidence": "test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "DB-001",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "Real SQL Express: 24 base tables/5 views; all views queried; enabled/trusted FKs inspected; actual FK, CHECK and UNIQUE invalid inserts rejected.",
+      "evidence": "test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "DB-002",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "Registered users/friend request/relationship exist in SQL normalized tables and account payload; original SQL test additionally verifies reset and reload.",
+      "evidence": "test/qa-sql.test.js; test/sql-integration.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": "QA-015 (FIXED)"
+    },
+    {
+      "id": "DB-003",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "Actual SQL PvE: Black human, Red bot opening, restart with persisted login/board/deadline/history, resign/replay; SQL row is PvE/Red bot, real human creator, one move, RedWin.",
+      "evidence": "test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": "QA-016 (FIXED)"
+    },
+    {
+      "id": "DB-004",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "SQL Server thật: state/phiên/board/capture/history giữ qua restart; stale writer bị version guard rollback, không insert user một phần; requestId lặp chỉ có một dòng nước đi.",
+      "evidence": "test/sql-integration.test.js; test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "DB-005",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "SQL Server thật: state/phiên/board/capture/history giữ qua restart; stale writer bị version guard rollback, không insert user một phần; requestId lặp chỉ có một dòng nước đi.",
+      "evidence": "test/sql-integration.test.js; test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "DB-006",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "Real SQL Express: 24 base tables/5 views; all views queried; enabled/trusted FKs inspected; actual FK, CHECK and UNIQUE invalid inserts rejected.",
+      "evidence": "test/qa-sql.test.js; artifacts/migration/final/sql.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "DB-007",
+      "phase": "DB",
+      "status": "PASS",
+      "actual": "HTTP cookie riêng + WebSocket thật + file tạm: 3 nước/1 ăn quân, từ chối sai lượt, reconnect, restart server/persistence và replay; board sau restore bằng board đã xác nhận. Clock pause/resume được assert trong phase3.",
+      "evidence": "test/server.test.js; test/integration.test.js; test/helpers/authenticated-game.js; test/phase3.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-001",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-002",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-003",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "14 authenticated clients: only one opponent under concurrent join; ten spectators enforced; kick/rejoin blocked; spectator commands and host midmatch replacement rejected without mutation.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-004",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "Raw authenticated WS/API bypass attempts denied; spectator/other room receives no secret payload or signaling; demotion clears call/history; new pair sees only its own messages; unauth/foreign Origin upgrade rejected.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-005",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "QA real authoritative moves: out-of-turn, invalid clock, duplicate, capture, spectator isolation and rematch: tất cả assertion đạt.",
+      "evidence": "test/acceptance.test.js; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-006",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "Real HTTP body >16KiB => 413, malformed JSON => 400, foreign Origin =>403; actual oversized WS frame =>1009 with generic log (logger observed and still prints); same session reconnects and creates room; auth flood=>429 and health stays200. No password/input sentinel exposed.",
+      "evidence": "test/acceptance-validation.test.js; artifacts/qa/validation.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "SEC-007",
+      "phase": "SEC",
+      "status": "PASS",
+      "actual": "40 real join/leave actions and 12 new authenticated WebSocket transports: peers/memberships return to baseline, call/computer maps empty, waiting-room timer refs zero, socket listener total remains bounded. Not a production soak/load test.",
+      "evidence": "test/acceptance-security.test.js; artifacts/qa/security.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "ENV-001",
+      "phase": "ENV",
+      "status": "BLOCKED",
+      "actual": "SMTP Node đã triển khai và PASS qua SMTP test server với STARTTLS/implicit TLS, auth, retry và reset HTTP. Chưa có cấu hình/credentials/người nhận để xác minh delivery đến hộp thư thật; không đồng nhất SMTP acceptance với inbox delivery.",
+      "evidence": "test/mail.test.js; src/server/services/reset-mailer.js; artifacts/migration/final/node.log",
+      "bug": "QA-018 (SMTP implemented; external delivery BLOCKED)"
+    },
+    {
+      "id": "ENV-002",
+      "phase": "ENV",
+      "status": "BLOCKED",
+      "actual": "Edge chạy với camera/micro giả lập; chưa có phiên người dùng kiểm chứng thiết bị vật lý và quyền hệ điều hành.",
+      "evidence": "playwright.config.js; playwright.qa.config.js",
+      "bug": "QA-019"
+    },
+    {
+      "id": "ENV-003",
+      "phase": "ENV",
+      "status": "BLOCKED",
+      "actual": "Chỉ có hai peer local; chưa có hai mạng độc lập/credentials TURN. Client hiện cấu hình STUN, chưa có cấu hình TURN để nghiệm thu.",
+      "evidence": "src/client/main.js ensurePeerConnection; playwright.qa.config.js",
+      "bug": "QA-020"
+    },
+    {
+      "id": "ENV-004",
+      "phase": "ENV",
+      "status": "PASS",
+      "actual": "Real wall clock: default countdown >=2.9s; turn/AI expire >=59s; pause preserves remaining; reconnect waits own 60s; call+invite expire at 60s. No production duration changed.",
+      "evidence": "test/acceptance-time.test.js; artifacts/migration/final/node.log; artifacts/migration/final/node.log",
+      "bug": ""
+    },
+    {
+      "id": "ENV-005",
+      "phase": "ENV",
+      "status": "PASS",
+      "actual": "4 isolated contexts/cookies, real UI social/invite -> 3 moves/capture -> mobile spectator -> offline/reconnect -> resign/rematch -> confirmed leave -> 2 historical matches/replay -> logout/back; no pageerrors.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": ""
+    },
+    {
+      "id": "ENV-006",
+      "phase": "ENV",
+      "status": "PASS",
+      "actual": "UI field validity and registration -> login verified in Edge; invalid passwords/confirm blocked before submit.",
+      "evidence": "e2e/qa/acceptance.spec.js; artifacts/migration/final/browser-results.json; artifacts/migration/final/browser-results.json",
+      "bug": "QA-006 (FIXED)"
+    }
+  ]
+}
