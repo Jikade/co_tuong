@@ -114,7 +114,8 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
     for (const r of social.requests) {
       const incoming = r.to === user.id;
       const actions = incoming ? ['accept', 'reject'] : ['cancel'];
-      row(document.querySelector('#friend-requests'), `${incoming ? r.sender.displayName : r.recipient.displayName} · ${incoming ? 'Đã gửi lời mời' : 'Đang chờ'}`, actions.map((a) => [{ accept: 'Chấp nhận', reject: 'Từ chối', cancel: 'Hủy' }[a], () => request(`/api/friends/requests/${r.id}/${a}`, { method: 'POST' })]));
+      const person = incoming ? r.sender : r.recipient;
+      row(document.querySelector('#friend-requests'), `${person.displayName} (@${person.username}) · ${incoming ? 'Đã gửi lời mời' : 'Đang chờ'}`, actions.map((a) => [{ accept: 'Chấp nhận', reject: 'Từ chối', cancel: 'Hủy' }[a], () => request(`/api/friends/requests/${r.id}/${a}`, { method: 'POST' })]));
     }
     for (const i of social.invites) {
       const item = row(document.querySelector('#room-invites'), `Phòng ${i.roomCode}`, (i.to === user.id ? ['accept', 'decline'] : ['cancel']).map((action) => [{ accept: 'Vào phòng', decline: 'Từ chối', cancel: 'Hủy' }[action], async () => { const result = await request(`/api/rooms/invites/${i.id}/${action}`, { method: 'POST' }); if (action === 'accept') { joinRoom(result.roomCode); dashboard.hidden = true; } }]));
@@ -125,6 +126,7 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
     for (const n of social.notifications) row(document.querySelector('#notification-list'), `${n.read ? '' : '● '}${n.text}`, n.read ? [] : [['Đã đọc', () => request(`/api/notifications/${n.id}/read`, { method: 'POST' })]]);
     const { sessions } = await request('/api/auth/sessions');
     for (const s of sessions) row(document.querySelector('#session-list'), `${s.current ? 'Phiên hiện tại' : 'Phiên khác'} · hết hạn ${new Date(s.expiresAt).toLocaleDateString('vi-VN')}`, s.current ? [] : [['Thu hồi', () => request(`/api/auth/sessions/${s.id}`, { method: 'DELETE' })]]);
+    if (document.querySelector('#friend-query').value.trim().length >= 2) await refreshFriendSearch();
   }
   function updateInviteCountdowns() {
     let expired = false;
@@ -159,15 +161,27 @@ export function createAccountUi({ apiBase, onLogin, onLogout, joinRoom, currentR
   document.querySelector('#account-toggle').onclick = () => { dashboard.hidden = !dashboard.hidden; refreshSocial().catch((e) => notify(e.message)); };
   document.querySelector('#account-close').onclick = () => { dashboard.hidden = true; };
   document.querySelector('#refresh-public').onclick = () => refreshPublic().catch((e) => notify(e.message));
-  document.querySelector('#friend-search-form').onsubmit = async (e) => {
-    e.preventDefault();
+  async function refreshFriendSearch() {
     try {
       const { users } = await request(`/api/friends/search?q=${encodeURIComponent(document.querySelector('#friend-query').value)}`);
       const list = document.querySelector('#friend-search-results'); list.replaceChildren();
       if (!users.length) row(list, 'Không tìm thấy người chơi.');
-      for (const u of users) row(list, `${u.displayName} (@${u.username})`, [['Kết bạn', () => request('/api/friends/requests', { method: 'POST', body: { userId: u.id } })]]);
+      const relationshipLabels = { none: 'Chưa kết bạn', outgoing: 'Đã gửi lời mời', incoming: 'Có lời mời kết bạn', friend: 'Đã là bạn bè' };
+      for (const u of users) {
+        const actions = {
+          none: [['Kết bạn', async () => { await request('/api/friends/requests', { method: 'POST', body: { userId: u.id } }); await refreshFriendSearch(); }]],
+          outgoing: [['Hủy lời mời', async () => { await request(`/api/friends/requests/${u.requestId}/cancel`, { method: 'POST' }); await refreshFriendSearch(); }]],
+          incoming: [
+            ['Chấp nhận', async () => { await request(`/api/friends/requests/${u.requestId}/accept`, { method: 'POST' }); await refreshFriendSearch(); }],
+            ['Từ chối', async () => { await request(`/api/friends/requests/${u.requestId}/reject`, { method: 'POST' }); await refreshFriendSearch(); }],
+          ],
+          friend: [],
+        }[u.relationship];
+        row(list, `${u.displayName} (@${u.username}) · ${relationshipLabels[u.relationship]}`, actions);
+      }
     } catch (error) { notify(error.message); }
-  };
+  }
+  document.querySelector('#friend-search-form').onsubmit = async (e) => { e.preventDefault(); await refreshFriendSearch(); };
   document.querySelector('#profile-form').onsubmit = async (e) => {
     e.preventDefault();
     try { const result = await request('/api/me', { method: 'PATCH', body: { displayName: document.querySelector('#profile-name').value } }); user = result.user; document.querySelector('#account-name').textContent = user.displayName; document.querySelector('#display-name').value = user.displayName; notify('Đã lưu hồ sơ.'); }

@@ -1002,7 +1002,11 @@ function renderRoom() {
       const row = document.createElement('div'); row.className = 'account-row';
       const name = document.createElement('span'); name.textContent = person.name;
       const kick = document.createElement('button'); kick.type = 'button'; kick.className = 'button button-quiet danger'; kick.textContent = 'Mời rời phòng';
-      kick.onclick = () => sendAction('kick-member', { targetPlayerId: person.id }); row.append(name, kick); spectatorList.append(row);
+      kick.onclick = () => {
+        if (window.confirm(`Bạn có chắc muốn mời ${person.name} rời phòng không?`)) {
+          sendAction('kick-member', { targetPlayerId: person.id });
+        }
+      }; row.append(name, kick); spectatorList.append(row);
     }
     if (!currentRoom.spectators.length) spectatorList.textContent = 'Chưa có khán giả.';
   }

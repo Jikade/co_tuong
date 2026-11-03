@@ -128,7 +128,16 @@ export function createAccounts(repository, { sessionDays = 7, deliverReset = asy
     search(userId, query) {
       query = String(query ?? '').trim().toLowerCase();
       if (query.length < 2) return [];
-      return state.users.filter((u) => u.id !== userId && (u.username.toLowerCase().includes(query) || u.displayName.toLowerCase().includes(query))).slice(0, 30).map(({ id, username, displayName }) => ({ id, username, displayName }));
+      return state.users.filter((u) => u.id !== userId && (u.username.toLowerCase().includes(query) || u.displayName.toLowerCase().includes(query))).slice(0, 30).map(({ id, username, displayName }) => {
+        const friendship = state.friends.some((friend) => friend.includes(userId) && friend.includes(id));
+        const request = state.friendRequests.find((item) => item.status === 'Pending'
+          && [item.from, item.to].includes(userId) && [item.from, item.to].includes(id));
+        return {
+          id, username, displayName,
+          relationship: friendship ? 'friend' : request ? (request.from === userId ? 'outgoing' : 'incoming') : 'none',
+          requestId: request?.id ?? null,
+        };
+      });
     },
     social(userId) {
       return {
