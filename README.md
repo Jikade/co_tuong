@@ -437,9 +437,9 @@ PHASE 3 – THỜI GIAN, MẤT KẾT NỐI VÀ KẾT QUẢ
 PHASE 4 – GIAO TIẾP VÀ CHƠI VỚI MÁY
 
 1. Chat riêng giữa hai người chơi
-   Mục tiêu: Chủ Room và Đối thủ có thể trao đổi trong Room, khán giả nhìn thấy nội dung trao đổi của hai người chơi.
+   Mục tiêu: Chủ Room và Đối thủ có thể trao đổi trong Room, khán giả không nhìn thấy nội dung trao đổi của hai người chơi.
    • Chỉ hai người đang giữ vai trò Chủ Room và Đối thủ được sử dụng khung Chat dành cho người chơi.
-   • Khán giả tuyệt đối không có quyền gửi tin nhắn trong khung Chat của người chơi, chỉ nhìn thấy tin nhắn giữa Chủ Room và Đối thủ.
+   • Khán giả tuyệt đối không có quyền gửi tin nhắn trong khung Chat của người chơi, cũng không nhìn thấy tin nhắn giữa Chủ Room và Đối thủ.
    • Trong phiên bản này không triển khai Chat Khán giả. Nếu sau này bổ sung, Chat Khán giả phải là một kênh tách biệt chỉ giữa Khán giả với nhau; Chủ Room và Đối thủ không được nhận hoặc nhìn thấy kênh đó để tránh bị phân tâm.
    • Người chơi nhập nội dung vào ô tin nhắn và chọn Gửi. Hệ thống không cho gửi tin nhắn rỗng hoặc chỉ chứa khoảng trắng.
    • Khi tin nhắn hợp lệ được gửi, hệ thống chuyển tin nhắn Real-time chỉ tới hai người chơi của Room hiện tại.
