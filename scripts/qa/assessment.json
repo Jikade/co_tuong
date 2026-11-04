@@ -1,0 +1,36 @@
+{
+  "ENV-001": {
+    "status": "BLOCKED",
+    "actual": "SMTP Node đã triển khai và PASS qua SMTP test server với STARTTLS/implicit TLS, auth, retry và reset HTTP. Chưa có cấu hình/credentials/người nhận để xác minh delivery đến hộp thư thật; không đồng nhất SMTP acceptance với inbox delivery.",
+    "evidence": "test/mail.test.js; src/server/services/reset-mailer.js; artifacts/migration/final/node.log",
+    "bug": "QA-018 (SMTP implemented; external delivery BLOCKED)"
+  },
+  "P1-021": {
+    "status": "BLOCKED",
+    "actual": "Luồng Quên mật khẩu đã gọi SMTP JavaScript, token một lần/15 phút/rate limit giữ nguyên, log được redaction và token gửi lỗi bị vô hiệu. Delivery tới hộp thư thật chưa xác minh vì thiếu cấu hình/credentials thực tế.",
+    "evidence": "test/mail.test.js; test/password-migration.test.js; artifacts/migration/final/node.log",
+    "bug": "QA-018 (external delivery BLOCKED)"
+  },
+  "ENV-002": {
+    "status": "BLOCKED",
+    "actual": "Edge chạy với camera/micro giả lập; chưa có phiên người dùng kiểm chứng thiết bị vật lý và quyền hệ điều hành.",
+    "evidence": "playwright.config.js; playwright.qa.config.js",
+    "bug": "QA-019"
+  },
+  "ENV-003": {
+    "status": "BLOCKED",
+    "actual": "Chỉ có hai peer local; chưa có hai mạng độc lập/credentials TURN. Client hiện cấu hình STUN, chưa có cấu hình TURN để nghiệm thu.",
+    "evidence": "src/client/main.js ensurePeerConnection; playwright.qa.config.js",
+    "bug": "QA-020"
+  },
+  "P1-056": {
+    "status": "PASS",
+    "actual": "Đã thực thi lời mời hai chiều đồng thời, chỉ giữ một Pending. Câu Word dùng 'có thể' cho auto-accept nên đây là lựa chọn tùy chọn; ứng dụng giữ Pending và để người nhận Chấp nhận.",
+    "evidence": "test/acceptance.test.js; artifacts/qa/final-node.log"
+  },
+  "P1-140": {
+    "status": "PASS",
+    "actual": "Áp dụng chỉ dẫn người dùng và Phase 4 ¶438: khán giả không nhận/xem/gửi chat. Câu Phase 1 ¶195 được coi là mâu thuẫn tài liệu, không dùng để cấp quyền xem dữ liệu riêng.",
+    "evidence": "test/acceptance-security.test.js; e2e/qa/acceptance.spec.js; artifacts/qa/final-node.log; artifacts/qa/browser.log"
+  }
+}

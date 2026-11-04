@@ -1,0 +1,2870 @@
+{
+  "source": "C:\\Users\\Acer\\Downloads\\Cờ Tướng.docx",
+  "sha256": "2c5b95ba2c6b1c0c966ec572aa95919db825eca58cce5893878c7c3fccef32cd",
+  "paragraphs": 495,
+  "cases": [
+    {
+      "id": "P1-001",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 6,
+      "requirement": "Người dùng mở màn hình Đăng ký và nhập: tên đăng nhập, tên hiển thị, email, mật khẩu và xác nhận mật khẩu."
+    },
+    {
+      "id": "P1-002",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 7,
+      "requirement": "Email không được để trống, phải đúng định dạng và không được trùng với email của tài khoản đã tồn tại."
+    },
+    {
+      "id": "P1-003",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 8,
+      "requirement": "Email được sử dụng để xác minh tài khoản trong trường hợp người dùng quên mật khẩu và cần đặt lại mật khẩu."
+    },
+    {
+      "id": "P1-004",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 9,
+      "requirement": "Tên đăng nhập không được để trống và không được trùng với tài khoản đã tồn tại. Nếu trùng, hệ thống thông báo rõ để người dùng chọn tên khác."
+    },
+    {
+      "id": "P1-005",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 10,
+      "requirement": "Mật khẩu tối thiểu 8 ký tự, có ít nhất chữ và số. Hai ô Mật khẩu và Xác nhận mật khẩu phải giống nhau."
+    },
+    {
+      "id": "P1-006",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 11,
+      "requirement": "Nếu còn trường bắt buộc chưa nhập, định dạng không hợp lệ hoặc hai mật khẩu không khớp, hệ thống không tạo tài khoản và hiển thị lỗi ngay tại nội dung cần sửa."
+    },
+    {
+      "id": "P1-007",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 12,
+      "requirement": "Khi toàn bộ dữ liệu hợp lệ, hệ thống tạo tài khoản, thông báo đăng ký thành công và chuyển người dùng sang màn hình Đăng nhập."
+    },
+    {
+      "id": "P1-008",
+      "phase": "P1",
+      "section": "1. Đăng ký tài khoản",
+      "paragraph": 13,
+      "requirement": "Nhấn nút Đăng ký nhiều lần liên tiếp không được tạo ra nhiều tài khoản giống nhau."
+    },
+    {
+      "id": "P1-009",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 16,
+      "requirement": "Người dùng nhập tên đăng nhập và mật khẩu rồi chọn Đăng nhập."
+    },
+    {
+      "id": "P1-010",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 17,
+      "requirement": "Nếu thông tin đúng và tài khoản đang hoạt động, hệ thống đăng nhập thành công, hiển thị tên người chơi và đưa người dùng tới màn hình chính."
+    },
+    {
+      "id": "P1-011",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 18,
+      "requirement": "Nếu sai tên đăng nhập hoặc mật khẩu, hệ thống từ chối đăng nhập và hiển thị thông báo phù hợp; không tiết lộ thông tin nhạy cảm của tài khoản."
+    },
+    {
+      "id": "P1-012",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 19,
+      "requirement": "Nếu phiên đăng nhập còn hiệu lực khi người dùng mở lại hệ thống, người dùng được tiếp tục sử dụng mà không phải đăng nhập lại. Khi phiên hết hiệu lực, hệ thống yêu cầu đăng nhập lại."
+    },
+    {
+      "id": "P1-013",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 20,
+      "requirement": "Khi người dùng chọn Đăng xuất, hệ thống kết thúc phiên hiện tại và đưa về màn hình Đăng nhập. Các màn hình yêu cầu tài khoản không còn truy cập được bằng nút quay lại."
+    },
+    {
+      "id": "P1-014",
+      "phase": "P1",
+      "section": "2. Đăng nhập, duy trì phiên và đăng xuất",
+      "paragraph": 21,
+      "requirement": "Nếu người dùng mở link mời Room nhưng chưa đăng nhập, hệ thống chuyển tới màn hình Đăng nhập. Sau khi đăng nhập thành công, người dùng được đưa trở lại đúng Room đã mở từ link nếu Room vẫn còn hợp lệ."
+    },
+    {
+      "id": "P1-015",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 24,
+      "requirement": "Tại màn hình Đăng nhập, người dùng có thể chọn Quên mật khẩu."
+    },
+    {
+      "id": "P1-016",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 25,
+      "requirement": "Hệ thống hiển thị màn hình yêu cầu người dùng nhập email đã đăng ký với tài khoản."
+    },
+    {
+      "id": "P1-017",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 26,
+      "requirement": "Người dùng nhập email và chọn Gửi yêu cầu đặt lại mật khẩu."
+    },
+    {
+      "id": "P1-018",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 27,
+      "requirement": "Nếu email để trống hoặc sai định dạng, hệ thống không gửi yêu cầu và hiển thị thông báo yêu cầu nhập lại."
+    },
+    {
+      "id": "P1-019",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 28,
+      "requirement": "Hệ thống kiểm tra email có thuộc một tài khoản đang tồn tại và còn hoạt động hay không."
+    },
+    {
+      "id": "P1-020",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 29,
+      "requirement": "Để tránh làm lộ thông tin tài khoản, sau khi người dùng gửi yêu cầu, hệ thống hiển thị thông báo chung như: “Nếu email này được đăng ký trong hệ thống, hướng dẫn đặt lại mật khẩu sẽ được gửi tới email.”"
+    },
+    {
+      "id": "P1-021",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 30,
+      "requirement": "Nếu email hợp lệ và thuộc một tài khoản, hệ thống tạo mã/token đặt lại mật khẩu có thời hạn và gửi đường link đặt lại mật khẩu tới email đó."
+    },
+    {
+      "id": "P1-022",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 31,
+      "requirement": "Token đặt lại mật khẩu chỉ được sử dụng cho đúng tài khoản đã yêu cầu và chỉ có hiệu lực trong một khoảng thời gian xác định, ví dụ 15 phút."
+    },
+    {
+      "id": "P1-023",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 32,
+      "requirement": "Người dùng mở đường link trong email. Hệ thống kiểm tra token còn tồn tại, chưa được sử dụng và chưa hết hạn."
+    },
+    {
+      "id": "P1-024",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 33,
+      "requirement": "Nếu token hợp lệ, hệ thống hiển thị màn hình Đặt lại mật khẩu gồm hai ô: Mật khẩu mới và Xác nhận mật khẩu mới."
+    },
+    {
+      "id": "P1-025",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 34,
+      "requirement": "Mật khẩu mới phải đáp ứng cùng quy tắc mật khẩu của chức năng Đăng ký: tối thiểu 8 ký tự, có ít nhất chữ và số."
+    },
+    {
+      "id": "P1-026",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 35,
+      "requirement": "Hai ô Mật khẩu mới và Xác nhận mật khẩu mới phải giống nhau."
+    },
+    {
+      "id": "P1-027",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 36,
+      "requirement": "Nếu dữ liệu không hợp lệ, hệ thống không thay đổi mật khẩu và hiển thị lỗi để người dùng sửa lại."
+    },
+    {
+      "id": "P1-028",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 37,
+      "requirement": "Nếu hợp lệ, hệ thống cập nhật mật khẩu mới cho tài khoản và đánh dấu token đặt lại mật khẩu là đã sử dụng."
+    },
+    {
+      "id": "P1-029",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 38,
+      "requirement": "Một token đã được sử dụng không được sử dụng lại lần thứ hai."
+    },
+    {
+      "id": "P1-030",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 39,
+      "requirement": "Nếu token đã hết hạn, không tồn tại hoặc đã được sử dụng, hệ thống từ chối yêu cầu và thông báo “Liên kết đặt lại mật khẩu không còn hiệu lực.”"
+    },
+    {
+      "id": "P1-031",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 40,
+      "requirement": "Sau khi đặt lại mật khẩu thành công, hệ thống thông báo “Đặt lại mật khẩu thành công” và đưa người dùng về màn hình Đăng nhập."
+    },
+    {
+      "id": "P1-032",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 41,
+      "requirement": "Từ thời điểm đó, mật khẩu cũ không còn được sử dụng để đăng nhập; người dùng phải đăng nhập bằng mật khẩu mới."
+    },
+    {
+      "id": "P1-033",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 42,
+      "requirement": "Nếu người dùng gửi nhiều yêu cầu Quên mật khẩu liên tiếp, hệ thống có thể vô hiệu hóa các token cũ và chỉ giữ token mới nhất còn hiệu lực để tránh tồn tại nhiều đường link đặt lại mật khẩu cùng lúc."
+    },
+    {
+      "id": "P1-034",
+      "phase": "P1",
+      "section": "2.1. Quên mật khẩu và đặt lại mật khẩu",
+      "paragraph": 43,
+      "requirement": "Hệ thống cần giới hạn số lần gửi yêu cầu trong một khoảng thời gian để tránh người dùng bấm liên tục hoặc bị lạm dụng chức năng gửi email."
+    },
+    {
+      "id": "P1-035",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 46,
+      "requirement": "Sau khi đăng nhập, người dùng có thể mở mục Bạn bè từ màn hình chính."
+    },
+    {
+      "id": "P1-036",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 47,
+      "requirement": "Màn hình Bạn bè hiển thị danh sách những tài khoản đã kết bạn với người dùng."
+    },
+    {
+      "id": "P1-037",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 48,
+      "requirement": "Mỗi người trong danh sách hiển thị tối thiểu: tên hiển thị, tên đăng nhập và trạng thái Online/Offline."
+    },
+    {
+      "id": "P1-038",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 49,
+      "requirement": "Người dùng có thể nhập tên đăng nhập hoặc tên hiển thị vào ô tìm kiếm để tìm tài khoản khác trong hệ thống."
+    },
+    {
+      "id": "P1-039",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 50,
+      "requirement": "Hệ thống chỉ hiển thị những tài khoản phù hợp với nội dung tìm kiếm và không hiển thị tài khoản của chính người đang tìm như một đối tượng có thể kết bạn."
+    },
+    {
+      "id": "P1-040",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 51,
+      "requirement": "Với một tài khoản chưa phải bạn bè và chưa có lời mời kết bạn đang chờ xử lý, người dùng có thể chọn Kết bạn."
+    },
+    {
+      "id": "P1-041",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 52,
+      "requirement": "Khi người dùng chọn Kết bạn, hệ thống kiểm tra hai tài khoản vẫn còn tồn tại và giữa hai tài khoản chưa có quan hệ bạn bè."
+    },
+    {
+      "id": "P1-042",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 53,
+      "requirement": "Người dùng không được tự gửi lời mời kết bạn cho chính mình."
+    },
+    {
+      "id": "P1-043",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 54,
+      "requirement": "Nếu hai người đã là bạn bè, hệ thống không tạo thêm lời mời kết bạn trùng lặp và hiển thị trạng thái Đã là bạn bè."
+    },
+    {
+      "id": "P1-044",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 55,
+      "requirement": "Nếu đã tồn tại một lời mời kết bạn đang chờ xử lý giữa hai tài khoản, hệ thống không tạo thêm lời mời giống nhau."
+    },
+    {
+      "id": "P1-045",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 56,
+      "requirement": "Nếu hợp lệ, hệ thống tạo lời mời kết bạn và người nhận nhận được thông báo có người muốn kết bạn."
+    },
+    {
+      "id": "P1-046",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 58,
+      "requirement": "Người nhận có thể mở danh sách Lời mời kết bạn để xem các yêu cầu đang chờ."
+    },
+    {
+      "id": "P1-047",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 59,
+      "requirement": "Mỗi lời mời hiển thị tối thiểu tên hiển thị và tên đăng nhập của người gửi."
+    },
+    {
+      "id": "P1-048",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 60,
+      "requirement": "Người nhận có hai lựa chọn: Chấp nhận hoặc Từ chối."
+    },
+    {
+      "id": "P1-049",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 61,
+      "requirement": "Nếu người nhận chọn Chấp nhận, hệ thống tạo quan hệ bạn bè giữa hai tài khoản."
+    },
+    {
+      "id": "P1-050",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 62,
+      "requirement": "Sau khi kết bạn thành công, cả hai người đều xuất hiện trong danh sách Bạn bè của nhau."
+    },
+    {
+      "id": "P1-051",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 63,
+      "requirement": "Lời mời kết bạn đã được Chấp nhận chuyển sang trạng thái hoàn thành và không được xử lý lại lần thứ hai."
+    },
+    {
+      "id": "P1-052",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 64,
+      "requirement": "Nếu người nhận chọn Từ chối, lời mời kết bạn kết thúc và hai tài khoản không trở thành bạn bè."
+    },
+    {
+      "id": "P1-053",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 65,
+      "requirement": "Người gửi nhận được trạng thái phù hợp sau khi lời mời được Chấp nhận hoặc Từ chối."
+    },
+    {
+      "id": "P1-054",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 66,
+      "requirement": "Nếu một lời mời đã bị xử lý nhưng người dùng bấm Chấp nhận/Từ chối nhiều lần do thao tác nhanh hoặc lỗi mạng, hệ thống chỉ xử lý một lần."
+    },
+    {
+      "id": "P1-055",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 69,
+      "requirement": "Nếu A đã gửi lời mời kết bạn cho B nhưng trước khi B xử lý, B cũng thực hiện thao tác Kết bạn với A, hệ thống không tạo hai lời mời song song."
+    },
+    {
+      "id": "P1-056",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 70,
+      "requirement": "Trong trường hợp đã tồn tại lời mời từ A → B, thao tác Kết bạn từ B có thể được hiểu là Chấp nhận lời mời hiện tại"
+    },
+    {
+      "id": "P1-057",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 72,
+      "requirement": "Khi lời mời kết bạn vẫn đang ở trạng thái chờ xử lý, người gửi có thể chọn Hủy lời mời."
+    },
+    {
+      "id": "P1-058",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 73,
+      "requirement": "Sau khi hủy, lời mời không còn xuất hiện trong danh sách chờ của người nhận."
+    },
+    {
+      "id": "P1-059",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 74,
+      "requirement": "Nếu người nhận cố xử lý một lời mời đã bị hủy, hệ thống thông báo lời mời không còn hiệu lực."
+    },
+    {
+      "id": "P1-060",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 76,
+      "requirement": "Với một tài khoản đã là bạn bè, người dùng có thể chọn Hủy kết bạn."
+    },
+    {
+      "id": "P1-061",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 77,
+      "requirement": "Trước khi thực hiện, hệ thống hiển thị xác nhận để tránh thao tác nhầm."
+    },
+    {
+      "id": "P1-062",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 78,
+      "requirement": "Nếu xác nhận, quan hệ bạn bè bị xóa khỏi cả hai tài khoản."
+    },
+    {
+      "id": "P1-063",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 79,
+      "requirement": "Sau khi hủy kết bạn, hai người không còn xuất hiện trong danh sách Bạn bè của nhau nhưng tài khoản và lịch sử các trận đã chơi trước đó không bị xóa."
+    },
+    {
+      "id": "P1-064",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 80,
+      "requirement": "Việc hủy kết bạn không ảnh hưởng tới một Match đang diễn ra giữa hai người."
+    },
+    {
+      "id": "P1-065",
+      "phase": "P1",
+      "section": "2.2. Kết bạn và quản lý bạn bè trong game",
+      "paragraph": 81,
+      "requirement": "Nếu hai người đang ở cùng Room khi hủy kết bạn, vai trò Chủ Room/Đối thủ/Khán giả hiện tại không tự thay đổi; việc hủy kết bạn chỉ ảnh hưởng đến quan hệ bạn bè sau đó."
+    },
+    {
+      "id": "P1-066",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 86,
+      "requirement": "Người chơi đã đăng nhập chọn Tạo Room, nhập tên Room và chọn loại Công khai hoặc Riêng tư."
+    },
+    {
+      "id": "P1-067",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 87,
+      "requirement": "Nếu tên Room để trống hoặc dữ liệu không hợp lệ, hệ thống không tạo Room và yêu cầu người dùng sửa lại."
+    },
+    {
+      "id": "P1-068",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 88,
+      "requirement": "Khi tạo Room thành công, người tạo mặc định trở thành Chủ Room và Room chuyển sang trạng thái Đang chờ Đối thủ."
+    },
+    {
+      "id": "P1-069",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 89,
+      "requirement": "Hệ thống tự động sinh một mã Room và một đường link mời gắn với Room vừa tạo."
+    },
+    {
+      "id": "P1-070",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 90,
+      "requirement": "Mã Room có 6 chữ số để người dùng có thể nhập thủ công và không được trùng với mã của một Room đang hoạt động khác."
+    },
+    {
+      "id": "P1-071",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 91,
+      "requirement": "Trong màn hình Room, hệ thống hiển thị tên Room, mã Room, đường link mời, thông tin Chủ Room, ô Đối thủ và danh sách Khán giả tối đa 10 người."
+    },
+    {
+      "id": "P1-072",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 92,
+      "requirement": "Chủ Room có thể chọn Sao chép mã Room hoặc Sao chép link để gửi cho người khác."
+    },
+    {
+      "id": "P1-073",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 93,
+      "requirement": "Room Công khai xuất hiện trong danh sách Room để người dùng khác có thể nhìn thấy và tham gia trực tiếp."
+    },
+    {
+      "id": "P1-074",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 94,
+      "requirement": "Room Riêng tư không xuất hiện trong danh sách công khai. Người khác chỉ có thể truy cập bằng mã Room, đường link hoặc lời mời trực tiếp."
+    },
+    {
+      "id": "P1-075",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 95,
+      "requirement": "Khi Room bị đóng hoặc không còn tồn tại, mã Room và đường link của Room đó hết hiệu lực."
+    },
+    {
+      "id": "P1-076",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 96,
+      "requirement": "Nếu người dùng mở link của một Room đã đóng hoặc không còn tồn tại, hệ thống thông báo “Room không còn tồn tại hoặc không còn khả dụng”."
+    },
+    {
+      "id": "P1-077",
+      "phase": "P1",
+      "section": "3. Tạo Room chơi cờ",
+      "paragraph": 97,
+      "requirement": "Nếu người dùng bấm Tạo Room nhiều lần liên tiếp từ cùng một thao tác, hệ thống chỉ tạo một Room."
+    },
+    {
+      "id": "P1-078",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 100,
+      "requirement": "Trong Room, Chủ Room chọn Mời bạn."
+    },
+    {
+      "id": "P1-079",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 101,
+      "requirement": "Hệ thống mở danh sách Bạn bè của Chủ Room, hiển thị tối thiểu tên hiển thị, tên đăng nhập và trạng thái Online/Offline của từng người."
+    },
+    {
+      "id": "P1-080",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 102,
+      "requirement": "Chủ Room có thể tìm nhanh một người trong danh sách Bạn bè bằng tên đăng nhập hoặc tên hiển thị."
+    },
+    {
+      "id": "P1-081",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 103,
+      "requirement": "Chỉ những tài khoản đã là bạn bè với Chủ Room mới xuất hiện trong danh sách Mời bạn. Người chưa kết bạn không được mời trực tiếp bằng chức năng này."
+    },
+    {
+      "id": "P1-082",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 104,
+      "requirement": "Nếu Chủ Room muốn mời một người chưa phải bạn bè, Chủ Room phải kết bạn với người đó trước hoặc sử dụng mã Room/đường link Room để gửi qua ứng dụng bên ngoài."
+    },
+    {
+      "id": "P1-083",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 105,
+      "requirement": "Chức năng mời trực tiếp trong game chỉ khả dụng với bạn bè đang Online."
+    },
+    {
+      "id": "P1-084",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 106,
+      "requirement": "Với người đang Offline, nút Mời không khả dụng hoặc hệ thống thông báo “Người chơi hiện đang Offline”."
+    },
+    {
+      "id": "P1-085",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 107,
+      "requirement": "Đối với bạn bè Offline, Chủ Room có thể sao chép mã Room hoặc đường link Room và tự gửi qua Zalo, Messenger, Facebook hoặc ứng dụng khác."
+    },
+    {
+      "id": "P1-086",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 108,
+      "requirement": "Chủ Room chọn một người bạn đang Online và nhấn Mời."
+    },
+    {
+      "id": "P1-087",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 109,
+      "requirement": "Trước khi tạo lời mời, hệ thống kiểm tra lại: Chủ Room vẫn còn ở trong Room; Room vẫn còn hoạt động; hai tài khoản vẫn còn là bạn bè; người nhận vẫn đang Online; lời mời trực tiếp khác của Chủ Room không còn ở trạng thái chờ xử lý."
+    },
+    {
+      "id": "P1-088",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 115,
+      "requirement": "Nếu người được chọn đã chuyển sang Offline trước khi lời mời được gửi, hệ thống không tạo lời mời và thông báo người chơi hiện không còn Online."
+    },
+    {
+      "id": "P1-089",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 116,
+      "requirement": "Nếu hai người đã hủy kết bạn trước thời điểm gửi lời mời, hệ thống không cho phép gửi lời mời trực tiếp và yêu cầu Chủ Room cập nhật lại danh sách Bạn bè."
+    },
+    {
+      "id": "P1-090",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 117,
+      "requirement": "Nếu các điều kiện hợp lệ, hệ thống tạo một lời mời vào Room gắn với: Room hiện tại; Chủ Room; người bạn được mời; thời điểm gửi; trạng thái lời mời."
+    },
+    {
+      "id": "P1-091",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 123,
+      "requirement": "Người được mời nhận thông báo trong game, tối thiểu hiển thị: tên người mời; tên Room; hai lựa chọn Tham gia và Từ chối."
+    },
+    {
+      "id": "P1-092",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 127,
+      "requirement": "Ngay khi lời mời được gửi thành công, hệ thống bắt đầu bộ đếm 60 giây."
+    },
+    {
+      "id": "P1-093",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 128,
+      "requirement": "Trên màn hình Chủ Room hiển thị trạng thái: Đang chờ phản hồi – 60s và thời gian giảm dần."
+    },
+    {
+      "id": "P1-094",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 129,
+      "requirement": "Người được mời cũng nhìn thấy thời gian còn lại của lời mời để biết yêu cầu còn hiệu lực hay không."
+    },
+    {
+      "id": "P1-095",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 130,
+      "requirement": "Bộ đếm 60 giây chỉ là thời hạn phản hồi của lời mời, hoàn toàn không giữ trước hoặc khóa ô Đối thủ."
+    },
+    {
+      "id": "P1-096",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 131,
+      "requirement": "Trong thời gian chờ phản hồi, Room vẫn hoạt động bình thường."
+    },
+    {
+      "id": "P1-097",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 132,
+      "requirement": "Nếu là Room công khai và ô Đối thủ đang trống, một người dùng khác vẫn có thể tham gia Room và trở thành Đối thủ trước khi người được mời phản hồi."
+    },
+    {
+      "id": "P1-098",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 134,
+      "requirement": "Nếu người được mời chọn Tham gia trong thời hạn 60 giây, hệ thống kiểm tra lại: lời mời vẫn còn hiệu lực; Room vẫn tồn tại; người dùng chưa bị Chủ Room đá khỏi Room; Room chưa vượt quá giới hạn người tham gia; trạng thái hiện tại của ô Đối thủ."
+    },
+    {
+      "id": "P1-099",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 140,
+      "requirement": "Nếu ô Đối thủ vẫn đang Trống và Match chưa bắt đầu, người được mời vào Room và trở thành Đối thủ."
+    },
+    {
+      "id": "P1-100",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 141,
+      "requirement": "Nếu ô Đối thủ đã có người, người được mời không được thay thế Đối thủ hiện tại mà vào Room với vai trò Khán giả, nếu Room vẫn còn chỗ cho Khán giả."
+    },
+    {
+      "id": "P1-101",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 142,
+      "requirement": "Nếu Room đã đủ số Khán giả tối đa, hệ thống từ chối tham gia và thông báo Room hiện đã đầy."
+    },
+    {
+      "id": "P1-102",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 143,
+      "requirement": "Nếu Match đã bắt đầu, người được mời chỉ được vào với vai trò Khán giả và không được thay thế một trong hai người đang thi đấu."
+    },
+    {
+      "id": "P1-103",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 144,
+      "requirement": "Sau khi người được mời tham gia Room thành công, bộ đếm 60 giây dừng và lời mời được chuyển sang trạng thái Đã hoàn thành."
+    },
+    {
+      "id": "P1-104",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 146,
+      "requirement": "Nếu người được mời chọn Từ chối, lời mời kết thúc ngay."
+    },
+    {
+      "id": "P1-105",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 147,
+      "requirement": "Chủ Room nhận được thông báo: “Người chơi đã từ chối lời mời.”"
+    },
+    {
+      "id": "P1-106",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 149,
+      "requirement": "Việc từ chối không làm thay đổi trạng thái Room hoặc ô Đối thủ."
+    },
+    {
+      "id": "P1-107",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 150,
+      "requirement": "Sau đó Chủ Room có thể gửi lời mời mới cho một người bạn khác."
+    },
+    {
+      "id": "P1-108",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 152,
+      "requirement": "Nếu hết 60 giây mà người được mời chưa chọn Tham gia hoặc Từ chối, lời mời tự động chuyển sang trạng thái Hết hạn."
+    },
+    {
+      "id": "P1-109",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 153,
+      "requirement": "Hệ thống xóa trạng thái Đang chờ phản hồi khỏi màn hình Chủ Room."
+    },
+    {
+      "id": "P1-110",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 154,
+      "requirement": "Room tiếp tục hoạt động theo trạng thái hiện tại và không thay đổi vai trò của bất kỳ người nào."
+    },
+    {
+      "id": "P1-111",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 155,
+      "requirement": "Người được mời không thể sử dụng lại lời mời đã hết hạn để tham gia Room."
+    },
+    {
+      "id": "P1-112",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 156,
+      "requirement": "Nếu muốn mời lại cùng người đó, Chủ Room phải tạo một lời mời mới."
+    },
+    {
+      "id": "P1-113",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 158,
+      "requirement": "Trong thời gian lời mời còn hiệu lực, Chủ Room có thể chọn Hủy lời mời."
+    },
+    {
+      "id": "P1-114",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 159,
+      "requirement": "Khi Chủ Room hủy, lời mời hết hiệu lực ngay và người được mời không còn có thể sử dụng lời mời đó để tham gia."
+    },
+    {
+      "id": "P1-115",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 160,
+      "requirement": "Người được mời nhận thông báo rằng lời mời đã bị hủy nếu thông báo lời mời vẫn đang hiển thị."
+    },
+    {
+      "id": "P1-116",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 162,
+      "requirement": "Lời mời tự động hết hiệu lực nếu Room bị đóng."
+    },
+    {
+      "id": "P1-117",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 163,
+      "requirement": "Nếu Chủ Room rời Room và quyền Chủ Room được chuyển cho người khác, các lời mời đang chờ do Chủ Room cũ gửi hết hiệu lực. Chủ Room mới phải tạo lời mời mới nếu muốn mời người khác."
+    },
+    {
+      "id": "P1-118",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 164,
+      "requirement": "Nếu người được mời bị Chủ Room đá khỏi Room và đang bị chặn tham gia lại Room đó, lời mời cũ không được sử dụng để vượt qua quyền chặn."
+    },
+    {
+      "id": "P1-119",
+      "phase": "P1",
+      "section": "4. Mời bạn trong game – chờ phản hồi 60 giây",
+      "paragraph": 165,
+      "requirement": "Tại một thời điểm, một Chủ Room chỉ có một lời mời vào Room đang chờ phản hồi để tránh nhiều lời mời song song gây khó xác định trạng thái."
+    },
+    {
+      "id": "P1-120",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 169,
+      "requirement": "Trong Room, Chủ Room chọn Mời bạn và chọn Chia sẻ link."
+    },
+    {
+      "id": "P1-121",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 170,
+      "requirement": "Hệ thống hiển thị đường link của Room hiện tại và cho phép Chủ Room chọn Sao chép link."
+    },
+    {
+      "id": "P1-122",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 171,
+      "requirement": "Sau khi sao chép, Chủ Room có thể tự gửi link qua Zalo, Messenger, Facebook hoặc ứng dụng khác. Hệ thống game chỉ cung cấp link, không tự gửi tin nhắn thay người dùng."
+    },
+    {
+      "id": "P1-123",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 172,
+      "requirement": "Khi người nhận mở link, hệ thống xác định Room tương ứng."
+    },
+    {
+      "id": "P1-124",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 173,
+      "requirement": "Nếu người nhận chưa đăng nhập, hệ thống xử lý đăng nhập theo mục 2 rồi đưa người dùng trở lại đúng Room."
+    },
+    {
+      "id": "P1-125",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 174,
+      "requirement": "Nếu Room không còn tồn tại hoặc đã bị đóng, hệ thống thông báo Room không còn khả dụng."
+    },
+    {
+      "id": "P1-126",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 175,
+      "requirement": "Nếu Room còn hoạt động, người dùng được đưa vào Room và vai trò được xác định theo trạng thái hiện tại: nếu ô Đối thủ đang trống và người đó là người được xử lý đầu tiên thì có thể trở thành Đối thủ; nếu Room đã có Đối thủ thì vào với vai trò Khán giả."
+    },
+    {
+      "id": "P1-127",
+      "phase": "P1",
+      "section": "5. Mời bằng đường link và mạng xã hội",
+      "paragraph": 176,
+      "requirement": "Nếu trận đã bắt đầu, người mở link chỉ được vào với vai trò Khán giả và không được thay thế người đang thi đấu."
+    },
+    {
+      "id": "P1-128",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 180,
+      "requirement": "Room công khai được hiển thị trong danh sách để những người dùng khác nhìn thấy. Người dùng phải đăng nhập trước khi vào bên trong Room."
+    },
+    {
+      "id": "P1-129",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 181,
+      "requirement": "Mỗi Room trong danh sách công khai hiển thị tối thiểu tên Room, tên Chủ Room và trạng thái hiện tại của Room để người dùng biết tình trạng trước khi tham gia."
+    },
+    {
+      "id": "P1-130",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 182,
+      "requirement": "Trạng thái Room được hiển thị theo các trường hợp chính: Đang chờ Đối thủ: Room đã có Chủ Room nhưng ô Đối thủ đang trống. Đã đủ hai người: Room đã có Chủ Room và Đối thủ nhưng Match chưa bắt đầu. Đang diễn ra: Chủ Room và Đối thủ đã bắt đầu Match."
+    },
+    {
+      "id": "P1-131",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 186,
+      "requirement": "Khi trạng thái Room thay đổi, thông tin trong danh sách Room công khai phải được cập nhật để người dùng không nhìn thấy trạng thái cũ."
+    },
+    {
+      "id": "P1-132",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 187,
+      "requirement": "Người dùng có thể chọn một Room từ danh sách để tham gia. Vai trò sau khi vào vẫn được xác định theo quy tắc của Room: Room đang chờ Đối thủ thì người đủ điều kiện có thể trở thành Đối thủ; Room đã có đủ hai người hoặc đang diễn ra thì người vào sau trở thành Khán giả."
+    },
+    {
+      "id": "P1-133",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 188,
+      "requirement": "Room đã bị đóng hoặc không còn hoạt động phải được loại khỏi danh sách Room công khai."
+    },
+    {
+      "id": "P1-134",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 189,
+      "requirement": "Người tạo Room là Chủ Room."
+    },
+    {
+      "id": "P1-135",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 190,
+      "requirement": "Nếu Room chỉ có Chủ Room và ô Đối thủ đang trống, người dùng đầu tiên tham gia sau Chủ Room tự động trở thành Đối thủ."
+    },
+    {
+      "id": "P1-136",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 191,
+      "requirement": "Khi trở thành Đối thủ, thông tin của người đó được hiển thị tại ô Đối thủ và chức năng Sẵn sàng được kích hoạt."
+    },
+    {
+      "id": "P1-137",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 192,
+      "requirement": "Sau khi Room đã có Chủ Room và Đối thủ, những người vào sau được xác định là Khán giả."
+    },
+    {
+      "id": "P1-138",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 193,
+      "requirement": "Nếu nhiều người cùng tham gia gần như đồng thời khi ô Đối thủ đang trống, máy chủ chỉ xác nhận một người đầu tiên trở thành Đối thủ; những người còn lại vào Room với vai trò Khán giả."
+    },
+    {
+      "id": "P1-139",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 194,
+      "requirement": "Khán giả được xem trạng thái Room và theo dõi bàn cờ khi trận diễn ra nhưng không được điều khiển quân cờ, thay đổi lượt, bấm Sẵn sàng, bắt đầu trận, gửi nước đi hoặc tác động đến kết quả."
+    },
+    {
+      "id": "P1-140",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 195,
+      "requirement": "Khán giả tuyệt đối không được sử dụng khung Chat của hai người chơi và được nhìn thấy tin nhắn giữa Chủ Room và Đối thủ."
+    },
+    {
+      "id": "P1-141",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 197,
+      "requirement": "Khán giả không được tham gia hoặc xem Video Call của hai người chơi."
+    },
+    {
+      "id": "P1-142",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 199,
+      "requirement": "Nếu Đối thủ rời Room trước khi trận bắt đầu hoặc bị Chủ Room loại khỏi vị trí Đối thủ, ô Đối thủ trở lại trạng thái Trống."
+    },
+    {
+      "id": "P1-143",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 200,
+      "requirement": "Hệ thống không tự động kéo một Khán giả lên làm Đối thủ."
+    },
+    {
+      "id": "P1-144",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 201,
+      "requirement": "Ô Đối thủ trống được hiển thị cho tất cả Khán giả đang ở trong Room."
+    },
+    {
+      "id": "P1-145",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 202,
+      "requirement": "Bất kỳ Khán giả nào muốn chơi có thể chủ động bấm vào ô Đối thủ để chuyển từ Khán giả thành Đối thủ; không cần gửi yêu cầu xin phép Chủ Room."
+    },
+    {
+      "id": "P1-146",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 203,
+      "requirement": "Khi Khán giả bấm vào ô Đối thủ, hệ thống kiểm tra ô vẫn còn trống, người đó vẫn đang ở Room và trận chưa bắt đầu."
+    },
+    {
+      "id": "P1-147",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 204,
+      "requirement": "Nếu hợp lệ, người đầu tiên được máy chủ xác nhận thành công trở thành Đối thủ. Người đó nhận thông báo “Bạn đã trở thành Đối thủ”, giao diện chuyển sang chế độ người chơi và nút Sẵn sàng được kích hoạt."
+    },
+    {
+      "id": "P1-148",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 205,
+      "requirement": "Nếu nhiều Khán giả cùng bấm vào ô Đối thủ gần như đồng thời, hệ thống chỉ cho phép một người đầu tiên được xử lý thành công; những người còn lại nhận thông báo vị trí đã có người và vẫn là Khán giả."
+    },
+    {
+      "id": "P1-149",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 206,
+      "requirement": "Nếu không có Khán giả nào chủ động vào vị trí Đối thủ, Room tiếp tục ở trạng thái Đang chờ người chơi."
+    },
+    {
+      "id": "P1-150",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 208,
+      "requirement": "Trước khi Match được tạo, Chủ Room có quyền quản lý người đang giữ vị trí Đối thủ."
+    },
+    {
+      "id": "P1-151",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 209,
+      "requirement": "Nếu Chủ Room không muốn người hiện tại làm Đối thủ, Chủ Room có thể chọn Loại khỏi vị trí Đối thủ. Người đó được chuyển về vai trò Khán giả và ô Đối thủ trở lại Trống."
+    },
+    {
+      "id": "P1-152",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 210,
+      "requirement": "Nếu Chủ Room không muốn người đó tiếp tục ở trong Room, Chủ Room có thể chọn Mời rời Room/Đá khỏi Room. Người đó bị đưa ra khỏi Room và không còn thuộc danh sách người tham gia hiện tại."
+    },
+    {
+      "id": "P1-153",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 211,
+      "requirement": "Sau khi ô Đối thủ trống trở lại, Khán giả khác có thể chủ động bấm vào ô Đối thủ theo quy tắc phía trên."
+    },
+    {
+      "id": "P1-154",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 212,
+      "requirement": "Khi Match đã bắt đầu, Chủ Room không được dùng quyền quản lý Room để loại Đối thủ giữa trận hoặc thay người chơi nhằm thay đổi kết quả. Từ thời điểm đó việc rời trận và mất kết nối được xử lý theo Phase 3."
+    },
+    {
+      "id": "P1-155",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 213,
+      "requirement": "Người bị Loại khỏi vị trí Đối thủ vẫn được ở lại Room với vai trò Khán giả và sau này có thể trở lại vị trí Đối thủ nếu ô trống."
+    },
+    {
+      "id": "P1-156",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 214,
+      "requirement": "Người bị Đá khỏi Room không được tham gia lại chính Room đó trong thời gian Room còn tồn tại, kể cả bằng danh sách công khai, mã Room hoặc link mời."
+    },
+    {
+      "id": "P1-157",
+      "phase": "P1",
+      "section": "6.1. Tham gia Room công khai",
+      "paragraph": 215,
+      "requirement": "Khi Room bị đóng, quyền chặn theo Room hết hiệu lực."
+    },
+    {
+      "id": "P1-158",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 217,
+      "requirement": "Tại màn hình chính, người dùng chọn Tham gia bằng mã Room."
+    },
+    {
+      "id": "P1-159",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 218,
+      "requirement": "Hệ thống hiển thị ô nhập mã. Người dùng nhập mã và chọn Tham gia."
+    },
+    {
+      "id": "P1-160",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 219,
+      "requirement": "Nếu để trống hoặc mã sai định dạng, hệ thống không gửi yêu cầu và yêu cầu người dùng nhập lại."
+    },
+    {
+      "id": "P1-161",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 220,
+      "requirement": "Hệ thống kiểm tra mã có tương ứng với một Room đang hoạt động hay không."
+    },
+    {
+      "id": "P1-162",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 221,
+      "requirement": "Nếu không tìm thấy, hệ thống thông báo “Không tìm thấy Room”. Nếu Room đã bị đóng hoặc không còn hoạt động, hệ thống thông báo “Room không còn khả dụng”."
+    },
+    {
+      "id": "P1-163",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 222,
+      "requirement": "Nếu mã hợp lệ, hệ thống đưa người dùng vào đúng Room."
+    },
+    {
+      "id": "P1-164",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 223,
+      "requirement": "Sau khi vào Room, vai trò được xác định theo cùng quy tắc: nếu chỉ có Chủ Room và ô Đối thủ đang trống thì người dùng được xử lý đầu tiên có thể trở thành Đối thủ; nếu đã có Đối thủ thì người dùng trở thành Khán giả; nếu ô Đối thủ trống nhưng Room đã có Khán giả thì người dùng vào với vai trò Khán giả và có thể chủ động bấm vào ô Đối thủ."
+    },
+    {
+      "id": "P1-165",
+      "phase": "P1",
+      "section": "6.2. Tham gia Room bằng mã Room",
+      "paragraph": 224,
+      "requirement": "Nếu người dùng bấm Tham gia nhiều lần liên tiếp, hệ thống chỉ xử lý một yêu cầu."
+    },
+    {
+      "id": "P1-166",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 227,
+      "requirement": "Khi Chủ Room chủ động rời Room trước khi trận bắt đầu, hệ thống không đóng Room ngay nếu vẫn còn người khác trong Room."
+    },
+    {
+      "id": "P1-167",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 228,
+      "requirement": "Quyền Chủ Room được chuyển theo thứ tự ưu tiên: Đối thủ hiện tại trước; nếu không có Đối thủ thì chuyển cho Khán giả vào Room sớm nhất; tiếp theo là Khán giả thứ 2, Khán giả thứ 3 và tiếp tục theo thứ tự thời điểm tham gia."
+    },
+    {
+      "id": "P1-168",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 229,
+      "requirement": "Nếu Đối thủ được chuyển thành Chủ Room, người đó chuyển từ ô Đối thủ sang vị trí Chủ Room; ô Đối thủ trở thành Trống. Các Khán giả còn lại có thể chủ động bấm vào ô Đối thủ để trở thành người chơi mới."
+    },
+    {
+      "id": "P1-169",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 230,
+      "requirement": "Nếu không có Đối thủ và một Khán giả được chuyển thành Chủ Room, người đó rời danh sách Khán giả và đảm nhận quyền quản lý Room; ô Đối thủ vẫn giữ trạng thái Trống."
+    },
+    {
+      "id": "P1-170",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 231,
+      "requirement": "Hệ thống thông báo cho toàn bộ người còn lại biết ai là Chủ Room mới và cập nhật ngay quyền quản lý trên giao diện."
+    },
+    {
+      "id": "P1-171",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 232,
+      "requirement": "Khi quyền Chủ Room được chuyển cho một người mới trước khi Match bắt đầu, toàn bộ trạng thái Sẵn sàng hiện tại của Room được đặt lại về Chưa sẵn sàng."
+    },
+    {
+      "id": "P1-172",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 233,
+      "requirement": "Nếu Đối thủ cũ được chuyển thành Chủ Room, trạng thái Sẵn sàng trước đó của người này trong vai trò Đối thủ không được giữ lại."
+    },
+    {
+      "id": "P1-173",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 234,
+      "requirement": "Sau khi trở thành Chủ Room, người đó phải tự xác nhận Sẵn sàng lại với vai trò mới."
+    },
+    {
+      "id": "P1-174",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 235,
+      "requirement": "Nếu sau đó một Khán giả chủ động vào ô Đối thủ, Đối thủ mới cũng phải tự bấm Sẵn sàng."
+    },
+    {
+      "id": "P1-175",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 236,
+      "requirement": "Chỉ khi Chủ Room mới và Đối thủ hiện tại đều xác nhận Sẵn sàng sau quá trình chuyển quyền thì hệ thống mới cho phép tạo Match."
+    },
+    {
+      "id": "P1-176",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 237,
+      "requirement": "Việc reset Sẵn sàng khi chuyển Chủ Room chỉ áp dụng khi Match chưa được tạo. Nếu Match đang diễn ra thì việc rời hoặc mất kết nối được xử lý theo Phase 3 và không thay đổi người chơi giữa Match."
+    },
+    {
+      "id": "P1-177",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 238,
+      "requirement": "Nếu Room không còn bất kỳ người dùng nào sau khi Chủ Room rời, Room bị đóng và mã/link của Room hết hiệu lực."
+    },
+    {
+      "id": "P1-178",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 239,
+      "requirement": "Trong trường hợp Chủ Room mất kết nối ngoài ý muốn khi trận đang diễn ra, hệ thống chưa chuyển quyền Chủ Room ngay mà chờ theo cơ chế kết nối lại 60 giây ở Phase 3."
+    },
+    {
+      "id": "P1-179",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 240,
+      "requirement": "Nếu Chủ Room quay lại trong thời gian chờ, quyền Chủ Room được giữ nguyên."
+    },
+    {
+      "id": "P1-180",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 241,
+      "requirement": "Nếu hết thời gian kết nối lại và người đó bị xác định rời trận, hệ thống chốt kết quả trận trước rồi mới chuyển quyền Chủ Room cho người còn lại theo thứ tự ưu tiên: Đối thủ trước, sau đó tới Khán giả theo thứ tự tham gia."
+    },
+    {
+      "id": "P1-181",
+      "phase": "P1",
+      "section": "6.3. Chuyển quyền Chủ Room và quản lý người trong Room",
+      "paragraph": 242,
+      "requirement": "Khi quyền Chủ Room đã chuyển sang người mới, các lời mời trực tiếp đang chờ phản hồi do Chủ Room cũ tạo ra hết hiệu lực; Chủ Room mới có thể gửi lời mời mới nếu cần."
+    },
+    {
+      "id": "P1-182",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 245,
+      "requirement": "Khi Room có đủ Chủ Room và Đối thủ, hệ thống cho phép hai người sử dụng chức năng Sẵn sàng."
+    },
+    {
+      "id": "P1-183",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 246,
+      "requirement": "Hệ thống duy trì kết nối Real-time để trạng thái Sẵn sàng của một người được cập nhật ngay cho người còn lại."
+    },
+    {
+      "id": "P1-184",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 247,
+      "requirement": "Khi một người bấm Sẵn sàng, hệ thống cập nhật trạng thái tương ứng trên cả hai màn hình."
+    },
+    {
+      "id": "P1-185",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 248,
+      "requirement": "Chỉ khi cả Chủ Room và Đối thủ đều Sẵn sàng, Chủ Room mới được phép chọn Bắt đầu."
+    },
+    {
+      "id": "P1-186",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 249,
+      "requirement": "Nếu một trong hai người bỏ trạng thái Sẵn sàng trước khi Match được tạo, nút Bắt đầu không còn khả dụng cho đến khi cả hai Sẵn sàng trở lại."
+    },
+    {
+      "id": "P1-187",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 250,
+      "requirement": "Nếu Đối thủ rời hoặc bị Chủ Room loại khỏi vị trí trước trận, Match chưa được tạo và ô Đối thủ trở lại Trống."
+    },
+    {
+      "id": "P1-188",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 251,
+      "requirement": "Khi Đối thủ rời Room, bị Chủ Room loại khỏi vị trí Đối thủ hoặc được thay bằng một người khác trước khi Match được tạo, trạng thái Sẵn sàng của Đối thủ cũ lập tức hết hiệu lực."
+    },
+    {
+      "id": "P1-189",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 252,
+      "requirement": "Người mới trở thành Đối thủ không được kế thừa trạng thái Sẵn sàng của người trước đó và phải tự bấm Sẵn sàng."
+    },
+    {
+      "id": "P1-190",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 253,
+      "requirement": "Hệ thống chỉ sử dụng trạng thái Sẵn sàng của đúng hai tài khoản hiện đang giữ vai trò Chủ Room và Đối thủ để quyết định có cho phép Bắt đầu Match hay không."
+    },
+    {
+      "id": "P1-191",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 254,
+      "requirement": "Nếu thành phần hai người chơi thay đổi trước trận, hệ thống tuyệt đối không sử dụng trạng thái Sẵn sàng đã lưu của người chơi cũ để tạo Match."
+    },
+    {
+      "id": "P1-192",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 255,
+      "requirement": "Vì vậy, việc Đối thủ cũ đã từng Sẵn sàng không làm cho Đối thủ mới vừa vào Room tự động ở trạng thái Sẵn sàng."
+    },
+    {
+      "id": "P1-193",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 256,
+      "requirement": "Nếu Chủ Room rời trước trận, hệ thống chuyển quyền Chủ Room theo mục 6.3 thay vì đóng Room nếu vẫn còn người."
+    },
+    {
+      "id": "P1-194",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 257,
+      "requirement": "Nếu Chủ Room nhấn Bắt đầu nhiều lần liên tiếp, hệ thống chỉ tạo một Match duy nhất."
+    },
+    {
+      "id": "P1-195",
+      "phase": "P1",
+      "section": "7. Sẵn sàng, bắt đầu và rời Room trước trận",
+      "paragraph": 258,
+      "requirement": "Khi Match được tạo, hai vị trí người chơi được khóa cho Match hiện tại. Khán giả không thể thay thế một trong hai người giữa trận."
+    },
+    {
+      "id": "P2-001",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 263,
+      "requirement": "Sau khi Chủ Room bấm Bắt đầu hợp lệ, hệ thống tạo trận với đúng hai người đang giữ vị trí Chủ Room và Đối thủ."
+    },
+    {
+      "id": "P2-002",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 264,
+      "requirement": "Hệ thống sinh một định danh Match riêng để phân biệt trận hiện tại với các trận khác và gắn hai người chơi vào Match đó."
+    },
+    {
+      "id": "P2-003",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 265,
+      "requirement": "Hai người chơi được đưa vào cùng một nhóm kết nối Real-time của Match."
+    },
+    {
+      "id": "P2-004",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 266,
+      "requirement": "Trong phiên bản này, kết nối Real-time được triển khai bằng SignalR/WebSocket hoặc công nghệ tương đương, giúp các thay đổi trong Room và Match được gửi ngay tới các client liên quan mà không cần tải lại trang."
+    },
+    {
+      "id": "P2-005",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 267,
+      "requirement": "Các sự kiện như nước đi, thay đổi lượt, trạng thái bàn cờ, thời gian và kết quả trận chỉ được đồng bộ tới đúng Match liên quan."
+    },
+    {
+      "id": "P2-006",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 268,
+      "requirement": "Khán giả đang theo dõi Room cũng được kết nối vào luồng cập nhật Real-time của Match nhưng chỉ với quyền xem."
+    },
+    {
+      "id": "P2-007",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 269,
+      "requirement": "Khi trạng thái Match thay đổi, Khán giả nhận các thông tin cần thiết để theo dõi như vị trí quân cờ, quân đã bị ăn, bên đang tới lượt, thời gian còn lại, trạng thái Chiếu Tướng và kết quả trận."
+    },
+    {
+      "id": "P2-008",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 270,
+      "requirement": "Khán giả chỉ được nhận dữ liệu từ Match, không được gửi yêu cầu di chuyển quân, thay đổi lượt, Sẵn sàng, bắt đầu trận hoặc thay đổi bất kỳ trạng thái thi đấu nào."
+    },
+    {
+      "id": "P2-009",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 271,
+      "requirement": "Nếu một Khán giả vào Room sau khi Match đã bắt đầu, hệ thống trước tiên tải trạng thái bàn cờ hiện tại của Match cho người đó, sau đó mới tiếp tục gửi các thay đổi mới qua kết nối Real-time."
+    },
+    {
+      "id": "P2-010",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 272,
+      "requirement": "Vì vậy Khán giả vào giữa trận phải nhìn thấy trạng thái bàn cờ hiện tại, không được nhìn thấy bàn cờ khởi đầu rồi chờ nước đi tiếp theo mới đồng bộ."
+    },
+    {
+      "id": "P2-011",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 273,
+      "requirement": "Nếu nhiều Khán giả cùng theo dõi, việc gửi trạng thái cho Khán giả không được làm thay đổi trạng thái chính thức của Match hoặc quyền thao tác của hai người chơi."
+    },
+    {
+      "id": "P2-012",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 274,
+      "requirement": "Người chơi chỉ gửi yêu cầu thao tác. Máy chủ kiểm tra và xác nhận trạng thái chính thức trước khi gửi kết quả lại cho hai bên; client không tự quyết định một nước đi đã hợp lệ."
+    },
+    {
+      "id": "P2-013",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 275,
+      "requirement": "Hệ thống phân ngẫu nhiên một lần bên Đỏ và bên Đen. Kết quả được giữ nguyên trong suốt trận; bên Đỏ luôn đi trước."
+    },
+    {
+      "id": "P2-014",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 276,
+      "requirement": "Bàn cờ xuất hiện ở vị trí bắt đầu chuẩn, hiển thị tên hai người, màu quân của mỗi bên và đồng hồ lượt."
+    },
+    {
+      "id": "P2-015",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 277,
+      "requirement": "Trạng thái bàn cờ ban đầu và kết quả phân bên được máy chủ gửi cho cả hai người chơi. Hai client phải nhận cùng một trạng thái."
+    },
+    {
+      "id": "P2-016",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 278,
+      "requirement": "Chỉ sau khi trạng thái khởi đầu của Match đã được thiết lập cho cả hai bên, hệ thống mới thực hiện đếm ngược 3 - 2 - 1."
+    },
+    {
+      "id": "P2-017",
+      "phase": "P2",
+      "section": "1. Khởi tạo trận đấu và đồng bộ Real-time",
+      "paragraph": 279,
+      "requirement": "Trong thời gian đếm ngược, cả hai người đều không thể di chuyển quân. Khi đếm ngược kết thúc, trận chuyển sang Đang diễn ra và lượt đầu tiên thuộc bên Đỏ."
+    },
+    {
+      "id": "P2-018",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 282,
+      "requirement": "Chỉ người đang tới lượt mới có thể chọn quân của mình. Người không tới lượt bấm vào quân sẽ không tạo ra nước đi."
+    },
+    {
+      "id": "P2-019",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 283,
+      "requirement": "Khi người chơi chọn một quân, hệ thống chỉ làm nổi bật quân đang được chọn; không hiển thị, đánh dấu hay gợi ý các ô mà quân có thể đi."
+    },
+    {
+      "id": "P2-020",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 284,
+      "requirement": "Người chơi tự quan sát bàn cờ, tự xác định nước đi và tự chọn ô đích. Hệ thống chỉ kiểm tra tính hợp lệ sau khi người chơi đã chọn nước đi."
+    },
+    {
+      "id": "P2-021",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 285,
+      "requirement": "Nếu người chơi chọn một nước không hợp lệ nhưng trên bàn cờ vẫn còn ít nhất một nước hợp lệ khác, hệ thống thông báo “Nước đi không hợp lệ”, giữ nguyên bàn cờ, không đổi lượt và không gợi ý nước thay thế."
+    },
+    {
+      "id": "P2-022",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 286,
+      "requirement": "Khi người chơi chọn ô đích, hệ thống kiểm tra toàn bộ điều kiện của nước đi trước khi thay đổi bàn cờ."
+    },
+    {
+      "id": "P2-023",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 287,
+      "requirement": "Nếu nước đi hợp lệ, quân được di chuyển tới ô đích; nếu ô đích có quân đối phương thì quân đó bị ăn; lịch sử nước đi được ghi lại; sau đó chuyển lượt cho đối thủ nếu trận chưa kết thúc."
+    },
+    {
+      "id": "P2-024",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 288,
+      "requirement": "Khi một quân bị ăn hợp lệ, quân bị ăn phải được loại khỏi bàn cờ ngay trên cả hai màn hình và không còn được chọn ở các lượt sau."
+    },
+    {
+      "id": "P2-025",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 289,
+      "requirement": "Hệ thống có thể hiển thị khu vực Quân đã bị ăn để người chơi theo dõi các quân đã rời khỏi bàn cờ; khi xem lại lịch sử, quân bị ăn cũng phải biến mất đúng tại nước ăn tương ứng."
+    },
+    {
+      "id": "P2-026",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 290,
+      "requirement": "Nếu nước đi không hợp lệ, bàn cờ giữ nguyên, lượt không đổi và thời gian của người đang đi vẫn tiếp tục chạy."
+    },
+    {
+      "id": "P2-027",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 291,
+      "requirement": "Nếu cùng một thao tác bị gửi lặp do người dùng bấm nhanh hoặc lỗi mạng, một nước đi chỉ được áp dụng một lần."
+    },
+    {
+      "id": "P2-028",
+      "phase": "P2",
+      "section": "2. Luồng của một lượt đi",
+      "paragraph": 292,
+      "requirement": "Sau mỗi nước đi hợp lệ, cả hai người phải nhìn thấy cùng vị trí quân cờ, cùng lượt chơi và cùng trạng thái trận."
+    },
+    {
+      "id": "P2-029",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 295,
+      "requirement": "Khi trận được tạo, hệ thống lưu trạng thái bàn cờ ban đầu cùng Match, hai người chơi và bên đang được quyền đi."
+    },
+    {
+      "id": "P2-030",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 296,
+      "requirement": "Sau mỗi nước đi hợp lệ, hệ thống cập nhật trạng thái bàn cờ mới."
+    },
+    {
+      "id": "P2-031",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 297,
+      "requirement": "Việc lưu được thực hiện tự động bởi hệ thống. Trong phiên bản này không có nút Lưu bàn cờ thủ công và người chơi không cần chủ động lưu sau mỗi nước đi."
+    },
+    {
+      "id": "P2-032",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 298,
+      "requirement": "Auto Save chỉ xảy ra sau khi nước đi đã được máy chủ xác nhận hợp lệ; nước đi bị từ chối không tạo một trạng thái lưu mới."
+    },
+    {
+      "id": "P2-033",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 299,
+      "requirement": "Mỗi lần Auto Save, trạng thái mới nhất của Match được cập nhật để khi người chơi tải lại trang hoặc reconnect, hệ thống có thể lấy đúng trạng thái gần nhất đã được xác nhận."
+    },
+    {
+      "id": "P2-034",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 300,
+      "requirement": "Auto Save của Match hiện tại không thay thế lịch sử của các Match đã kết thúc. Khi Match kết thúc, trạng thái cuối và toàn bộ lịch sử nước đi được lưu thành dữ liệu lịch sử của Match đó."
+    },
+    {
+      "id": "P2-035",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 301,
+      "requirement": "Khi người chơi tải lại trang hoặc kết nối lại, hệ thống tự động thực hiện Load trạng thái gần nhất theo quy tắc tại Phase 3; người chơi không phải chọn một nút Load thủ công."
+    },
+    {
+      "id": "P2-036",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 302,
+      "requirement": "Trạng thái lưu phải xác định được vị trí của tất cả quân còn trên bàn, các quân đã bị ăn, người đang tới lượt và trạng thái của trận."
+    },
+    {
+      "id": "P2-037",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 303,
+      "requirement": "Trạng thái Match phải lưu đủ thông tin để khôi phục đồng hồ lượt, bao gồm thời gian còn lại của lượt hoặc thời điểm bắt đầu lượt gần nhất."
+    },
+    {
+      "id": "P2-038",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 304,
+      "requirement": "Khi Match chuyển sang trạng thái Tạm chờ kết nối lại, thời gian đang còn lại được giữ nguyên để khi người chơi quay lại hệ thống tiếp tục từ đúng số giây đó."
+    },
+    {
+      "id": "P2-039",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 305,
+      "requirement": "Hệ thống đồng thời lưu lịch sử nước đi theo đúng thứ tự để có thể dựng lại diễn biến trận."
+    },
+    {
+      "id": "P2-040",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 306,
+      "requirement": "Nếu người chơi tải lại trang ngay sau một nước đi hợp lệ, trạng thái được tải lại phải bao gồm nước đi đó; không được quay về trạng thái cũ trước nước đi."
+    },
+    {
+      "id": "P2-041",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 307,
+      "requirement": "Nếu cùng một nước đi bị gửi lặp, hệ thống không được lưu thành nhiều nước đi khác nhau."
+    },
+    {
+      "id": "P2-042",
+      "phase": "P2",
+      "section": "3. Tự động lưu trạng thái bàn cờ – Auto Save",
+      "paragraph": 308,
+      "requirement": "Khi trận kết thúc, trạng thái cuối cùng của bàn cờ và kết quả trận được lưu cùng lịch sử."
+    },
+    {
+      "id": "P2-043",
+      "phase": "P2",
+      "section": "4. Quy tắc chung khi ăn quân và bảo vệ Tướng",
+      "paragraph": 310,
+      "requirement": "Một quân chỉ ăn được quân đối phương nếu bản thân nước đi tới ô đó là hợp lệ theo luật của quân."
+    },
+    {
+      "id": "P2-044",
+      "phase": "P2",
+      "section": "4. Quy tắc chung khi ăn quân và bảo vệ Tướng",
+      "paragraph": 311,
+      "requirement": "Không quân nào được dừng tại vị trí đang có quân cùng bên."
+    },
+    {
+      "id": "P2-045",
+      "phase": "P2",
+      "section": "4. Quy tắc chung khi ăn quân và bảo vệ Tướng",
+      "paragraph": 312,
+      "requirement": "Người chơi không được thực hiện nước đi khiến Tướng của chính mình rơi vào trạng thái bị chiếu."
+    },
+    {
+      "id": "P2-046",
+      "phase": "P2",
+      "section": "4. Quy tắc chung khi ăn quân và bảo vệ Tướng",
+      "paragraph": 313,
+      "requirement": "Nếu Tướng đang bị chiếu, nước tiếp theo bắt buộc phải đưa Tướng thoát chiếu. Nước đi không giải quyết được tình trạng chiếu bị từ chối."
+    },
+    {
+      "id": "P2-047",
+      "phase": "P2",
+      "section": "5. Luật quân Xe",
+      "paragraph": 315,
+      "requirement": "Xe đi theo hàng ngang hoặc cột dọc, có thể đi nhiều giao điểm trong một lượt."
+    },
+    {
+      "id": "P2-048",
+      "phase": "P2",
+      "section": "5. Luật quân Xe",
+      "paragraph": 316,
+      "requirement": "Tất cả vị trí nằm giữa Xe và ô đích phải trống. Xe không được nhảy qua bất kỳ quân nào."
+    },
+    {
+      "id": "P2-049",
+      "phase": "P2",
+      "section": "5. Luật quân Xe",
+      "paragraph": 317,
+      "requirement": "Xe ăn quân đối phương bằng cách đi tới đúng ô quân đó đang đứng, với điều kiện đường đi không bị cản."
+    },
+    {
+      "id": "P2-050",
+      "phase": "P2",
+      "section": "5. Luật quân Xe",
+      "paragraph": 318,
+      "requirement": "Nước Xe bị từ chối nếu đi chéo, nhảy qua quân, dừng trên quân cùng bên hoặc làm Tướng của mình bị chiếu."
+    },
+    {
+      "id": "P2-051",
+      "phase": "P2",
+      "section": "6. Luật quân Mã",
+      "paragraph": 320,
+      "requirement": "Mã đi theo hình chữ L: một bước theo hàng/cột rồi một bước chéo ra ngoài."
+    },
+    {
+      "id": "P2-052",
+      "phase": "P2",
+      "section": "6. Luật quân Mã",
+      "paragraph": 321,
+      "requirement": "Vị trí kề Mã theo hướng xuất phát được gọi là chân Mã. Nếu chân Mã có quân đứng chặn thì Mã không được đi theo hướng bị chặn đó."
+    },
+    {
+      "id": "P2-053",
+      "phase": "P2",
+      "section": "6. Luật quân Mã",
+      "paragraph": 322,
+      "requirement": "Mã ăn quân khi ô đích đúng hình chữ L, chân Mã không bị chặn và ô đích có quân đối phương."
+    },
+    {
+      "id": "P2-054",
+      "phase": "P2",
+      "section": "6. Luật quân Mã",
+      "paragraph": 323,
+      "requirement": "Nước Mã bị từ chối nếu sai hình chữ L, chân Mã bị chặn, ô đích có quân cùng bên hoặc làm Tướng của mình bị chiếu."
+    },
+    {
+      "id": "P2-055",
+      "phase": "P2",
+      "section": "7. Luật quân Tượng",
+      "paragraph": 325,
+      "requirement": "Tượng đi chéo đúng hai giao điểm trong một lượt."
+    },
+    {
+      "id": "P2-056",
+      "phase": "P2",
+      "section": "7. Luật quân Tượng",
+      "paragraph": 326,
+      "requirement": "Điểm chéo ở giữa đường đi là mắt Tượng. Nếu mắt Tượng có quân đứng chặn thì Tượng không đi qua được."
+    },
+    {
+      "id": "P2-057",
+      "phase": "P2",
+      "section": "7. Luật quân Tượng",
+      "paragraph": 327,
+      "requirement": "Tượng không được qua sông; Tượng của mỗi bên chỉ hoạt động ở nửa bàn cờ thuộc phía mình."
+    },
+    {
+      "id": "P2-058",
+      "phase": "P2",
+      "section": "7. Luật quân Tượng",
+      "paragraph": 328,
+      "requirement": "Tượng ăn quân đối phương khi ô đích đúng hai đường chéo, mắt Tượng trống, chưa vượt sông và ô đích có quân đối phương."
+    },
+    {
+      "id": "P2-059",
+      "phase": "P2",
+      "section": "7. Luật quân Tượng",
+      "paragraph": 329,
+      "requirement": "Nước Tượng bị từ chối nếu qua sông, mắt Tượng bị chặn, đi sai khoảng cách, ô đích có quân mình hoặc làm Tướng mình bị chiếu."
+    },
+    {
+      "id": "P2-060",
+      "phase": "P2",
+      "section": "8. Luật quân Sĩ",
+      "paragraph": 331,
+      "requirement": "Sĩ đi chéo đúng một giao điểm trong một lượt."
+    },
+    {
+      "id": "P2-061",
+      "phase": "P2",
+      "section": "8. Luật quân Sĩ",
+      "paragraph": 332,
+      "requirement": "Sĩ luôn phải nằm trong phạm vi cung của bên mình."
+    },
+    {
+      "id": "P2-062",
+      "phase": "P2",
+      "section": "8. Luật quân Sĩ",
+      "paragraph": 333,
+      "requirement": "Sĩ ăn quân đối phương nếu quân đó nằm ở ô chéo kề bên trong cung và nước đi không làm Tướng bị chiếu."
+    },
+    {
+      "id": "P2-063",
+      "phase": "P2",
+      "section": "8. Luật quân Sĩ",
+      "paragraph": 334,
+      "requirement": "Sĩ không được đi ngang, đi dọc hoặc ra ngoài cung."
+    },
+    {
+      "id": "P2-064",
+      "phase": "P2",
+      "section": "9. Luật quân Tướng",
+      "paragraph": 336,
+      "requirement": "Tướng đi ngang hoặc dọc đúng một giao điểm và luôn phải ở trong cung của mình."
+    },
+    {
+      "id": "P2-065",
+      "phase": "P2",
+      "section": "9. Luật quân Tướng",
+      "paragraph": 337,
+      "requirement": "Tướng không được đi vào vị trí đang bị quân đối phương khống chế."
+    },
+    {
+      "id": "P2-066",
+      "phase": "P2",
+      "section": "9. Luật quân Tướng",
+      "paragraph": 338,
+      "requirement": "Hai Tướng không được đứng đối mặt trực tiếp trên cùng một cột nếu giữa hai Tướng không còn quân cản."
+    },
+    {
+      "id": "P2-067",
+      "phase": "P2",
+      "section": "9. Luật quân Tướng",
+      "paragraph": 339,
+      "requirement": "Nếu một nước đi của bất kỳ quân nào làm mất quân cản và khiến hai Tướng nhìn thẳng nhau, nước đi đó bị từ chối."
+    },
+    {
+      "id": "P2-068",
+      "phase": "P2",
+      "section": "9. Luật quân Tướng",
+      "paragraph": 340,
+      "requirement": "Tướng chỉ được ăn quân đối phương ở ô kề hợp lệ khi sau nước ăn Tướng vẫn an toàn."
+    },
+    {
+      "id": "P2-069",
+      "phase": "P2",
+      "section": "10. Luật quân Pháo",
+      "paragraph": 342,
+      "requirement": "Khi không ăn quân, Pháo đi ngang hoặc dọc như Xe và toàn bộ đường đi phải trống."
+    },
+    {
+      "id": "P2-070",
+      "phase": "P2",
+      "section": "10. Luật quân Pháo",
+      "paragraph": 343,
+      "requirement": "Khi ăn quân, giữa Pháo và quân bị ăn phải có đúng một quân làm ngòi. Quân làm ngòi có thể thuộc bất kỳ bên nào."
+    },
+    {
+      "id": "P2-071",
+      "phase": "P2",
+      "section": "10. Luật quân Pháo",
+      "paragraph": 344,
+      "requirement": "Pháo không được ăn quân nếu không có ngòi hoặc có từ hai quân trở lên nằm giữa Pháo và quân đích."
+    },
+    {
+      "id": "P2-072",
+      "phase": "P2",
+      "section": "10. Luật quân Pháo",
+      "paragraph": 345,
+      "requirement": "Pháo không đi chéo và không được dừng tại ô có quân cùng bên."
+    },
+    {
+      "id": "P2-073",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 347,
+      "requirement": "Tốt Đỏ di chuyển từ phía quân Đỏ về phía quân Đen. Trước khi qua sông, Tốt Đỏ chỉ được tiến thẳng một giao điểm và không được đi ngang."
+    },
+    {
+      "id": "P2-074",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 348,
+      "requirement": "Sau khi qua sông, Tốt Đỏ được tiến thẳng một giao điểm hoặc đi ngang trái/phải một giao điểm; Tốt Đỏ không bao giờ được đi lùi."
+    },
+    {
+      "id": "P2-075",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 349,
+      "requirement": "Tốt Đen di chuyển từ phía quân Đen về phía quân Đỏ theo hướng hoàn toàn ngược lại. Trước khi qua sông chỉ được tiến thẳng một giao điểm; sau khi qua sông được tiến thẳng hoặc đi ngang trái/phải một giao điểm và không được đi lùi."
+    },
+    {
+      "id": "P2-076",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 350,
+      "requirement": "Tốt ăn quân theo đúng hướng mà nó được phép di chuyển ở thời điểm đó; không có cách ăn riêng."
+    },
+    {
+      "id": "P2-077",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 351,
+      "requirement": "Nước Tốt bị từ chối nếu đi sai hướng, đi quá một giao điểm, vào ô có quân cùng bên hoặc làm Tướng của mình bị chiếu."
+    },
+    {
+      "id": "P2-078",
+      "phase": "P2",
+      "section": "11. Luật quân Tốt",
+      "paragraph": 352,
+      "requirement": "Dù giao diện có xoay bàn cờ cho người chơi nhìn từ phía của mình, hướng đi thực tế của Tốt Đỏ và Tốt Đen vẫn phải đúng theo hai phía của bàn cờ."
+    },
+    {
+      "id": "P2-079",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 354,
+      "requirement": "Sau mỗi nước đi hợp lệ, hệ thống kiểm tra Tướng của bên sắp tới lượt có đang bị tấn công hay không."
+    },
+    {
+      "id": "P2-080",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 355,
+      "requirement": "Nếu bị tấn công, hệ thống hiển thị trạng thái Chiếu Tướng."
+    },
+    {
+      "id": "P2-081",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 356,
+      "requirement": "Bên đang bị chiếu chỉ được thực hiện nước đi giúp thoát khỏi tình trạng chiếu."
+    },
+    {
+      "id": "P2-082",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 357,
+      "requirement": "Hệ thống không gợi ý nước thoát chiếu. Nếu người chơi chọn một nước không giải quyết được tình trạng chiếu nhưng vẫn còn nước hợp lệ khác, nước đó bị từ chối và người chơi tiếp tục tự chọn nước khác trong thời gian còn lại."
+    },
+    {
+      "id": "P2-083",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 358,
+      "requirement": "Nếu đang bị chiếu và không còn bất kỳ nước đi hợp lệ nào để thoát, trận kết thúc do Chiếu bí: bên bị chiếu thua và bên còn lại thắng."
+    },
+    {
+      "id": "P2-084",
+      "phase": "P2",
+      "section": "12. Chiếu Tướng, chiếu bí và hết nước đi hợp lệ",
+      "paragraph": 359,
+      "requirement": "Chỉ khi đến lượt mà hệ thống xác định người chơi không còn bất kỳ nước đi hợp lệ nào thì người đó mới bị xử thua, dù Tướng có đang bị chiếu hay không. Nếu vẫn còn ít nhất một nước hợp lệ thì không được xử thua chỉ vì vừa chọn sai."
+    },
+    {
+      "id": "P3-001",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 364,
+      "requirement": "Mỗi lượt có 60 giây. Khi tới lượt ai, đồng hồ của người đó bắt đầu giảm; người còn lại không bị tính thời gian."
+    },
+    {
+      "id": "P3-002",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 365,
+      "requirement": "Khi còn 10 giây, hệ thống hiển thị cảnh báo thời gian sắp hết."
+    },
+    {
+      "id": "P3-003",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 366,
+      "requirement": "Nếu một nước đi hợp lệ được máy chủ ghi nhận trước khi đồng hồ về 0, nước đi được chấp nhận và trận tiếp tục."
+    },
+    {
+      "id": "P3-004",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 367,
+      "requirement": "Nếu đồng hồ về 0 trước khi có nước đi hợp lệ, người đang tới lượt bị xử thua do hết thời gian/AFK và đối thủ được xử thắng."
+    },
+    {
+      "id": "P3-005",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 368,
+      "requirement": "Đi nước sai không làm đồng hồ quay lại từ đầu. Người chơi không thể liên tục thử nước sai để kéo dài lượt."
+    },
+    {
+      "id": "P3-006",
+      "phase": "P3",
+      "section": "1. Đồng hồ lượt và AFK",
+      "paragraph": 369,
+      "requirement": "AFK khi trận chưa bắt đầu không tạo thắng/thua vì lúc đó chưa có Match chính thức."
+    },
+    {
+      "id": "P3-007",
+      "phase": "P3",
+      "section": "2. Rời trận chủ động",
+      "paragraph": 371,
+      "requirement": "Trong khi trận đang diễn ra, người chơi chọn Rời trận/Thoát trận thì hệ thống hiển thị xác nhận rằng hành động này sẽ được tính là thua."
+    },
+    {
+      "id": "P3-008",
+      "phase": "P3",
+      "section": "2. Rời trận chủ động",
+      "paragraph": 372,
+      "requirement": "Nếu người chơi hủy xác nhận, trận tiếp tục bình thường."
+    },
+    {
+      "id": "P3-009",
+      "phase": "P3",
+      "section": "2. Rời trận chủ động",
+      "paragraph": 373,
+      "requirement": "Nếu người chơi xác nhận rời, trận kết thúc ngay: người rời bị xử thua và đối thủ thắng. Không áp dụng thời gian chờ kết nối lại cho trường hợp rời chủ động."
+    },
+    {
+      "id": "P3-010",
+      "phase": "P3",
+      "section": "2. Rời trận chủ động",
+      "paragraph": 374,
+      "requirement": "Sau khi Match kết thúc vì một người rời, hệ thống cập nhật kết quả trước rồi mới xử lý việc chuyển quyền Chủ Room nếu người rời là Chủ Room."
+    },
+    {
+      "id": "P3-011",
+      "phase": "P3",
+      "section": "2. Rời trận chủ động",
+      "paragraph": 375,
+      "requirement": "Nếu người rời là Chủ Room, quyền Chủ Room được chuyển cho Đối thủ còn lại; nếu Đối thủ cũng không còn trong Room thì chuyển tiếp cho Khán giả theo thứ tự tham gia."
+    },
+    {
+      "id": "P3-012",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 378,
+      "requirement": "Khi một người mất mạng, đóng tab đột ngột, tải lại trang hoặc mất kết nối với trận ngoài ý muốn, trận chuyển sang trạng thái Tạm chờ kết nối lại."
+    },
+    {
+      "id": "P3-013",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 379,
+      "requirement": "Người còn lại nhìn thấy thông báo đối thủ đang mất kết nối và bộ đếm chờ 60 giây."
+    },
+    {
+      "id": "P3-014",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 380,
+      "requirement": "Trong thời gian chờ kết nối lại, trận tạm dừng để không đồng thời tính cả lỗi mất mạng và AFK."
+    },
+    {
+      "id": "P3-015",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 381,
+      "requirement": "Nếu người chơi quay lại trong 60 giây, hệ thống xác định Match mà tài khoản đang tham gia và kiểm tra quyền của tài khoản trong Match."
+    },
+    {
+      "id": "P3-016",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 382,
+      "requirement": "Hệ thống lấy trạng thái bàn cờ mới nhất đã lưu, bao gồm vị trí quân, quân đã bị ăn, bên đang tới lượt, thời gian còn lại và trạng thái trận."
+    },
+    {
+      "id": "P3-017",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 383,
+      "requirement": "Bàn cờ được dựng lại đúng theo trạng thái đã lưu; việc Load không tự thay đổi lượt, vị trí quân hoặc kết quả."
+    },
+    {
+      "id": "P3-018",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 384,
+      "requirement": "Sau khi Load thành công, người chơi được đưa trở lại nhóm kết nối Real-time của Match và trận tiếp tục từ trạng thái trước khi mất kết nối."
+    },
+    {
+      "id": "P3-019",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 385,
+      "requirement": "Nếu Match đã kết thúc trong thời gian người chơi mất kết nối, hệ thống hiển thị kết quả đã ghi nhận và không cho đi quân tiếp."
+    },
+    {
+      "id": "P3-020",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 386,
+      "requirement": "Nếu không tìm thấy trạng thái Match hợp lệ, hệ thống không tự tạo bàn cờ ban đầu để tiếp tục một trận cũ mà phải thông báo lỗi."
+    },
+    {
+      "id": "P3-021",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 387,
+      "requirement": "Nếu quá 60 giây mà người chơi không quay lại, người mất kết nối bị xử thua và người còn kết nối được xử thắng."
+    },
+    {
+      "id": "P3-022",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 388,
+      "requirement": "Nếu người mất kết nối quá 60 giây là Chủ Room, hệ thống chốt kết quả trước rồi chuyển quyền Chủ Room theo mục 6.3 của Phase 1."
+    },
+    {
+      "id": "P3-023",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 389,
+      "requirement": "Nếu cả hai cùng mất kết nối do lỗi toàn hệ thống hoặc không thể xác định bên gây gián đoạn, hệ thống không tự trao thắng cho một bên."
+    },
+    {
+      "id": "P3-024",
+      "phase": "P3",
+      "section": "3. Mất kết nối ngoài ý muốn, Load bàn cờ và kết nối lại",
+      "paragraph": 390,
+      "requirement": "Nếu một người mất kết nối trước rồi người còn lại cũng mất kết nối sau đó, hệ thống không tự suy đoán người thắng; kết quả chỉ được chốt khi đủ căn cứ theo thời gian kết nối lại của từng người."
+    },
+    {
+      "id": "P3-025",
+      "phase": "P3",
+      "section": "4. Đầu hàng và xin hòa",
+      "paragraph": 392,
+      "requirement": "Đầu hàng: người chơi chọn Đầu hàng → hệ thống yêu cầu xác nhận → xác nhận xong người đó thua, đối thủ thắng và bàn cờ bị khóa."
+    },
+    {
+      "id": "P3-026",
+      "phase": "P3",
+      "section": "4. Đầu hàng và xin hòa",
+      "paragraph": 393,
+      "requirement": "Xin hòa: một người gửi yêu cầu hòa → đối thủ nhận thông báo → Chấp nhận thì trận kết thúc Hòa; Từ chối thì trận tiếp tục."
+    },
+    {
+      "id": "P3-027",
+      "phase": "P3",
+      "section": "4. Đầu hàng và xin hòa",
+      "paragraph": 394,
+      "requirement": "Tại một thời điểm chỉ tồn tại một yêu cầu hòa đang chờ xử lý. Không cho gửi liên tục nhiều yêu cầu hòa cùng lúc."
+    },
+    {
+      "id": "P3-028",
+      "phase": "P3",
+      "section": "4. Đầu hàng và xin hòa",
+      "paragraph": 395,
+      "requirement": "Yêu cầu hòa tự hết hiệu lực nếu trận kết thúc bởi một lý do khác trước khi đối thủ phản hồi."
+    },
+    {
+      "id": "P3-029",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 397,
+      "requirement": "Chiếu bí → bên bị chiếu thua, bên còn lại thắng."
+    },
+    {
+      "id": "P3-030",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 398,
+      "requirement": "Không còn nước đi hợp lệ khi đến lượt → bên không còn nước hợp lệ thua, đối thủ thắng."
+    },
+    {
+      "id": "P3-031",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 399,
+      "requirement": "Hết 60 giây của lượt → người đang tới lượt thua do hết thời gian/AFK."
+    },
+    {
+      "id": "P3-032",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 400,
+      "requirement": "Rời trận chủ động sau khi xác nhận → người rời thua ngay."
+    },
+    {
+      "id": "P3-033",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 401,
+      "requirement": "Mất kết nối ngoài ý muốn quá 60 giây → người mất kết nối thua."
+    },
+    {
+      "id": "P3-034",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 402,
+      "requirement": "Đầu hàng → người đầu hàng thua."
+    },
+    {
+      "id": "P3-035",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 403,
+      "requirement": "Hai bên đồng ý hòa → kết quả Hòa."
+    },
+    {
+      "id": "P3-036",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 404,
+      "requirement": "Room chưa tạo Match mà thay đổi Chủ Room hoặc Đối thủ → không ghi nhận thắng/thua."
+    },
+    {
+      "id": "P3-037",
+      "phase": "P3",
+      "section": "5. Các trường hợp kết thúc trận",
+      "paragraph": 405,
+      "requirement": "Lỗi toàn hệ thống hoặc dữ liệu trận không đủ căn cứ để xác định bên gây lỗi → không tự phân thắng."
+    },
+    {
+      "id": "P3-038",
+      "phase": "P3",
+      "section": "6. Lịch sử trận và xem lại",
+      "paragraph": 407,
+      "requirement": "Người chơi mở mục Lịch sử để xem các trận đã hoàn thành."
+    },
+    {
+      "id": "P3-039",
+      "phase": "P3",
+      "section": "6. Lịch sử trận và xem lại",
+      "paragraph": 408,
+      "requirement": "Mỗi trận hiển thị tối thiểu: đối thủ, màu quân, kết quả Thắng/Thua/Hòa, lý do kết thúc và thời gian chơi."
+    },
+    {
+      "id": "P3-040",
+      "phase": "P3",
+      "section": "6. Lịch sử trận và xem lại",
+      "paragraph": 409,
+      "requirement": "Người chơi có thể mở một trận đã lưu để xem lại từ trạng thái ban đầu."
+    },
+    {
+      "id": "P3-041",
+      "phase": "P3",
+      "section": "6. Lịch sử trận và xem lại",
+      "paragraph": 410,
+      "requirement": "Khi xem lại, người dùng có thể chuyển tới nước đầu, nước trước, nước tiếp theo và nước cuối. Bàn cờ chỉ dùng để xem, không cho đi quân mới."
+    },
+    {
+      "id": "P3-042",
+      "phase": "P3",
+      "section": "6. Lịch sử trận và xem lại",
+      "paragraph": 411,
+      "requirement": "Lịch sử phải phản ánh đúng thứ tự nước đi và các quân đã bị ăn trong trận."
+    },
+    {
+      "id": "P3-043",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 414,
+      "requirement": "Khi một Match kết thúc hợp lệ, hệ thống chốt kết quả Thắng/Thua/Hòa và lưu toàn bộ thông tin của Match vào Lịch sử."
+    },
+    {
+      "id": "P3-044",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 415,
+      "requirement": "Mỗi Match được lưu thành một bản ghi lịch sử riêng. Việc hai người tiếp tục chơi trận mới trong cùng Room không được ghi đè lên lịch sử của Match vừa kết thúc."
+    },
+    {
+      "id": "P3-045",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 416,
+      "requirement": "Sau khi hoàn tất việc lưu kết quả, Room không tự động bị đóng mà chuyển từ trạng thái Đang diễn ra sang Đang chờ trận mới. Đang chờ trận mới: Match trước đã kết thúc, Chủ Room và Đối thủ vẫn ở trong Room và đang chờ Sẵn sàng để bắt đầu Match mới."
+    },
+    {
+      "id": "P3-046",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 418,
+      "requirement": "Room ở trạng thái Đang chờ trận mới vẫn được hiển thị trong danh sách công khai. Người vào sau tham gia với vai trò Khán giả nếu ô Đối thủ vẫn có người; nếu ô Đối thủ đã Trống thì xử lý theo quy tắc tham gia Đối thủ hiện tại."
+    },
+    {
+      "id": "P3-047",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 419,
+      "requirement": "Chủ Room vẫn giữ vai trò Chủ Room và Đối thủ vẫn giữ vai trò Đối thủ nếu cả hai vẫn còn ở trong Room."
+    },
+    {
+      "id": "P3-048",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 420,
+      "requirement": "Những Khán giả đang có mặt trong Room vẫn tiếp tục ở lại với vai trò Khán giả; hệ thống không tự động đưa Khán giả vào vị trí Đối thủ chỉ vì Match vừa kết thúc."
+    },
+    {
+      "id": "P3-049",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 421,
+      "requirement": "Sau khi Match kết thúc, trạng thái Sẵn sàng của cả Chủ Room và Đối thủ được đặt lại về Chưa sẵn sàng."
+    },
+    {
+      "id": "P3-050",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 422,
+      "requirement": "Hai người không được tự động bắt đầu một Match mới chỉ vì vừa hoàn thành Match trước."
+    },
+    {
+      "id": "P3-051",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 423,
+      "requirement": "Nếu muốn chơi lại, Chủ Room và Đối thủ phải bấm Sẵn sàng lại. Chỉ khi cả hai cùng Sẵn sàng thì Chủ Room mới được chọn Bắt đầu."
+    },
+    {
+      "id": "P3-052",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 424,
+      "requirement": "Khi Chủ Room chọn Bắt đầu cho trận tiếp theo, hệ thống tạo một Match mới với định danh Match mới, thực hiện lại việc phân bên Đỏ/Đen, khởi tạo bàn cờ và countdown 3-2-1 như quy trình Khởi tạo trận đấu."
+    },
+    {
+      "id": "P3-053",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 425,
+      "requirement": "Match mới có lịch sử nước đi và kết quả riêng; không sử dụng lịch sử nước đi của Match trước."
+    },
+    {
+      "id": "P3-054",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 426,
+      "requirement": "Nếu một người rời Room sau khi Match đã kết thúc nhưng trước khi Match mới được tạo, hệ thống xử lý theo quy tắc quản lý Room trước trận, không coi việc rời Room đó là thua một Match mới chưa tồn tại."
+    },
+    {
+      "id": "P3-055",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 427,
+      "requirement": "Nếu người rời là Chủ Room, hệ thống chuyển quyền Chủ Room theo quy tắc tại mục 6.3. Chuyển quyền Chủ Room và quản lý người trong Room."
+    },
+    {
+      "id": "P3-056",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 428,
+      "requirement": "Nếu Đối thủ rời Room sau trận, ô Đối thủ trở lại trạng thái Trống và Khán giả có thể chủ động bấm vào ô Đối thủ theo quy tắc đã mô tả ở mục 6.1."
+    },
+    {
+      "id": "P3-057",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 429,
+      "requirement": "Trong thời gian Room đang ở trạng thái Đang chờ trận mới, nếu Chủ Room và Đối thủ cũ vẫn còn giữ vị trí thì người tham gia mới chỉ vào với vai trò Khán giả."
+    },
+    {
+      "id": "P3-058",
+      "phase": "P3",
+      "section": "7. Xử lý Room sau khi Match kết thúc và chơi lại",
+      "paragraph": 430,
+      "requirement": "Chỉ khi ô Đối thủ trở thành Trống do Đối thủ cũ rời Room hoặc bị loại khỏi vị trí thì Khán giả mới được phép chủ động bấm vào ô Đối thủ."
+    },
+    {
+      "id": "P4-001",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 437,
+      "requirement": "Chỉ hai người đang giữ vai trò Chủ Room và Đối thủ được sử dụng khung Chat dành cho người chơi."
+    },
+    {
+      "id": "P4-002",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 438,
+      "requirement": "Khán giả tuyệt đối không có quyền gửi tin nhắn trong khung Chat của người chơi và không được nhận hoặc nhìn thấy tin nhắn giữa Chủ Room và Đối thủ."
+    },
+    {
+      "id": "P4-003",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 439,
+      "requirement": "Trong phiên bản này không triển khai Chat Khán giả. Nếu sau này bổ sung, Chat Khán giả phải là một kênh tách biệt chỉ giữa Khán giả với nhau; Chủ Room và Đối thủ không được nhận hoặc nhìn thấy kênh đó để tránh bị phân tâm."
+    },
+    {
+      "id": "P4-004",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 440,
+      "requirement": "Người chơi nhập nội dung vào ô tin nhắn và chọn Gửi. Hệ thống không cho gửi tin nhắn rỗng hoặc chỉ chứa khoảng trắng."
+    },
+    {
+      "id": "P4-005",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 441,
+      "requirement": "Khi tin nhắn hợp lệ được gửi, hệ thống chuyển tin nhắn Real-time chỉ tới hai người chơi của Room hiện tại."
+    },
+    {
+      "id": "P4-006",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 442,
+      "requirement": "Tin nhắn hiển thị tối thiểu tên người gửi, nội dung và thời gian gửi."
+    },
+    {
+      "id": "P4-007",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 443,
+      "requirement": "Tin nhắn của Room này không được gửi nhầm sang Room khác."
+    },
+    {
+      "id": "P4-008",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 444,
+      "requirement": "Người không còn giữ vai trò Chủ Room hoặc Đối thủ không được tiếp tục gửi hoặc nhận Chat của hai người chơi."
+    },
+    {
+      "id": "P4-009",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 445,
+      "requirement": "Nếu người chơi mất kết nối tại thời điểm gửi, hệ thống không hiển thị tin nhắn như đã gửi thành công khi máy chủ chưa nhận được."
+    },
+    {
+      "id": "P4-010",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 446,
+      "requirement": "Chat hoạt động độc lập với bàn cờ; gửi hoặc nhận tin nhắn không làm dừng đồng hồ lượt, thay đổi lượt hoặc kết quả."
+    },
+    {
+      "id": "P4-011",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 447,
+      "requirement": "Nếu Đối thủ bị Chủ Room loại khỏi vị trí trước trận, người đó lập tức mất quyền truy cập Chat của hai người chơi. Đối thủ mới không được xem lại nội dung Chat riêng đã diễn ra với Đối thủ trước đó."
+    },
+    {
+      "id": "P4-012",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 448,
+      "requirement": "Khi một người rời Room, người đó không còn gửi hoặc nhận tin nhắn mới trong Chat của Room."
+    },
+    {
+      "id": "P4-013",
+      "phase": "P4",
+      "section": "1. Chat riêng giữa hai người chơi",
+      "paragraph": 449,
+      "requirement": "Mỗi khi thành phần hai người chơi trong Room thay đổi, người vừa trở thành Chủ Room hoặc Đối thủ chỉ được nhận các tin nhắn phát sinh sau khi họ giữ vai trò người chơi; họ không được tải lại nội dung Chat riêng của cặp người chơi trước đó."
+    },
+    {
+      "id": "P4-014",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 452,
+      "requirement": "Khi Chủ Room và Đối thủ đều có mặt trong Room, giao diện hiển thị chức năng Video Call cho hai người chơi."
+    },
+    {
+      "id": "P4-015",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 453,
+      "requirement": "Chỉ Chủ Room và Đối thủ được bắt đầu hoặc tham gia Video Call. Khán giả không được sử dụng và không được xem cuộc gọi."
+    },
+    {
+      "id": "P4-016",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 454,
+      "requirement": "Một trong hai người chọn Video Call để gửi yêu cầu gọi tới người còn lại."
+    },
+    {
+      "id": "P4-017",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 455,
+      "requirement": "Hệ thống kiểm tra người gọi và người nhận vẫn đang thuộc cùng một Room trước khi gửi yêu cầu."
+    },
+    {
+      "id": "P4-018",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 456,
+      "requirement": "Nếu hợp lệ, người nhận thấy thông báo cuộc gọi đến với tên người gọi và hai lựa chọn Chấp nhận hoặc Từ chối."
+    },
+    {
+      "id": "P4-019",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 457,
+      "requirement": "Nếu người nhận không Chấp nhận hoặc Từ chối trong vòng 60 giây, yêu cầu Video Call tự động hết hiệu lực. Hệ thống kết thúc yêu cầu và người gọi nhận thông báo “Cuộc gọi không được trả lời”"
+    },
+    {
+      "id": "P4-020",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 458,
+      "requirement": "Sau khi yêu cầu kết thúc, một trong hai người có thể thực hiện yêu cầu Video Call mới nếu cả hai vẫn còn giữ vai trò người chơi trong Room."
+    },
+    {
+      "id": "P4-021",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 459,
+      "requirement": "Nếu người nhận chọn Từ chối, yêu cầu Video Call kết thúc ngay, người gọi nhận thông báo “Đối phương đã từ chối cuộc gọi”. Hai người vẫn ở trong Room và trận cờ không bị ảnh hưởng."
+    },
+    {
+      "id": "P4-022",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 460,
+      "requirement": "Trong thời gian chờ phản hồi, người gọi thấy trạng thái Đang gọi. Hệ thống không tạo nhiều yêu cầu trùng nhau nếu người gọi bấm liên tiếp."
+    },
+    {
+      "id": "P4-023",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 461,
+      "requirement": "Nếu người nhận Chấp nhận, hệ thống thiết lập cuộc gọi video giữa đúng hai người chơi."
+    },
+    {
+      "id": "P4-024",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 462,
+      "requirement": "Trước khi tham gia, hệ thống yêu cầu quyền camera và micro nếu chưa được cấp."
+    },
+    {
+      "id": "P4-025",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 463,
+      "requirement": "Nếu người dùng từ chối quyền Camera hoặc Micro, hệ thống thông báo thiết bị tương ứng chưa được cấp quyền và cho phép người dùng thử cấp quyền lại."
+    },
+    {
+      "id": "P4-026",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 464,
+      "requirement": "Việc từ chối quyền Camera/Micro không được làm kết thúc hoặc tạm dừng Match."
+    },
+    {
+      "id": "P4-027",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 465,
+      "requirement": "Người dùng có thể bật/tắt camera hoặc micro trong khi gọi. Nếu camera không khả dụng nhưng micro vẫn hoạt động, cuộc gọi có thể tiếp tục bằng âm thanh."
+    },
+    {
+      "id": "P4-028",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 466,
+      "requirement": "Khi cả hai đã kết nối thành công, video của hai người được hiển thị trong khu vực Video Call của Room."
+    },
+    {
+      "id": "P4-029",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 467,
+      "requirement": "Trong khi Video Call đang hoạt động, mỗi người có thể chọn Rời cuộc gọi."
+    },
+    {
+      "id": "P4-030",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 468,
+      "requirement": "Khi một người rời cuộc gọi, kết nối video/audio của người đó kết thúc và người còn lại nhận thông báo đối phương đã rời cuộc gọi."
+    },
+    {
+      "id": "P4-031",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 469,
+      "requirement": "Rời Video Call không làm người dùng rời Room, không tính thua và không làm Match kết thúc."
+    },
+    {
+      "id": "P4-032",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 470,
+      "requirement": "Sau khi cuộc gọi kết thúc, hai người có thể thực hiện một yêu cầu Video Call mới nếu vẫn còn giữ vai trò Chủ Room và Đối thủ."
+    },
+    {
+      "id": "P4-033",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 471,
+      "requirement": "Tại một thời điểm, mỗi Room chỉ có tối đa một Video Call đang hoạt động giữa hai người chơi."
+    },
+    {
+      "id": "P4-034",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 472,
+      "requirement": "Video Call và trận cờ hoạt động độc lập. Lỗi, rời hoặc kết thúc cuộc gọi không làm thay đổi lượt, đồng hồ, AFK hay kết quả trận."
+    },
+    {
+      "id": "P4-035",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 473,
+      "requirement": "Nếu một người rời Room hoặc không còn giữ vai trò Chủ Room/Đối thủ, người đó bị ngắt khỏi Video Call hiện tại."
+    },
+    {
+      "id": "P4-036",
+      "phase": "P4",
+      "section": "2. Video Call trực tiếp giữa hai người chơi trong Room",
+      "paragraph": 474,
+      "requirement": "Khi Room không còn hai người chơi hợp lệ hoặc Room bị đóng, Video Call đang hoạt động kết thúc."
+    },
+    {
+      "id": "P4-037",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 477,
+      "requirement": "Người chơi chọn Chơi với máy và chọn bên Đỏ hoặc Đen."
+    },
+    {
+      "id": "P4-038",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 478,
+      "requirement": "Hệ thống tạo một Match riêng thuộc loại Người chơi - Máy và khởi tạo bàn cờ ở trạng thái bắt đầu chuẩn."
+    },
+    {
+      "id": "P4-039",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 479,
+      "requirement": "Nếu người chơi chọn Đỏ, người chơi đi trước. Nếu chọn Đen, máy là bên Đỏ và tự thực hiện nước đầu tiên."
+    },
+    {
+      "id": "P4-040",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 480,
+      "requirement": "Trận với máy sử dụng cùng luật di chuyển, ăn quân, chiếu Tướng, chiếu bí và hết nước hợp lệ như trận trực tuyến."
+    },
+    {
+      "id": "P4-041",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 481,
+      "requirement": "Trận với máy cũng sử dụng giới hạn 60 giây cho lượt của người chơi; lượt của máy được hệ thống xử lý tự động trong 60 giây"
+    },
+    {
+      "id": "P4-042",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 482,
+      "requirement": "Nếu người chơi không thực hiện được nước đi hợp lệ trước khi đồng hồ 60 giây kết thúc, người chơi bị xử thua do hết thời gian; máy được xử thắng."
+    },
+    {
+      "id": "P4-043",
+      "phase": "P4",
+      "section": "3. Bắt đầu trận với máy",
+      "paragraph": 483,
+      "requirement": "Máy không áp dụng xử thua AFK theo đồng hồ như người chơi vì lượt máy do hệ thống tự động xử lý."
+    },
+    {
+      "id": "P4-044",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 485,
+      "requirement": "Khi đến lượt máy, giao diện hiển thị trạng thái “Máy đang đi...” và tạm thời không cho người chơi di chuyển quân."
+    },
+    {
+      "id": "P4-045",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 486,
+      "requirement": "Hệ thống lấy trạng thái bàn cờ hiện tại và xác định tập hợp tất cả nước đi hợp lệ của bên máy."
+    },
+    {
+      "id": "P4-046",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 487,
+      "requirement": "Máy lựa chọn ngẫu nhiên một nước trong số các nước hợp lệ."
+    },
+    {
+      "id": "P4-047",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 488,
+      "requirement": "Máy không được tạo nước đi sai luật, bỏ qua quy tắc bảo vệ Tướng hoặc đi khi chưa tới lượt."
+    },
+    {
+      "id": "P4-048",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 489,
+      "requirement": "Sau khi máy thực hiện nước đi, hệ thống cập nhật và lưu trạng thái bàn cờ mới. Nếu trận chưa kết thúc, quyền đi chuyển lại cho người chơi; nếu nước đi làm trận kết thúc thì hệ thống xử lý kết quả ngay và không tạo lượt mới."
+    },
+    {
+      "id": "P4-049",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 490,
+      "requirement": "Nếu người chơi tải lại trang trong khi trận với máy chưa kết thúc và trạng thái còn hợp lệ, hệ thống tải lại trạng thái bàn cờ đã lưu thay vì tạo một trận mới."
+    },
+    {
+      "id": "P4-050",
+      "phase": "P4",
+      "section": "4. Cách máy thực hiện lượt",
+      "paragraph": 491,
+      "requirement": "Nếu máy không còn nước đi hợp lệ, máy bị xử thua theo cùng quy tắc áp dụng cho người chơi."
+    },
+    {
+      "id": "P4-051",
+      "phase": "P4",
+      "section": "5. Kết thúc và lưu trận với máy",
+      "paragraph": 493,
+      "requirement": "Người chơi có thể thắng, thua, đầu hàng hoặc kết thúc do các điều kiện luật cờ giống trận trực tuyến."
+    },
+    {
+      "id": "P4-052",
+      "phase": "P4",
+      "section": "5. Kết thúc và lưu trận với máy",
+      "paragraph": 494,
+      "requirement": "Trận với máy được lưu vào lịch sử để người chơi xem lại."
+    },
+    {
+      "id": "DB-001",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: 24 bảng nền và 5 view; setup lặp không tạo trùng"
+    },
+    {
+      "id": "DB-002",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: tài khoản, bạn bè và token reset lưu/khôi phục đúng"
+    },
+    {
+      "id": "DB-003",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: Room, thành viên, Match, nước đi, quân bị ăn và kết quả đúng"
+    },
+    {
+      "id": "DB-004",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: restart giữ trạng thái và lịch sử"
+    },
+    {
+      "id": "DB-005",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: request lặp/concurrent không tạo bản ghi một phần/trùng"
+    },
+    {
+      "id": "DB-006",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "SQL Server: khóa ngoại, UNIQUE và CHECK thực sự từ chối dữ liệu sai"
+    },
+    {
+      "id": "DB-007",
+      "phase": "DB",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "File persistence: restart giữ tài khoản, phiên, bàn cờ và replay"
+    },
+    {
+      "id": "SEC-001",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "API bảo vệ và WebSocket từ chối chưa đăng nhập"
+    },
+    {
+      "id": "SEC-002",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Không giả userId, roomId, matchId hoặc lấy phiên/replay người khác"
+    },
+    {
+      "id": "SEC-003",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Khán giả không thể start/move/ready/resign/draw hoặc gửi signaling/chat riêng"
+    },
+    {
+      "id": "SEC-004",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Room A không nhận sự kiện, chat hoặc cuộc gọi Room B"
+    },
+    {
+      "id": "SEC-005",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Client không sửa lượt, deadline hoặc quyền chơi bằng payload"
+    },
+    {
+      "id": "SEC-006",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Malformed JSON, input quá dài, Origin sai bị từ chối và server còn hoạt động"
+    },
+    {
+      "id": "SEC-007",
+      "phase": "SEC",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Nhiều vòng join/leave/disconnect không tăng listener/kết nối/timer không giới hạn"
+    },
+    {
+      "id": "ENV-001",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Email được giao thực tế qua SMTP đến hộp thư nhận"
+    },
+    {
+      "id": "ENV-002",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "WebRTC camera/micro vật lý thật"
+    },
+    {
+      "id": "ENV-003",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "WebRTC giữa hai mạng khác nhau qua NAT/TURN"
+    },
+    {
+      "id": "ENV-004",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Xác nhận 60 giây thực cho turn, reconnect, invite và call; countdown 3 giây"
+    },
+    {
+      "id": "ENV-005",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Desktop và mobile: bốn context/cookie độc lập, không pageerror"
+    },
+    {
+      "id": "ENV-006",
+      "phase": "ENV",
+      "section": "Yêu cầu bổ sung của người dùng",
+      "paragraph": null,
+      "requirement": "Frontend validation: thiếu field, email, độ dài/chữ/số mật khẩu, confirm mismatch"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+# Thư viện phụ thuộc và sản phẩm build
+node_modules/
+dist/
+coverage/
+/data/
+/certs/
+
+# Nhật ký
+*.log
+
+# Trình soạn thảo
+.vscode/
+.idea/
+
+# Tệp hệ thống
+.DS_Store
+Thumbs.db
+
+.npm-cache/
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local diagnostics
+realtime-error.txt
+test-result.txt
+
+# Local HTTPS development certificates
+/certs/
+bin/
+obj/
+/test-results/
+/playwright-report/
+/artifacts/
+*.user
+.vs/
