@@ -479,6 +479,136 @@ test('reusing a player ID in another room detaches the old socket membership', a
   assert.equal(currentSocket.roomCode, roomB.room.code);
   assert.equal(otherTab.socket.readyState, WebSocket.OPEN);
 });
+test('host kicks only eligible members before a match, clears readiness, and blocks kicked actions and rejoin', async (t) => {
+  const { host, opponent, spectator, connect, code, server } = await setup(t);
+  const initialSpectatorState = (m) => m.type === 'room-state' && m.room.spectators.length === 1;
+  await Promise.all([host.next(initialSpectatorState), opponent.next(initialSpectatorState)]);
+  const secondSpectator = await connect();
+  secondSpectator.send({ action: 'join-room', playerId: 'second-viewer-123', displayName: 'Second viewer', roomCode: code });
+  const secondSpectatorState = (m) => m.type === 'room-state' && m.room.spectators.length === 2;
+  await Promise.all([secondSpectator.next(secondSpectatorState), host.next(secondSpectatorState), opponent.next(secondSpectatorState)]);
+
+  host.send({ action: 'set-ready', ready: true });
+  opponent.send({ action: 'set-ready', ready: true });
+  const bothReady = (m) => m.type === 'room-state' && m.room.host.ready && m.room.opponent.ready;
+  await Promise.all([host.next(bothReady), opponent.next(bothReady)]);
+  assert.equal(server.rooms.get(code).host.ready, true);
+  assert.equal(server.rooms.get(code).opponent.ready, true);
+
+  const spectatorRemoved = spectator.next((m) => m.type === 'room-closed' && m.reason === 'kicked');
+  const hostAfterSpectatorKick = host.next((m) => m.type === 'room-state' && m.room.spectators.length === 1);
+  const opponentAfterSpectatorKick = opponent.next((m) => m.type === 'room-state' && m.room.spectators.length === 1);
+  host.send({ action: 'kick-member', targetPlayerId: 'spectator-player-123' });
+  await spectatorRemoved;
+  const [hostRoom, opponentRoom] = await Promise.all([hostAfterSpectatorKick, opponentAfterSpectatorKick]);
+  assert.equal(hostRoom.room.opponent.id, 'opponent-player-123');
+  assert.equal(hostRoom.room.host.ready, true);
+  assert.equal(hostRoom.room.opponent.ready, true);
+  assert.deepEqual(hostRoom.room.spectators.map((person) => person.id), ['second-viewer-123']);
+  assert.deepEqual(opponentRoom.room.match, null);
+
+  const nonHostDenied = spectator.next((m) => m.type === 'error');
+  spectator.send({ action: 'kick-member', playerId: 'host-player-123', targetPlayerId: 'opponent-player-123' });
+  await nonHostDenied;
+  const selfDenied = host.next((m) => m.type === 'error');
+  host.send({ action: 'kick-member', targetPlayerId: 'host-player-123' });
+  await selfDenied;
+
+  const opponentRemoved = opponent.next((m) => m.type === 'room-closed' && m.reason === 'kicked');
+  const hostAfterOpponentKick = host.next((m) => m.type === 'room-state' && !m.room.opponent);
+  host.send({ action: 'kick-member', targetPlayerId: 'opponent-player-123' });
+  await opponentRemoved;
+  const afterKick = await hostAfterOpponentKick;
+  assert.equal(afterKick.room.host.id, 'host-player-123');
+  assert.equal(afterKick.room.host.ready, false);
+  assert.equal(afterKick.room.opponent, null);
+  assert.ok(server.rooms.get(code).blocked.includes('opponent-player-123'));
+  const duplicateKickDenied = host.next((m) => m.type === 'error');
+  host.send({ action: 'kick-member', targetPlayerId: 'opponent-player-123' });
+  await duplicateKickDenied;
+  assert.equal(server.rooms.get(code).blocked.filter((id) => id === 'opponent-player-123').length, 1);
+
+  for (const [action, extra] of [
+    ['set-ready', { ready: true }],
+    ['move', { requestId: 'kicked-move-1', pieceId: 'red-pawn-0', to: { x: 0, y: 5 } }],
+  ]) {
+    const denied = opponent.next((m) => m.type === 'error');
+    opponent.send({ action, ...extra });
+    await denied;
+  }
+  const chatDenied = opponent.next((m) => m.type === 'chat-error');
+  opponent.send({ action: 'chat-send', text: 'kicked user' });
+  await chatDenied;
+  const callDenied = opponent.next((m) => m.type === 'call-error');
+  opponent.send({ action: 'call-start' });
+  await callDenied;
+  const signalingDenied = opponent.next((m) => m.type === 'call-error');
+  opponent.send({ action: 'call-ice-candidate', callId: 'stale-call-after-kick', candidate: { candidate: 'fake' } });
+  await signalingDenied;
+  const rejoinDenied = opponent.next((m) => m.type === 'error');
+  opponent.send({ action: 'join-room', playerId: 'opponent-player-123', displayName: 'Opponent back', roomCode: code });
+  assert.match((await rejoinDenied).message, /không thể vào lại/i);
+  assert.equal(server.rooms.get(code).blocked.filter((id) => id === 'opponent-player-123').length, 1);
+
+  secondSpectator.send({ action: 'become-opponent' });
+  const replacement = await secondSpectator.next((m) => m.type === 'room-state' && m.room.opponent?.id === 'second-viewer-123');
+  assert.equal(replacement.room.host.id, 'host-player-123');
+  assert.equal(replacement.room.opponent.ready, false);
+});
+
+test('host can kick spectators during a match without changing the match or active player call', async (t) => {
+  const { host, opponent, spectator, code, server } = await setup(t, { countdownMs: 5, turnSeconds: 30, chooseRedPlayerIndex: () => 0 });
+  host.send({ action: 'set-ready', ready: true });
+  opponent.send({ action: 'set-ready', ready: true });
+  const bothReady = (m) => m.type === 'room-state' && m.room.host.ready && m.room.opponent.ready;
+  await Promise.all([host.next(bothReady), opponent.next(bothReady)]);
+  host.send({ action: 'start-match' });
+  const syncing = (m) => m.type === 'room-state' && m.room.match?.status === 'syncing';
+  await Promise.all([host.next(syncing), opponent.next(syncing)]);
+  host.send({ action: 'snapshot-ack' });
+  opponent.send({ action: 'snapshot-ack' });
+  const playing = (m) => m.type === 'room-state' && m.room.match?.status === 'playing';
+  await Promise.all([host.next(playing), opponent.next(playing)]);
+
+  const callStarted = host.next((m) => m.type === 'call-started');
+  const incoming = opponent.next((m) => m.type === 'call-incoming');
+  host.send({ action: 'call-start' });
+  const [call, invite] = await Promise.all([callStarted, incoming]);
+  const hostAccepted = host.next((m) => m.type === 'call-accepted');
+  const opponentAccepted = opponent.next((m) => m.type === 'call-accepted');
+  opponent.send({ action: 'call-accept', callId: invite.callId });
+  await Promise.all([hostAccepted, opponentAccepted]);
+
+  const room = server.rooms.get(code);
+  const originalMatch = structuredClone(room.match);
+  const spectatorRemoved = spectator.next((m) => m.type === 'room-closed' && m.reason === 'kicked');
+  const hostUpdate = host.next((m) => m.type === 'room-state' && m.room.spectators.length === 0);
+  const opponentUpdate = opponent.next((m) => m.type === 'room-state' && m.room.spectators.length === 0);
+  host.send({ action: 'kick-member', targetPlayerId: 'spectator-player-123' });
+  await spectatorRemoved;
+  const [hostRoom, opponentRoom] = await Promise.all([hostUpdate, opponentUpdate]);
+  assert.equal(hostRoom.room.match.status, 'playing');
+  assert.equal(opponentRoom.room.match.id, originalMatch.id);
+  assert.deepEqual(room.match, originalMatch);
+  assert.equal(room.host.ready, false);
+  assert.equal(room.opponent.id, 'opponent-player-123');
+  assert.equal(room.spectators.length, 0);
+  assert.ok(room.blocked.includes('spectator-player-123'));
+
+  const offer = opponent.next((m) => m.type === 'call-offer' && m.callId === call.callId);
+  host.send({ action: 'call-offer', callId: call.callId, description: { type: 'offer', sdp: 'still-active' } });
+  assert.equal((await offer).description.sdp, 'still-active');
+
+  const playerKickDenied = host.next((m) => m.type === 'error');
+  host.send({ action: 'kick-member', targetPlayerId: 'opponent-player-123' });
+  await playerKickDenied;
+  assert.deepEqual(room.match, originalMatch);
+  assert.equal(room.opponent.id, 'opponent-player-123');
+  const codeRejoinDenied = spectator.next((m) => m.type === 'error');
+  spectator.send({ action: 'join-room', playerId: 'spectator-player-123', displayName: 'Viewer again', roomCode: code });
+  await codeRejoinDenied;
+});
+
 test('seat changes clear private chat, spectators can take the open seat, and kicked users cannot return', async (t) => {
   const { host, opponent, spectator, code, server } = await setup(t);
   host.send({ action: 'chat-send', text: 'Only the original pair' });

@@ -34,6 +34,9 @@ function summarize(record, playerId) {
   };
 }
 
+// [LỊCH SỬ TRẬN - LỚP DỊCH VỤ]
+// Bọc repository persistence để nạp record, tuần tự hóa các lần upsert và truy vấn danh sách,
+// ván máy đang chơi hoặc record theo ID cho luồng resume/replay.
 export function createHistoryStore(matchRepository) {
   if (!matchRepository || typeof matchRepository.loadAll !== 'function'
       || typeof matchRepository.upsert !== 'function') {

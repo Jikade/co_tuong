@@ -123,3 +123,35 @@ test('dismissing remove-player confirmation leaves the room unchanged', async ({
     await host.context.close();
   }
 });
+
+test('host can kick the opponent before a match and only the host sees that control', async ({ browser, baseURL }) => {
+  const host = await createUser(browser, baseURL, 'kick-host');
+  const opponent = await createSession(baseURL, 'kick-opponent');
+  const opponentContext = await browser.newContext({ baseURL });
+  try {
+    await opponentContext.addCookies([{ name: 'cotuong_session', value: opponent.session, url: baseURL }]);
+    const opponentPage = await opponentContext.newPage();
+    await opponentPage.goto('/');
+    await expect(opponentPage.locator('#connection-label')).toHaveText('Đã kết nối');
+
+    await host.page.locator('#room-name').fill('Opponent kick room');
+    await host.page.locator('#create-room-form button').click();
+    await expect(host.page.locator('#room-view')).toBeVisible();
+    const code = (await host.page.locator('#room-code').innerText()).trim();
+    await opponentPage.locator('#display-name').fill(opponent.data.displayName);
+    await opponentPage.locator('#room-code-input').fill(code);
+    await opponentPage.locator('#join-room-form button').click();
+    await expect(opponentPage.locator('#room-view')).toBeVisible();
+    await expect(host.page.locator('#kick-opponent')).toBeVisible();
+    await expect(opponentPage.locator('#kick-opponent')).toBeHidden();
+
+    host.page.once('dialog', (dialog) => dialog.accept());
+    await host.page.locator('#kick-opponent').click();
+    await expect(host.page.locator('#opponent-slot .empty-avatar')).toBeVisible();
+    await expect(host.page.locator('#kick-opponent')).toBeHidden();
+    await expect(opponentPage.locator('#lobby')).toBeVisible();
+  } finally {
+    await opponentContext.close();
+    await host.context.close();
+  }
+});

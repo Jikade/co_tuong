@@ -434,6 +434,8 @@ export function createGameServer(options = {}) {
     }, Math.min(1000, Math.max(1, match.turnDeadline - Date.now())));
   }
 
+  // [MÁY - HẸN LƯỢT ĐI]
+  // Timer trì hoãn nước máy và token theo ID + số nước để callback cũ không tác động lên trạng thái mới.
   function scheduleComputerTurn(match) {
     if (shuttingDown || match.status !== MATCH_STATUS.PLAYING || match.currentSide !== match.computerSide
         || match.pendingComputerTurn) return;
@@ -452,6 +454,9 @@ export function createGameServer(options = {}) {
     }, computerMoveDelayMs);
   }
 
+  // [MÁY - CHỌN VÀ ÁP DỤNG NƯỚC NGẪU NHIÊN]
+  // getLegalMoves lấy tập nước hợp lệ từ luật dùng chung; randomInt chọn một phần tử,
+  // applyLegalMove tạo trạng thái mới rồi lưu lịch sử/persistence và broadcast cho client.
   async function playComputerTurn(match, token) {
     if (computerMatches.get(match.id) !== match || match.pendingComputerTurn !== token
         || match.status !== MATCH_STATUS.PLAYING || match.currentSide !== match.computerSide
@@ -517,6 +522,9 @@ export function createGameServer(options = {}) {
     scheduleComputerHumanTurn(match);
   }
 
+  // [MÁY - TẠO HOẶC KHÔI PHỤC VÁN]
+  // Xác minh danh tính và màu, tìm ván đang chơi trong history để resume; nếu không có thì tạo match,
+  // khởi tạo quân cờ/lượt đồng hồ và lưu record trước khi gửi computer-state.
   async function startComputerMatch(socket, message) {
     if (!validIdentity(message) || !['red', 'black'].includes(message.side)
         || socket.roomCode || socket.computerMatchId) {
@@ -618,6 +626,9 @@ export function createGameServer(options = {}) {
     }
   }
 
+  // [MÁY - KIỂM TRA NƯỚC NGƯỜI CHƠI]
+  // Ràng buộc socket với match/người chơi, requestId, lượt và deadline; sau đó luật shared
+  // xác thực nước đi trước khi ghi move vào history, persist và phát trạng thái.
   async function computerMove(socket, message) {
     const match = computerMatches.get(message.matchId);
     if (!match || socket.computerMatchId !== match.id
@@ -737,6 +748,8 @@ export function createGameServer(options = {}) {
     send(socket, { type: 'computer-exited', matchId: message.matchId });
   }
 
+  // Khi server khởi động, nạp record máy còn playing từ HistoryStore vào Map RAM rồi
+  // đặt lại timer theo lượt hiện tại để trận có thể tiếp tục sau restart.
   async function restoreComputerMatches() {
     for (const record of history.activeComputerMatches()) {
       if (!record.humanPlayerId || !['red', 'black'].includes(record.humanSide)
@@ -1114,6 +1127,9 @@ export function createGameServer(options = {}) {
     send(socket, { type: 'call-error', message });
   }
 
+  // [VIDEO - SERVER CHUYỂN TIẾP SIGNALING]
+  // Chỉ kiểm tra hai ghế/callId và kích thước payload SDP hoặc ICE rồi chuyển tới peer còn lại.
+  // WebSocket chỉ mang tín hiệu; media không đi qua server này.
   function forwardSignal(socket, message, kind) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
@@ -1201,12 +1217,17 @@ export function createGameServer(options = {}) {
     await persistAndBroadcast(room);
   }
 
+  // [CHAT - TẢI LỊCH SỬ]
+  // Lọc tin theo đúng hai participant đang ngồi ở hai ghế; khán giả nhận danh sách rỗng.
   function sendChatHistory(room) {
     const currentIds = [room.host?.id, room.opponent?.id].filter(Boolean);
     const messages = (chatHistoryByRoom.get(room.code) ?? []).filter((m) => currentIds.length === 2 && m.participantIds?.length === 2 && currentIds.every((id) => m.participantIds.includes(id)));
     for (const peer of connectedParticipants(room)) send(peer, { type: 'chat-history', messages: [room.host?.id, room.opponent?.id].includes(peer.playerId) ? messages : [] });
   }
 
+  // [CHAT - QUYỀN, LƯU VÀ CHUYỂN TIẾP]
+  // Xác định room từ socket (không tin room do client tự khai), chỉ cho hai ghế gửi,
+  // giới hạn nội dung, gắn sender/participant IDs, giữ tối đa 100 tin và persist trước khi gửi hai phía.
   async function chatSend(socket, message) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
@@ -1236,6 +1257,9 @@ export function createGameServer(options = {}) {
     send(socket, payload); send(access.recipient, payload);
   }
 
+  // [VIDEO - TẠO LỜI MỜI]
+  // Server xác minh người chơi trong phòng, tạo call trạng thái ringing và timer hết hạn,
+  // sau đó gửi call-incoming cho đối thủ; đây là trạng thái signaling, chưa phải media.
   function startCall(socket) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
@@ -1265,6 +1289,8 @@ export function createGameServer(options = {}) {
     });
   }
 
+  // Nhận/từ chối lời mời chỉ hợp lệ với đúng callee và callId còn hạn; chấp nhận chuyển active
+  // rồi báo hai client bắt đầu trao đổi SDP/ICE, từ chối thì xóa call và báo caller.
   function acceptCall(socket, message, accepted) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
@@ -1298,6 +1324,8 @@ export function createGameServer(options = {}) {
     persistRooms().catch((error) => console.error('Could not update room activity:', error));
   }
 
+  // [VIDEO - KẾT THÚC]
+  // Một trong hai người chơi kết thúc bằng callId hiện hành; clearCall xóa timer/state và thông báo peer.
   function endCall(socket, message) {
     const room = roomForSocket(socket);
     const access = privatePlayerSockets(room, socket);
@@ -1747,7 +1775,43 @@ export function createGameServer(options = {}) {
 
   async function changeSeat(socket, message) {
     const room = roomForSocket(socket);
-    if (!room || (room.match && room.match.status !== MATCH_STATUS.FINISHED)) { sendError(socket, 'Chỉ đổi vai trò trong phòng chờ.'); return; }
+    if (!room) { sendError(socket, 'Room không còn khả dụng.'); return; }
+    if (message.action === 'kick-member') {
+      if (room.host?.id !== socket.playerId) { sendError(socket, 'Chỉ chủ phòng mới được mời thành viên rời phòng.'); return; }
+      const target = participantFor(room, message.targetPlayerId);
+      if (!target || target === room.host) { sendError(socket, 'Thành viên không hợp lệ.'); return; }
+      const isSpectator = room.spectators.some((person) => person.id === target.id);
+      const matchInProgress = room.match && room.match.status !== MATCH_STATUS.FINISHED;
+      if (matchInProgress && !isSpectator) {
+        sendError(socket, 'Không thể mời người chơi rời phòng khi trận đấu đang diễn ra.');
+        return;
+      }
+
+      const call = calls.get(room.code);
+      if (call && [call.callerId, call.calleeId].includes(target.id)) {
+        clearCall(room, { notify: target.id });
+      }
+      const peer = room.connections.get(target.id);
+      if (!Array.isArray(room.blocked)) room.blocked = [];
+      if (!room.blocked.includes(target.id)) room.blocked.push(target.id);
+      room.connections.delete(target.id);
+      if (peer) {
+        if (peers.get(target.id) === peer) peers.delete(target.id);
+        peer.playerId = null;
+        peer.roomCode = null;
+        send(peer, { type: 'room-closed', roomCode: room.code, reason: 'kicked' });
+      }
+      removeParticipant(room, target.id);
+
+      if (!isSpectator && !matchInProgress) {
+        if (room.host) room.host.ready = false;
+        if (room.opponent) room.opponent.ready = false;
+      }
+      await persistAndBroadcast(room);
+      sendChatHistory(room);
+      return;
+    }
+    if (room.match && room.match.status !== MATCH_STATUS.FINISHED) { sendError(socket, 'Chỉ đổi vai trò trong phòng chờ.'); return; }
     if (message.action === 'become-opponent') {
       const person = room.spectators.find((p) => p.id === socket.playerId);
       if (!person || room.opponent) { sendError(socket, 'Vị trí đối thủ không còn trống.'); return; }
@@ -1758,14 +1822,6 @@ export function createGameServer(options = {}) {
         if (!room.opponent || room.spectators.length >= 10) { sendError(socket, 'Không có đối thủ hoặc chỗ khán giả đã đầy.'); return; }
         clearCall(room, { notify: room.opponent.id });
         room.spectators.push({ ...room.opponent, ready: false }); room.opponent = null;
-      } else {
-        const target = participantFor(room, message.targetPlayerId);
-        if (!target || target.id === room.host.id) { sendError(socket, 'Thành viên không hợp lệ.'); return; }
-        clearCall(room, { notify: target.id });
-        const peer = room.connections.get(target.id);
-        room.blocked.push(target.id); room.connections.delete(target.id);
-        if (peer) { peers.delete(target.id); peer.playerId = null; peer.roomCode = null; send(peer, { type: 'room-closed', roomCode: room.code, reason: 'kicked' }); }
-        removeParticipant(room, target.id);
       }
     }
     room.host.ready = false; if (room.opponent) room.opponent.ready = false;

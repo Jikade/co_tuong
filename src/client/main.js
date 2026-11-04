@@ -1,3 +1,5 @@
+
+	// Điều phối giao diện, trạng thái và các sự kiện của người chơi
 import { createInitialPieces, getLegalDestinations, toDisplayCoordinate, toLogicCoordinate } from '../shared/game/xiangqi.js';
 import { MATCH_REASON, MATCH_RESULT, MATCH_STATUS } from '../shared/game/constants.js';
 import { createAccountUi } from './account-ui.js';
@@ -80,8 +82,8 @@ const historyList = document.querySelector('#history-list');
 const historyEmpty = document.querySelector('#history-empty');
 const closeHistoryButton = document.querySelector('#close-history');
 const replayBar = document.querySelector('#replay-bar');
-const replayLabel = document.querySelector('#replay-label');
-const realtimePanel = document.querySelector('#realtime-panel');
+const replayLabel = document.querySelector('#replay-label'); //Khai báo cho realtime
+const realtimePanel = document.querySelector('#realtime-panel'); //Khai báo cho realtime
 const chatMessages = document.querySelector('#chat-messages');
 const chatForm = document.querySelector('#chat-form');
 const chatInput = document.querySelector('#chat-input');
@@ -114,8 +116,18 @@ document.querySelector('.room-controls').append(becomeOpponentButton);
 const removeOpponentButton = document.createElement('button');
 removeOpponentButton.id = 'remove-opponent'; removeOpponentButton.className = 'button button-quiet'; removeOpponentButton.textContent = 'Chuyển đối thủ sang khán giả'; removeOpponentButton.hidden = true;
 document.querySelector('.settings-actions').append(removeOpponentButton);
+const kickOpponentButton = document.createElement('button');
+kickOpponentButton.id = 'kick-opponent'; kickOpponentButton.className = 'button button-quiet danger'; kickOpponentButton.textContent = 'Đá khỏi Room'; kickOpponentButton.hidden = true;
+document.querySelector('.player-seat-opponent').append(kickOpponentButton);
 becomeOpponentButton.onclick = () => sendAction('become-opponent');
 removeOpponentButton.onclick = () => sendAction('remove-opponent');
+kickOpponentButton.onclick = () => {
+  const opponent = currentRoom?.opponent;
+  if (getMyRole() !== 'host' || !opponent || (currentRoom.match && currentRoom.match.status !== MATCH_STATUS.FINISHED)) return;
+  if (window.confirm(`Bạn có chắc muốn đá ${opponent.name} khỏi Room không?`)) {
+    sendAction('kick-member', { targetPlayerId: opponent.id });
+  }
+};
 
 let playerId = null;
 let authenticated = false;
@@ -386,6 +398,9 @@ function showNotice(message) {
   }, 3800);
 }
 
+// [REALTIME - ĐƯA ACTION TỪ TRÌNH DUYỆT LÊN SERVER]
+// Chat, signaling WebRTC và nước đi đều dùng chung WebSocket JSON này. Hàm chỉ đóng gói action + dữ liệu;
+// quyền và tính hợp lệ nghiệp vụ do game-server.js kiểm tra sau khi transport nhận message.
 function sendAction(action, details = {}) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     const endpoint = endpoints.webSocketUrl;
@@ -450,6 +465,10 @@ window.addEventListener('online', () => {
   connect();
 });
 
+//Hàm của Chatrealtime
+// [CHAT / VIDEO / MÁY - ĐIỂM NHẬN SỰ KIỆN SERVER]
+// Các event từ WebSocket được phân loại tại đây: chat-message/chat-history cập nhật panel chat,
+// call-* điều khiển vòng đời WebRTC, computer-state thay trạng thái ván máy và đồng bộ bàn cờ.
 function handleServerMessage(message) {
   if (message.type === 'account-updated' || message.type === 'rooms-updated') {
     accountUi.refresh(message.type === 'rooms-updated' ? 'rooms' : 'social');
@@ -574,7 +593,9 @@ function handleServerMessage(message) {
     lobbyEl.hidden = false;
     realtimePanel.hidden = true;
     renderPrivatePanels();
-    showNotice('Phòng đã được đóng. Bạn có thể tạo hoặc tham gia phòng mới.');
+    showNotice(message.reason === 'kicked'
+      ? 'Chủ phòng đã mời bạn rời phòng. Bạn có thể tham gia phòng khác.'
+      : 'Phòng đã được đóng. Bạn có thể tạo hoặc tham gia phòng mới.');
     return;
   }
   if (message.type === 'left-room') {
@@ -653,6 +674,7 @@ function handleServerMessage(message) {
     renderPrivatePanels();
     showNotice('Tài khoản này đã kết nối vào Room ở tab khác.');
   }
+  // Chỉ render tin nhắn nếu vẫn đang ở đúng phòng; tin từ đối thủ khi panel đóng sẽ tăng badge chưa đọc.
   if (message.type === 'chat-message') {
     if (currentRoom?.code === chatRoomCode) {
       appendChatMessage(message.message);
@@ -661,6 +683,7 @@ function handleServerMessage(message) {
     }
     return;
   }
+  // Server gửi lịch sử theo cặp người chơi hiện tại; client thay nội dung panel bằng danh sách đó.
   if (message.type === 'chat-history') {
     if (currentRoom?.code === chatRoomCode) {
       chatMessages.replaceChildren();
@@ -726,7 +749,8 @@ function handleServerMessage(message) {
     renderPrivatePanels();
     return;
   }
-}
+} //Kết thúc chức năng của ChatRealtime
+
 
 function getMyRole() {
   if (computerMatch) return 'computer';
@@ -756,6 +780,7 @@ function isBlackPerspective() {
   return privateRole() && currentRoom?.match?.blackPlayerId === playerId;
 }
 
+//Hàm của ChatRealtime
 function appendChatMessage(message) {
   const item = document.createElement('li');
   item.className = message.senderId === playerId ? 'mine' : 'theirs';
@@ -817,7 +842,7 @@ function renderPrivatePanels() {
       : callState.status === 'calling' ? `Đang gọi ${opponent?.name ?? 'đối phương'}…`
         : callState.status === 'connecting' ? 'Đang kết nối video…'
           : callState.status === 'connected' ? audioOnly ? 'Đã kết nối bằng âm thanh (camera không khả dụng)' : 'Đã kết nối' : audioOnly ? 'Đang kết nối bằng âm thanh (camera không khả dụng)…' : 'Đang chuẩn bị cuộc gọi…';
-}
+}//Kết thúc chức năng ChatRealtime
 
 function cleanupCall({ notify = false, message = '', expectedState = null } = {}) {
   const previous = callState;
@@ -855,6 +880,9 @@ function toggleCallTrack(state, kind, options = {}) {
   });
 }
 
+// [VIDEO - KHỞI TẠO WEBRTC PEER]
+// RTCPeerConnection thương lượng kết nối trình duyệt; MediaStream track được gắn vào peer.
+// ICE candidate phát sinh được gửi qua WebSocket signaling, còn âm thanh/hình ảnh truyền giữa hai peer.
 function ensurePeerConnection(state) {
   if (state.pc) return state.pc;
   if (typeof RTCPeerConnection !== 'function') {
@@ -885,6 +913,8 @@ function ensurePeerConnection(state) {
   return pc;
 }
 
+// ICE có thể đến trước SDP remote; giữ tạm trong pendingCandidates rồi thêm vào PeerConnection
+// ngay sau khi đã cài remoteDescription để WebRTC có đủ thông tin ghép nối mạng.
 async function flushIceCandidates(state) {
   if (!state.pc?.remoteDescription) return;
   for (const candidate of state.pendingCandidates.splice(0)) {
@@ -893,6 +923,9 @@ async function flushIceCandidates(state) {
   }
 }
 
+// [VIDEO - XỬ LÝ SDP/ICE NHẬN QUA WEBSOCKET]
+// Offer đến thì cài remote SDP, tạo Answer rồi gửi lại; Answer được cài ở phía gọi.
+// Candidate đến sớm được xếp hàng; các candidate còn lại đưa trực tiếp vào RTCPeerConnection.
 async function handleCallSignal(message) {
   const state = callState;
   if (!state || state.callId !== message.callId) return;
@@ -996,7 +1029,8 @@ function renderRoom() {
   const awaitingOpponent = !match || match.status === MATCH_STATUS.FINISHED;
   becomeOpponentButton.hidden = role !== 'spectator' || !awaitingOpponent || Boolean(currentRoom.opponent);
   removeOpponentButton.hidden = role !== 'host' || !awaitingOpponent || !currentRoom.opponent;
-  if (role === 'host' && awaitingOpponent) {
+  kickOpponentButton.hidden = role !== 'host' || !awaitingOpponent || !currentRoom.opponent;
+  if (role === 'host') {
     spectatorList.replaceChildren();
     for (const person of currentRoom.spectators) {
       const row = document.createElement('div'); row.className = 'account-row';
@@ -1029,7 +1063,7 @@ function renderRoom() {
 }
 
 function renderComputerRoom() {
-  becomeOpponentButton.hidden = true; removeOpponentButton.hidden = true;
+  becomeOpponentButton.hidden = true; removeOpponentButton.hidden = true; kickOpponentButton.hidden = true;
   document.querySelector('#room-title').textContent = 'Chơi với máy';
   document.querySelector('.room-banner .muted').hidden = true;
   document.querySelector('#copy-room-code').hidden = true;
@@ -1227,6 +1261,9 @@ function renderPieces() {
   }
 }
 
+// [CHƠI VỚI MÁY / TRẬN PHÒNG - GỬI NƯỚC ĐI]
+// Người chơi chọn quân và ô đích; client tạo requestId rồi gửi computer-move hoặc move.
+// Đây chưa phải xác nhận hợp lệ: server kiểm tra lượt, thời gian và luật trước khi phát trạng thái mới.
 function handleCell(x, y) {
   if (!canPlay()) return;
   const match = computerMatch ?? currentRoom.match;
@@ -1305,6 +1342,7 @@ function exitReplay() {
 }
 
 function renderReplay() {
+  kickOpponentButton.hidden = true;
   const { record, index } = replayView;
   renderDashboard(null, true);
   document.querySelector('#room-title').textContent = record.roomName;
@@ -1371,6 +1409,8 @@ function formatDate(timestamp) {
   });
 }
 
+// [LỊCH SỬ / XEM LẠI]
+// Tải danh sách trận qua HTTP GET /api/history; chọn một dòng sẽ tải record đầy đủ để dựng lại bàn cờ.
 async function openHistory() {
   const target = roomViewEl.hidden ? document.body : document.querySelector('.extension-panels');
   if (historyOverlay.parentElement !== target) target.append(historyOverlay);
@@ -1415,6 +1455,7 @@ function renderHistoryList(matches) {
   }
 }
 
+// Tải record trận theo ID từ HTTP API; enterReplay/replayPieces phát lại các nước đã lưu trên client.
 async function loadReplay(matchId) {
   try {
     const response = await fetch(`${apiBase()}/api/matches/${encodeURIComponent(matchId)}`);
@@ -1432,6 +1473,9 @@ function requestResign() {
   else sendAction('resign');
 }
 
+// [CHƠI VỚI MÁY - KHỞI TẠO TỪ GIAO DIỆN]
+// Lưu tên hiển thị trên trình duyệt và gửi computer-start kèm người chơi/màu chọn qua WebSocket.
+// Server tạo mới hoặc khôi phục ván đang chơi rồi trả computer-state.
 function startComputerGame(side) {
   const displayName = displayNameInput.value.trim();
   if (!displayName || displayName.length > 50) {
@@ -1454,10 +1498,15 @@ function requestLeave() {
   sendAction('leave-match');
 }
 
+
+//ChatRealTime
 function respondDraw(accept) {
   sendAction('respond-draw', { accept });
 }
 
+// [CHAT - GỬI TIN NHẮN]
+// Lấy nội dung form, chặn tin rỗng và chỉ cho ghế người chơi gửi; chat-send được gửi qua WebSocket.
+// Server kiểm tra quyền, lưu lịch sử rồi chuyển cùng chat-message đến hai người chơi.
 chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const text = chatInput.value.trim();
@@ -1469,7 +1518,9 @@ chatForm.addEventListener('submit', (event) => {
   chatInput.value = '';
   chatStatus.textContent = '';
 });
-
+//Kết thúc chức năng Realtime
+// [VIDEO - BẮT ĐẦU CUỘC GỌI]
+// Caller gửi call-start để server mời đối thủ; sau call-accepted, phía gọi xin media, tạo SDP Offer.
 callStartButton.addEventListener('click', () => {
   if (!privateRole() || callState || !sendAction('call-start')) return;
   callState = { callId: null, role: 'caller', status: 'starting', pc: null,
@@ -1477,6 +1528,8 @@ callStartButton.addEventListener('click', () => {
   renderPrivatePanels();
 });
 
+// Người nhận cấp quyền và lấy MediaStream trước; nếu thành công mới báo call-accept để server
+// mở signaling cho hai phía. Nếu không lấy được media, gửi reject và dọn tài nguyên cục bộ.
 callAcceptButton.addEventListener('click', async () => {
   const state = callState;
   if (!state || state.status !== 'incoming') return;
@@ -1624,7 +1677,7 @@ function setShareMenu(open) {
 function roomInvitation() {
   const url = new URL(location.pathname, location.origin);
   url.searchParams.set('room', currentRoom.code);
-  return { title: 'Cờ Tướng Online', text: `${currentRoom.name} · Mã phòng ${currentRoom.code}`, url: url.href };
+  return { title: 'Cờ Tướng Online', text: url.href, url: url.href };
 }
 shareButton.addEventListener('click', () => {
   if (!currentRoom || replayView) return;
@@ -1636,7 +1689,7 @@ document.querySelector('#copy-room-link').addEventListener('click', async () => 
   if (!currentRoom || replayView) return;
   const { text, url } = roomInvitation();
   try {
-    await navigator.clipboard.writeText(`${text}\n${url}`);
+    await navigator.clipboard.writeText(url);
     showNotice('Đã sao chép lời mời và liên kết phòng.');
   } catch {
     document.querySelector('#room-invite-link').select();

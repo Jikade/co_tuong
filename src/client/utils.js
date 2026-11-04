@@ -1,3 +1,5 @@
+// Hàm tiện ích
+
 export function getWebSocketUrl({ override, protocol, hostname }) {
   if (override) return override;
   const scheme = protocol === 'https:' ? 'wss' : 'ws';

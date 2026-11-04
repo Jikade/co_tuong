@@ -20,6 +20,9 @@ export function createHttpHandler({ accounts, persistence, history, requireAuth,
     if (await handleAccountHttp(request, response, url)) return;
     const identity = accounts.authenticate(sessionToken(request));
     if (requireAuth && url.pathname.startsWith('/api/') && !identity) throw new ApiError(401, 'Vui lòng đăng nhập.');
+    // [HTTP LỊCH SỬ / REPLAY]
+    // Client lấy danh sách tóm tắt qua /api/history; chọn trận sẽ gọi /api/matches/:id
+    // để nhận record đầy đủ (danh sách nước đi) và dựng lại ván trên trình duyệt.
     if (url.pathname === '/api/history') {
       const playerId = requireAuth ? identity.user.id : url.searchParams.get('playerId');
       if (!playerId) {

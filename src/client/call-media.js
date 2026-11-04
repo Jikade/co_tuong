@@ -1,3 +1,9 @@
+
+	// Xin quyền camera/microphone, quản lý MediaStream
+
+// [VIDEO - XIN QUYỀN VÀ TẠO MEDIASTREAM]
+// getUserMedia xin audio và video riêng để cuộc gọi vẫn tiếp tục nếu chỉ một thiết bị khả dụng.
+// Các track được ghép thành MediaStream, gắn vào video cục bộ và sau đó chuyển cho RTCPeerConnection.
 export async function acquireCallMedia(state, {
   mediaDevices = globalThis.navigator?.mediaDevices,
   MediaStreamClass = globalThis.MediaStream,
@@ -63,6 +69,8 @@ export function renderCallMediaToggles(state, controls) {
   }
 }
 
+// [VIDEO - GIẢI PHÓNG THIẾT BỊ]
+// Đóng RTCPeerConnection, dừng các MediaStreamTrack (nhả camera/micro) và xóa nguồn video khi cuộc gọi kết thúc.
 export function releaseCallResources(state, {
   currentState = state,
   expectedState = null,

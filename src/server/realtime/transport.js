@@ -53,6 +53,9 @@ export function createWebSocketTransport({ httpServer, accounts, requireAuth, on
     socket.on('pong', () => { socket.isAlive = true; });
     onPresenceChange();
     socket.on('error', (error) => console.error('WebSocket connection failed:', error.message));
+    // [WEBSOCKET - LỚP VẬN CHUYỂN]
+    // Parse mỗi frame JSON rồi chuyển nguyên action/event cho game server xử lý nghiệp vụ;
+    // transport không tự quyết định quyền chat, luật cờ hay nội dung signaling.
     socket.on('message', (raw) => {
       let message;
       try { message = JSON.parse(raw.toString()); }

@@ -110,6 +110,9 @@ export function isInCheck(pieces, color) {
   );
 }
 
+// [LUẬT CỜ DÙNG CHUNG CLIENT/SERVER]
+// Kiểm tra ô đích, quân cùng phe, quy tắc di chuyển và trạng thái chiếu tướng sau nước đi.
+// Trả về bộ quân mới cùng quân bị ăn, hoặc null nếu nước không hợp lệ; server dùng kết quả này để xác nhận.
 export function applyLegalMove(pieces, pieceId, to) {
   if (!Number.isInteger(to?.x) || !Number.isInteger(to?.y) || !inBounds(to.x, to.y)) return null;
   const piece = pieces.find((candidate) => candidate.id === pieceId);
@@ -136,6 +139,7 @@ export function getLegalDestinations(pieces, pieceId) {
   return moves;
 }
 
+// Liệt kê mọi đích đến rồi dùng applyLegalMove lọc theo luật; máy chọn ngẫu nhiên trong danh sách này.
 export function getLegalMoves(pieces, color) {
   const moves = [];
 
